@@ -23,7 +23,8 @@ namespace KusinaPOS
             builder.Services.AddSingleton<IDatabaseService>(
                 new DatabaseService(DatabaseConstants.DatabasePath)
             );
-
+            builder.Services.AddSingleton<MainPage>();
+            builder.Services.AddSingleton<MainViewModel>();
             return builder.Build();
         }
     }
