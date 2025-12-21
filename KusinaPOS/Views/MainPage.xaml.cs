@@ -1,4 +1,6 @@
-﻿namespace KusinaPOS
+﻿using KusinaPOS.ViewModel;
+
+namespace KusinaPOS
 {
     public partial class MainPage : ContentPage
     {

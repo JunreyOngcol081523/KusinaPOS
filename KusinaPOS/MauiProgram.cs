@@ -1,5 +1,6 @@
 ﻿using KusinaPOS.Helpers;
 using KusinaPOS.Services;
+using KusinaPOS.ViewModel;
 using Microsoft.Extensions.Logging;
 
 namespace KusinaPOS
@@ -20,9 +21,11 @@ namespace KusinaPOS
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
-            builder.Services.AddSingleton<IDatabaseService>(
-                new DatabaseService(DatabaseConstants.DatabasePath)
-            );
+            //services
+            builder.Services.AddSingleton<IDatabaseService>(new DatabaseService(DatabaseConstants.DatabasePath));
+            builder.Services.AddSingleton<UserService>();
+
+            //viewmodels and pages
             builder.Services.AddSingleton<MainPage>();
             builder.Services.AddSingleton<MainViewModel>();
             return builder.Build();

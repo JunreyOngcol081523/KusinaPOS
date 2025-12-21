@@ -1,239 +1,242 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:KusinaPOS.ViewModel"
              x:Class="KusinaPOS.MainPage"
              BackgroundColor="{StaticResource BackgroundDark}">
 
     <ScrollView>
-        <!-- Two equally divided columns -->
+        <!-- Two columns: Logo | User Type + PIN Entry -->
         <Grid ColumnDefinitions="*,*" RowDefinitions="*" Padding="20">
 
-            <!-- Left Column - User Type Selection -->
+            <!-- Left Column - App Logo Only -->
             <VerticalStackLayout Grid.Column="0" 
                                  VerticalOptions="Center"
-                                 HorizontalOptions="Center"
-                                 Spacing="40">
-
-                <!-- Administrator Option -->
-                <VerticalStackLayout Spacing="15" HorizontalOptions="Center">
-                    <Border WidthRequest="180"
-                            HeightRequest="180"
-                            StrokeShape="RoundRectangle 90"
-                            Stroke="{Binding AdminBorderColor}"
-                            StrokeThickness="4"
-                            BackgroundColor="{StaticResource SurfaceDark}"
-                            HorizontalOptions="Center">
-                        <Image Source="adminicon.png"
-                               Aspect="AspectFit"
-                               Margin="20"
-                               SemanticProperties.Description="Administrator" />
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding AdministratorTappedCommand}" />
-                        </Border.GestureRecognizers>
-                    </Border>
-
-                    <Label Text="Administrator"
-                           FontSize="24"
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource TextPrimary}"
-                           HorizontalOptions="Center" />
-                </VerticalStackLayout>
-
-                <!-- Cashier Option -->
-                <VerticalStackLayout Spacing="15" HorizontalOptions="Center">
-                    <Border WidthRequest="180"
-                            HeightRequest="180"
-                            StrokeShape="RoundRectangle 90"
-                            Stroke="{Binding CashierBorderColor}"
-                            StrokeThickness="4"
-                            BackgroundColor="{StaticResource SurfaceDark}"
-                            HorizontalOptions="Center">
-                        <Image Source="cashiericon.png"
-                               Aspect="AspectFit"
-                               Margin="20"
-                               SemanticProperties.Description="Cashier" />
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding CashierTappedCommand}" />
-                        </Border.GestureRecognizers>
-                    </Border>
-
-                    <Label Text="Cashier"
-                           FontSize="24"
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource TextPrimary}"
-                           HorizontalOptions="Center" />
-                </VerticalStackLayout>
-
+                                 HorizontalOptions="Center">
+                <Image Source="{Binding AppLogoPath}"
+                       WidthRequest="400"
+                       HeightRequest="400"
+                       Aspect="AspectFit"
+                       SemanticProperties.Description="Kusina POS Logo" />
             </VerticalStackLayout>
 
-            <!-- Right Column - PIN Entry Section -->
-            <VerticalStackLayout Grid.Column="1"
-                                 VerticalOptions="Center"
-                                 Spacing="20"
-                                 Padding="40,0">
+            <!-- Right Column - User Type Selection + PIN Entry Side by Side -->
+            <Grid Grid.Column="1" 
+                  ColumnDefinitions="Auto,*"
+                  VerticalOptions="Center"
+                  Padding="40,0">
 
-                <!-- Selected User Type Label -->
-                <Label Text="{Binding SelectedUserTypeLabel}"
-                       FontSize="20"
-                       FontAttributes="Bold"
-                       TextColor="{Binding SelectedUserTypeLabelColor}"
-                       HorizontalOptions="Center"
-                       Margin="0,0,0,10" />
+                <!-- Left Side - User Type Selection (Vertical) -->
+                <VerticalStackLayout Grid.Column="0" 
+                                     VerticalOptions="Center"
+                                     Spacing="40"
+                                     Margin="0,0,40,0">
 
-                <!-- PIN Display -->
-                <Border Stroke="{StaticResource Gray300}"
-                        StrokeThickness="2"
-                        BackgroundColor="{StaticResource SurfaceDark}"
-                        StrokeShape="RoundRectangle 10"
-                        Padding="20,15"
-                        HorizontalOptions="Center"
-                        WidthRequest="300">
-                    <Label Text="{Binding PinDisplay}"
-                           FontSize="32"
+                    <!-- Administrator Option -->
+                    <VerticalStackLayout Spacing="15" HorizontalOptions="Center">
+                        <Border WidthRequest="150"
+                                HeightRequest="150"
+                                StrokeShape="RoundRectangle 75"
+                                Stroke="{Binding AdminBorderColor}"
+                                StrokeThickness="4"
+                                BackgroundColor="{StaticResource SurfaceDark}"
+                                HorizontalOptions="Center">
+                            <Image Source="adminicon.png"
+                                   Aspect="AspectFit"
+                                   Margin="20"
+                                   SemanticProperties.Description="Administrator" />
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding AdministratorTappedCommand}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+                        <Label Text="Administrator"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimary}"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+
+                    <!-- Cashier Option -->
+                    <VerticalStackLayout Spacing="15" HorizontalOptions="Center">
+                        <Border WidthRequest="150"
+                                HeightRequest="150"
+                                StrokeShape="RoundRectangle 75"
+                                Stroke="{Binding CashierBorderColor}"
+                                StrokeThickness="4"
+                                BackgroundColor="{StaticResource SurfaceDark}"
+                                HorizontalOptions="Center">
+                            <Image Source="cashiericon.png"
+                                   Aspect="AspectFit"
+                                   Margin="20"
+                                   SemanticProperties.Description="Cashier" />
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding CashierTappedCommand}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+                        <Label Text="Cashier"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimary}"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+
+                <!-- Right Side - PIN Entry Section -->
+                <VerticalStackLayout Grid.Column="1"
+                                     VerticalOptions="Center"
+                                     Spacing="20">
+
+                    <!-- Selected User Type Label -->
+                    <Label Text="{Binding SelectedUserTypeLabel}"
+                           FontSize="18"
                            FontAttributes="Bold"
-                           TextColor="{StaticResource TextPrimary}"
-                           HorizontalTextAlignment="Center"
-                           HorizontalOptions="Center" />
-                </Border>
+                           TextColor="{Binding SelectedUserTypeLabelColor}"
+                           HorizontalOptions="Center"
+                           Margin="0,0,0,10" />
 
-                <!-- Numeric Keypad -->
-                <Grid RowDefinitions="Auto,Auto,Auto,Auto"
-                      ColumnDefinitions="*,*,*"
-                      RowSpacing="15"
-                      ColumnSpacing="15"
-                      HorizontalOptions="Center"
-                      WidthRequest="300"
-                      Margin="0,20,0,0">
+                    <!-- PIN Display -->
+                    <Border Stroke="{StaticResource Gray300}"
+                            StrokeThickness="2"
+                            BackgroundColor="{StaticResource SurfaceDark}"
+                            StrokeShape="RoundRectangle 10"
+                            Padding="20,15"
+                            HorizontalOptions="Center"
+                            WidthRequest="300">
+                        <Label Text="{Binding PinDisplay}"
+                               FontSize="32"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimary}"
+                               HorizontalTextAlignment="Center"
+                               HorizontalOptions="Center" />
+                    </Border>
 
-                    <!-- Row 1: 1, 2, 3 -->
-                    <Button Grid.Row="0" Grid.Column="0" Text="1" 
+                    <!-- Numeric Keypad -->
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                          ColumnDefinitions="*,*,*"
+                          RowSpacing="12"
+                          ColumnSpacing="12"
+                          HorizontalOptions="Center"
+                          WidthRequest="300"
+                          Margin="0,15,0,0">
+
+                        <!-- Row 1: 1, 2, 3 -->
+                        <Button Grid.Row="0" Grid.Column="0" Text="1" 
                             Command="{Binding NumberClickedCommand}"
                             CommandParameter="1"
-                            FontSize="24" FontAttributes="Bold" HeightRequest="70"
+                            FontSize="24" FontAttributes="Bold" HeightRequest="65"
                             BackgroundColor="{StaticResource SurfaceDark}"
                             TextColor="{StaticResource TextPrimary}"
                             BorderColor="{StaticResource Gray300}" BorderWidth="1"
                             CornerRadius="10" />
-                    <Button Grid.Row="0" Grid.Column="1" Text="2" 
+                        <Button Grid.Row="0" Grid.Column="1" Text="2" 
                             Command="{Binding NumberClickedCommand}"
                             CommandParameter="2"
-                            FontSize="24" FontAttributes="Bold" HeightRequest="70"
+                            FontSize="24" FontAttributes="Bold" HeightRequest="65"
                             BackgroundColor="{StaticResource SurfaceDark}"
                             TextColor="{StaticResource TextPrimary}"
                             BorderColor="{StaticResource Gray300}" BorderWidth="1"
                             CornerRadius="10" />
-                    <Button Grid.Row="0" Grid.Column="2" Text="3" 
+                        <Button Grid.Row="0" Grid.Column="2" Text="3" 
                             Command="{Binding NumberClickedCommand}"
                             CommandParameter="3"
-                            FontSize="24" FontAttributes="Bold" HeightRequest="70"
+                            FontSize="24" FontAttributes="Bold" HeightRequest="65"
                             BackgroundColor="{StaticResource SurfaceDark}"
                             TextColor="{StaticResource TextPrimary}"
                             BorderColor="{StaticResource Gray300}" BorderWidth="1"
                             CornerRadius="10" />
 
-                    <!-- Row 2: 4, 5, 6 -->
-                    <Button Grid.Row="1" Grid.Column="0" Text="4" 
+                        <!-- Row 2: 4, 5, 6 -->
+                        <Button Grid.Row="1" Grid.Column="0" Text="4" 
                             Command="{Binding NumberClickedCommand}"
                             CommandParameter="4"
-                            FontSize="24" FontAttributes="Bold" HeightRequest="70"
+                            FontSize="24" FontAttributes="Bold" HeightRequest="65"
                             BackgroundColor="{StaticResource SurfaceDark}"
                             TextColor="{StaticResource TextPrimary}"
                             BorderColor="{StaticResource Gray300}" BorderWidth="1"
                             CornerRadius="10" />
-                    <Button Grid.Row="1" Grid.Column="1" Text="5" 
+                        <Button Grid.Row="1" Grid.Column="1" Text="5" 
                             Command="{Binding NumberClickedCommand}"
                             CommandParameter="5"
-                            FontSize="24" FontAttributes="Bold" HeightRequest="70"
+                            FontSize="24" FontAttributes="Bold" HeightRequest="65"
                             BackgroundColor="{StaticResource SurfaceDark}"
                             TextColor="{StaticResource TextPrimary}"
                             BorderColor="{StaticResource Gray300}" BorderWidth="1"
                             CornerRadius="10" />
-                    <Button Grid.Row="1" Grid.Column="2" Text="6" 
+                        <Button Grid.Row="1" Grid.Column="2" Text="6" 
                             Command="{Binding NumberClickedCommand}"
                             CommandParameter="6"
-                            FontSize="24" FontAttributes="Bold" HeightRequest="70"
+                            FontSize="24" FontAttributes="Bold" HeightRequest="65"
                             BackgroundColor="{StaticResource SurfaceDark}"
                             TextColor="{StaticResource TextPrimary}"
                             BorderColor="{StaticResource Gray300}" BorderWidth="1"
                             CornerRadius="10" />
 
-                    <!-- Row 3: 7, 8, 9 -->
-                    <Button Grid.Row="2" Grid.Column="0" Text="7" 
+                        <!-- Row 3: 7, 8, 9 -->
+                        <Button Grid.Row="2" Grid.Column="0" Text="7" 
                             Command="{Binding NumberClickedCommand}"
                             CommandParameter="7"
-                            FontSize="24" FontAttributes="Bold" HeightRequest="70"
+                            FontSize="24" FontAttributes="Bold" HeightRequest="65"
                             BackgroundColor="{StaticResource SurfaceDark}"
                             TextColor="{StaticResource TextPrimary}"
                             BorderColor="{StaticResource Gray300}" BorderWidth="1"
                             CornerRadius="10" />
-                    <Button Grid.Row="2" Grid.Column="1" Text="8" 
+                        <Button Grid.Row="2" Grid.Column="1" Text="8" 
                             Command="{Binding NumberClickedCommand}"
                             CommandParameter="8"
-                            FontSize="24" FontAttributes="Bold" HeightRequest="70"
+                            FontSize="24" FontAttributes="Bold" HeightRequest="65"
                             BackgroundColor="{StaticResource SurfaceDark}"
                             TextColor="{StaticResource TextPrimary}"
                             BorderColor="{StaticResource Gray300}" BorderWidth="1"
                             CornerRadius="10" />
-                    <Button Grid.Row="2" Grid.Column="2" Text="9" 
+                        <Button Grid.Row="2" Grid.Column="2" Text="9" 
                             Command="{Binding NumberClickedCommand}"
                             CommandParameter="9"
-                            FontSize="24" FontAttributes="Bold" HeightRequest="70"
+                            FontSize="24" FontAttributes="Bold" HeightRequest="65"
                             BackgroundColor="{StaticResource SurfaceDark}"
                             TextColor="{StaticResource TextPrimary}"
                             BorderColor="{StaticResource Gray300}" BorderWidth="1"
                             CornerRadius="10" />
 
-                    <!-- Row 4: Clear, 0, Backspace -->
-                    <Button Grid.Row="3" Grid.Column="0" Text="Clear" 
+                        <!-- Row 4: Clear, 0, Backspace -->
+                        <Button Grid.Row="3" Grid.Column="0" Text="Clear" 
                             Command="{Binding ClearClickedCommand}"
-                            FontSize="18" FontAttributes="Bold" HeightRequest="70"
+                            FontSize="16" FontAttributes="Bold" HeightRequest="65"
                             BackgroundColor="{StaticResource Error}"
                             TextColor="{StaticResource White}"
                             CornerRadius="10" />
-                    <Button Grid.Row="3" Grid.Column="1" Text="0" 
+                        <Button Grid.Row="3" Grid.Column="1" Text="0" 
                             Command="{Binding NumberClickedCommand}"
                             CommandParameter="0"
-                            FontSize="24" FontAttributes="Bold" HeightRequest="70"
+                            FontSize="24" FontAttributes="Bold" HeightRequest="65"
                             BackgroundColor="{StaticResource SurfaceDark}"
                             TextColor="{StaticResource TextPrimary}"
                             BorderColor="{StaticResource Gray300}" BorderWidth="1"
                             CornerRadius="10" />
-                    <Button Grid.Row="3" Grid.Column="2" Text="⌫" 
+                        <Button Grid.Row="3" Grid.Column="2" Text="⌫" 
                             Command="{Binding BackspaceClickedCommand}"
-                            FontSize="24" FontAttributes="Bold" HeightRequest="70"
+                            FontSize="24" FontAttributes="Bold" HeightRequest="65"
                             BackgroundColor="{StaticResource Warning}"
                             TextColor="{StaticResource White}"
                             CornerRadius="10" />
-                </Grid>
+                    </Grid>
 
-                <!-- Login Button -->
-                <Button Text="Login"
-                        Command="{Binding LoginCommand}"
-                        FontSize="20"
-                        FontAttributes="Bold"
-                        BackgroundColor="{StaticResource Primary}"
-                        TextColor="{StaticResource White}"
-                        CornerRadius="10"
-                        HeightRequest="55"
-                        HorizontalOptions="Fill"
-                        Margin="0,20,0,0"
-                        SemanticProperties.Hint="Login with PIN" />
+                    <!-- Login Button -->
+                    <Button Text="Login"
+                            Command="{Binding LoginCommand}"
+                            FontSize="20"
+                            FontAttributes="Bold"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="{StaticResource White}"
+                            CornerRadius="10"
+                            HeightRequest="55"
+                            HorizontalOptions="Fill"
+                            Margin="0,15,0,0"
+                            SemanticProperties.Hint="Login with PIN" />
 
-                <!-- Create Account Button -->
-                <Button Text="Create New Account"
-                        Command="{Binding CreateAccountCommand}"
-                        FontSize="16"
-                        FontAttributes="Bold"
-                        BackgroundColor="{StaticResource SurfaceDark}"
-                        TextColor="{StaticResource Primary}"
-                        BorderColor="{StaticResource Primary}"
-                        BorderWidth="2"
-                        CornerRadius="10"
-                        HeightRequest="50"
-                        HorizontalOptions="Fill"
-                        SemanticProperties.Hint="Create a new account" />
+                </VerticalStackLayout>
 
-            </VerticalStackLayout>
+            </Grid>
 
         </Grid>
     </ScrollView>

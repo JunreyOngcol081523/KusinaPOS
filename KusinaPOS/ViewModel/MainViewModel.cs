@@ -1,8 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using KusinaPOS.Services;
 using System.Windows.Input;
 
-namespace KusinaPOS
+namespace KusinaPOS.ViewModel
 {
     public partial class MainViewModel : ObservableObject
     {
@@ -26,17 +27,22 @@ namespace KusinaPOS
 
         [ObservableProperty]
         private Color _cashierBorderColor;
+        private readonly UserService _userService;
 
-        public MainViewModel()
+        [ObservableProperty]
+        private string appLogoPath;
+        public MainViewModel(UserService userService)
         {
+            _userService = userService;
             // Initialize colors from resources
             var primaryColor = GetColorFromResource("Primary");
             var gray300Color = GetColorFromResource("Gray300");
             var textSecondaryColor = GetColorFromResource("TextSecondary");
 
-            AdminBorderColor = primaryColor;
+            AdminBorderColor = gray300Color;
             CashierBorderColor = gray300Color;
             SelectedUserTypeLabelColor = textSecondaryColor;
+            LoadAppLogo();
         }
 
         // Helper method to get color from resources
@@ -119,27 +125,59 @@ namespace KusinaPOS
         }
 
         [RelayCommand]
-        private async Task OnLogin()
+        private async Task LoginAsync()
         {
             if (string.IsNullOrEmpty(_selectedUserType))
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Please select a user type", "OK");
+                await Application.Current.MainPage.DisplayAlert(
+                    "Error",
+                    "Please select a user type",
+                    "OK"
+                );
                 return;
             }
 
-            if (_currentPin.Length < 4)
+            if (_currentPin.Length < 6)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Please enter a valid PIN (minimum 4 digits)", "OK");
+                await Application.Current.MainPage.DisplayAlert(
+                    "Error",
+                    "Please enter a valid PIN (minimum 6 digits)",
+                    "OK"
+                );
                 return;
             }
 
-            // TODO: Implement login logic
-            await Application.Current.MainPage.DisplayAlert("Login",
-                $"User Type: {_selectedUserType}\nPIN: {_currentPin}", "OK");
+            var user = await _userService.LoginWithPinAsync(
+                _currentPin,
+                _selectedUserType
+            );
 
-            // Clear PIN after login attempt
+            if (user == null)
+            {
+                await Application.Current.MainPage.DisplayAlert(
+                    "Login Failed",
+                    $"Invalid PIN or user type",
+                    "OK"
+                );
+
+                OnClearClicked();
+                return;
+            }
+
+            // ✅ SUCCESS
+            await Application.Current.MainPage.DisplayAlert(
+                "Welcome",
+                $"Hello {user.Name}",
+                "OK"
+            );
+
+            // TODO: Navigate based on role
+            // Admin → AdminDashboard
+            // Cashier → POS Screen
+
             OnClearClicked();
         }
+
 
         [RelayCommand]
         private async Task OnCreateAccount()
@@ -147,6 +185,11 @@ namespace KusinaPOS
             // TODO: Navigate to create account page
             await Application.Current.MainPage.DisplayAlert("Create Account",
                 "Navigate to create account page", "OK");
+        }
+        private void LoadAppLogo()
+        {
+            // Get logo path from Preferences, use default if not set
+            AppLogoPath = Preferences.Get("AppLogoPath", "kusinaposlogo.png");
         }
     }
 }
