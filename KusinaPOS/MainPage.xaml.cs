@@ -2,23 +2,48 @@
 {
     public partial class MainPage : ContentPage
     {
-        int count = 0;
+        
 
         public MainPage()
         {
             InitializeComponent();
+            PinEntry.TextChanged += OnPinEntryTextChanged;
+        }
+        private void OnAdministratorTapped(object sender, EventArgs e)
+        {
+            // Highlight Administrator
+            AdminBorder.Stroke = (Color)Application.Current.Resources["Primary"];
+
+            // Unhighlight Cashier
+            CashierBorder.Stroke = (Color)Application.Current.Resources["Gray300"];
+
+            // Update label
+            SelectedUserTypeLabel.Text = "Administrator Selected";
+            SelectedUserTypeLabel.TextColor = (Color)Application.Current.Resources["Primary"];
         }
 
-        private void OnCounterClicked(object? sender, EventArgs e)
+        private void OnCashierTapped(object sender, EventArgs e)
         {
-            count++;
+            // Highlight Cashier
+            CashierBorder.Stroke = (Color)Application.Current.Resources["Primary"];
 
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
+            // Unhighlight Administrator
+            AdminBorder.Stroke = (Color)Application.Current.Resources["Gray300"];
 
-            SemanticScreenReader.Announce(CounterBtn.Text);
+            // Update label
+            SelectedUserTypeLabel.Text = "Cashier Selected";
+            SelectedUserTypeLabel.TextColor = (Color)Application.Current.Resources["Primary"];
+        }
+        private void OnPinEntryTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(e.NewTextValue))
+                return;
+
+            // Remove any non-numeric characters
+            if (!int.TryParse(e.NewTextValue, out _))
+            {
+                ((Entry)sender).Text = e.OldTextValue;
+            }
         }
     }
 }

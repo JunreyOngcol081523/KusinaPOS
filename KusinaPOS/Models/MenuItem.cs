@@ -11,6 +11,8 @@ namespace KusinaPOS.Models
 
         [NotNull]
         public string Name { get; set; } = string.Empty;
+        [NotNull]
+        public string Category { get; set; } = string.Empty;
 
         [NotNull]
         public decimal Price { get; set; }

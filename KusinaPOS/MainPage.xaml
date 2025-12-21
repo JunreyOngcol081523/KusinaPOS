@@ -1,36 +1,143 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="KusinaPOS.MainPage">
+             x:Class="KusinaPOS.MainPage"
+             BackgroundColor="{StaticResource BackgroundDark}">
 
     <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25">
-            <Image
-                Source="dotnet_bot.png"
-                HeightRequest="185"
-                Aspect="AspectFit"
-                SemanticProperties.Description="dot net bot in a submarine number ten" />
+        <!-- Two equally divided columns -->
+        <Grid ColumnDefinitions="*,*" RowDefinitions="*" Padding="20">
 
-            <Label
-                Text="Hello, World!"
-                Style="{StaticResource Headline}"
-                SemanticProperties.HeadingLevel="Level1" />
+            <!-- Left Column - User Type Selection -->
+            <VerticalStackLayout Grid.Column="0" 
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 Spacing="40">
 
-            <Label
-                Text="Welcome to &#10;.NET Multi-platform App UI"
-                Style="{StaticResource SubHeadline}"
-                SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I" />
+                <!-- Administrator Option -->
+                <VerticalStackLayout Spacing="15" HorizontalOptions="Center">
+                    <Border x:Name="AdminBorder"
+                            WidthRequest="180"
+                            HeightRequest="180"
+                            StrokeShape="RoundRectangle 90"
+                            Stroke="{StaticResource Primary}"
+                            StrokeThickness="4"
+                            BackgroundColor="{StaticResource SurfaceDark}"
+                            HorizontalOptions="Center">
+                        <Image Source="adminicon.png"
+                               Aspect="AspectFit"
+                               Margin="20"
+                               SemanticProperties.Description="Administrator" />
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnAdministratorTapped" />
+                        </Border.GestureRecognizers>
+                    </Border>
 
-            <Button
-                x:Name="CounterBtn"
-                Text="Click me" 
-                SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
-                HorizontalOptions="Fill" />
-        </VerticalStackLayout>
+                    <Label Text="Administrator"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextPrimary}"
+                           HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <!-- Cashier Option -->
+                <VerticalStackLayout Spacing="15" HorizontalOptions="Center">
+                    <Border x:Name="CashierBorder"
+                            WidthRequest="180"
+                            HeightRequest="180"
+                            StrokeShape="RoundRectangle 90"
+                            Stroke="{StaticResource Gray300}"
+                            StrokeThickness="4"
+                            BackgroundColor="{StaticResource SurfaceDark}"
+                            HorizontalOptions="Center">
+                        <Image Source="cashiericon.png"
+                               Aspect="AspectFit"
+                               Margin="20"
+                               SemanticProperties.Description="Cashier" />
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCashierTapped" />
+                        </Border.GestureRecognizers>
+                    </Border>
+
+                    <Label Text="Cashier"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextPrimary}"
+                           HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+
+            <!-- Right Column - PIN Entry Section -->
+            <VerticalStackLayout Grid.Column="1"
+                                 VerticalOptions="Center"
+                                 Spacing="25"
+                                 Padding="40,0">
+
+                <!-- Selected User Type Label -->
+                <Label x:Name="SelectedUserTypeLabel"
+                       Text="Select a user type"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource TextSecondary}"
+                       HorizontalOptions="Center"
+                       Margin="0,0,0,10" />
+
+                <!-- Title -->
+                <Label Text="Enter PIN"
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource TextPrimary}"
+                       HorizontalOptions="Center"
+                       Margin="0,0,0,20" />
+
+                <!-- PIN Entry -->
+                <Border Stroke="{StaticResource Gray300}"
+                        StrokeThickness="2"
+                        BackgroundColor="{StaticResource SurfaceDark}"
+                        StrokeShape="RoundRectangle 10"
+                        Padding="20,10">
+                    <Entry x:Name="PinEntry"
+                           Placeholder="Enter your PIN"
+                           PlaceholderColor="{StaticResource Gray500}"
+                           TextColor="{StaticResource TextPrimary}"
+                           FontSize="20"
+                           IsPassword="True"
+                           Keyboard="Numeric"
+                           MaxLength="6"
+                           HorizontalTextAlignment="Center" />
+                </Border>
+
+                <!-- Login Button -->
+                <Button x:Name="LoginBtn"
+                        Text="Login"
+                        FontSize="20"
+                        FontAttributes="Bold"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="{StaticResource White}"
+                        CornerRadius="10"
+                        HeightRequest="55"
+                        HorizontalOptions="Fill"
+                        Margin="0,10,0,0"
+                        SemanticProperties.Hint="Login with PIN" />
+
+                <!-- Create Account Button -->
+                <Button x:Name="CreateAccountBtn"
+                        Text="Create New Account"
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        BackgroundColor="{StaticResource SurfaceDark}"
+                        TextColor="{StaticResource Primary}"
+                        BorderColor="{StaticResource Primary}"
+                        BorderWidth="2"
+                        CornerRadius="10"
+                        HeightRequest="55"
+                        HorizontalOptions="Fill"
+                        SemanticProperties.Hint="Create a new account" />
+
+            </VerticalStackLayout>
+
+        </Grid>
     </ScrollView>
 
 </ContentPage>
