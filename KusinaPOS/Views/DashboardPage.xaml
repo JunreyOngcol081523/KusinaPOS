@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="KusinaPOS.Views.DashboardPage"
+             xmlns:viewmodels="clr-namespace:KusinaPOS.ViewModel"
+             BackgroundColor="{StaticResource BackgroundDark}">
+
+    <Grid Padding="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Top Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,20">
+            <Image Grid.Column="0" 
+                   Source="kusinaposlogo.png" 
+                   HeightRequest="40"
+                   VerticalOptions="Start"
+                   HorizontalOptions="Start"/>
+
+            <Label Grid.Column="1" 
+                   Text="{Binding CurrentDateTime}" 
+                   FontSize="14"
+                   TextColor="{StaticResource TextSecondary}"
+                   VerticalOptions="Center"
+                   Margin="0,0,20,0" />
+
+            <HorizontalStackLayout Grid.Column="2" Spacing="10" VerticalOptions="Center">
+                <Label Text="{Binding LoggedInUserName}" 
+                       FontSize="14"
+                       TextColor="{StaticResource TextSecondary}"
+                       VerticalOptions="Center" />
+                <Border StrokeShape="RoundRectangle 15"
+                        WidthRequest="30"
+                        HeightRequest="30"
+                        BackgroundColor="{StaticResource Primary}">
+                    <Label Text="⚙" 
+                           FontSize="18"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           TextColor="White" >
+                        <!--tapped event below-->
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenSettingsCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Border>
+            </HorizontalStackLayout>
+        </Grid>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1" RowDefinitions="Auto,*" RowSpacing="20">
+
+            <!-- Top Cards Row -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,*,*,*" ColumnSpacing="15">
+
+                <!-- Today's Sales Card -->
+                <Border Grid.Column="0" 
+                        BackgroundColor="{StaticResource SurfaceDark}"
+                        StrokeShape="RoundRectangle 15"
+                        Padding="20">
+                    <VerticalStackLayout Spacing="15">
+                        <Label Text="TODAY'S SALES" 
+                               FontSize="12" 
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextSecondary}" />
+
+                        <Label Text="💰" 
+                               FontSize="48"
+                               HorizontalOptions="Start" />
+
+                        <Label Text="$1,845.50" 
+                               FontSize="32" 
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Primary}" />
+
+                        <Label Text="Total Transactions: 72" 
+                               FontSize="12"
+                               TextColor="{StaticResource TextSecondary}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Inventory Status Card -->
+                <Border Grid.Column="1" 
+                        BackgroundColor="{StaticResource SurfaceDark}"
+                        StrokeShape="RoundRectangle 15"
+                        Padding="20">
+                    <VerticalStackLayout Spacing="15">
+                        <Label Text="INVENTORY STATUS" 
+                               FontSize="12" 
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextSecondary}" />
+
+                        <Label Text="🥩" 
+                               FontSize="48"
+                               HorizontalOptions="Start" />
+
+                        <Label Text="Meat Stock: 35.4 kg" 
+                               FontSize="14" 
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimary}" />
+
+                        <HorizontalStackLayout Spacing="5">
+                            <Label Text="⚠️" FontSize="12" />
+                            <Label Text="Low Stock Alert: Beef Tenderloin (5 kg remaining)" 
+                                   FontSize="11"
+                                   TextColor="{StaticResource Warning}" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Top Selling Items Card -->
+                <Border Grid.Column="2" 
+                        BackgroundColor="{StaticResource SurfaceDark}"
+                        StrokeShape="RoundRectangle 15"
+                        Padding="20">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="TOP SELLING ITEMS" 
+                               FontSize="12" 
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextSecondary}" />
+
+                        <VerticalStackLayout Spacing="8">
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="1. 🐟 Grilled Salmon (38)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="2. 🥩 Ribeye Steak (25)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="3. 🥗 Caesar Salad (42)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="4. 🍕 Margarita Pizza (20)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="5. ☕ Tiramisu (18)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Cashier Performance Card -->
+                <Border Grid.Column="3" 
+                        BackgroundColor="{StaticResource SurfaceDark}"
+                        StrokeShape="RoundRectangle 15"
+                        Padding="20">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="CASHIER PERFORMANCE" 
+                               FontSize="12" 
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextSecondary}" />
+
+                        <VerticalStackLayout Spacing="8">
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="1. 🥇 Sarah J. ($750.00)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="2. 🥈 Michael B. ($520.50)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="3. 🥉 David L. ($415.00)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="4. 👤 Emily R. ($160.00)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+            </Grid>
+
+            <!-- Bottom Section -->
+            <Grid Grid.Row="1" ColumnDefinitions="2*,*" ColumnSpacing="15">
+
+                <!-- Daily Sales Overview Chart -->
+                <Border Grid.Column="0" 
+                        BackgroundColor="{StaticResource SurfaceDark}"
+                        StrokeShape="RoundRectangle 15"
+                        Padding="20">
+                    <VerticalStackLayout Spacing="15">
+                        <Label Text="DAILY SALES OVERVIEW" 
+                               FontSize="12" 
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextSecondary}" />
+
+                        <!-- Chart Placeholder - You'll need a charting library like LiveCharts or Microcharts -->
+                        <Grid RowDefinitions="*,Auto" RowSpacing="10">
+                            <Grid Grid.Row="0" ColumnDefinitions="*,*,*,*,*,*,*" ColumnSpacing="10">
+                                <VerticalStackLayout Grid.Column="0" VerticalOptions="End" Spacing="5">
+                                    <BoxView BackgroundColor="{StaticResource Primary}" HeightRequest="180" WidthRequest="40" CornerRadius="5" />
+                                    <Label Text="Mon" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="End" Spacing="5">
+                                    <BoxView BackgroundColor="{StaticResource Primary}" HeightRequest="120" WidthRequest="40" CornerRadius="5" />
+                                    <Label Text="Tue" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="2" VerticalOptions="End" Spacing="5">
+                                    <BoxView BackgroundColor="{StaticResource Primary}" HeightRequest="140" WidthRequest="40" CornerRadius="5" />
+                                    <Label Text="Wed" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="3" VerticalOptions="End" Spacing="5">
+                                    <BoxView BackgroundColor="{StaticResource Primary}" HeightRequest="160" WidthRequest="40" CornerRadius="5" />
+                                    <Label Text="Thu" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="4" VerticalOptions="End" Spacing="5">
+                                    <BoxView BackgroundColor="{StaticResource Primary}" HeightRequest="200" WidthRequest="40" CornerRadius="5" />
+                                    <Label Text="Fri" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="5" VerticalOptions="End" Spacing="5">
+                                    <BoxView BackgroundColor="{StaticResource Primary}" HeightRequest="150" WidthRequest="40" CornerRadius="5" />
+                                    <Label Text="Sat" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="6" VerticalOptions="End" Spacing="5">
+                                    <BoxView BackgroundColor="{StaticResource Primary}" HeightRequest="230" WidthRequest="40" CornerRadius="5" />
+                                    <Label Text="Sun" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Action Buttons -->
+                <Grid Grid.Column="1" RowDefinitions="*,*,*" RowSpacing="15">
+
+                    <!-- Row 1 -->
+                    <Grid Grid.Row="0" ColumnDefinitions="*,*" ColumnSpacing="15">
+                        <Border Grid.Column="0" 
+                                BackgroundColor="{StaticResource SurfaceDark}"
+                                Stroke="{StaticResource Primary}"
+                                StrokeThickness="2"
+                                StrokeShape="RoundRectangle 15"
+                                Padding="15">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenMenuManagementCommand}" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="🍽️" FontSize="32" HorizontalOptions="Center" />
+                                <Label Text="MANAGE" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                                <Label Text="MENU" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Column="1" 
+                                BackgroundColor="{StaticResource SurfaceDark}"
+                                Stroke="{StaticResource Primary}"
+                                StrokeThickness="2"
+                                StrokeShape="RoundRectangle 15"
+                                Padding="15">
+                            <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="📖" FontSize="32" HorizontalOptions="Center" />
+                                <Label Text="MANAGE" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                                <Label Text="RECIPES" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <!-- Row 2 -->
+                    <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="15">
+                        <Border Grid.Column="0" 
+                                BackgroundColor="{StaticResource SurfaceDark}"
+                                Stroke="{StaticResource Primary}"
+                                StrokeThickness="2"
+                                StrokeShape="RoundRectangle 15"
+                                Padding="15">
+                            <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="📦" FontSize="32" HorizontalOptions="Center" />
+                                <Label Text="INVENTORY" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                                <Label Text="MANAGEMENT" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Column="1" 
+                                BackgroundColor="{StaticResource SurfaceDark}"
+                                Stroke="{StaticResource Primary}"
+                                StrokeThickness="2"
+                                StrokeShape="RoundRectangle 15"
+                                Padding="15">
+                            <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="📊" FontSize="32" HorizontalOptions="Center" />
+                                <Label Text="SALES" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                                <Label Text="REPORTS" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <!-- Row 3 -->
+                    <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="15">
+                        <Border Grid.Column="0" 
+                                BackgroundColor="{StaticResource SurfaceDark}"
+                                Stroke="{StaticResource Primary}"
+                                StrokeThickness="2"
+                                StrokeShape="RoundRectangle 15"
+                                Padding="15">
+                            <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="👥" FontSize="32" HorizontalOptions="Center" />
+                                <Label Text="USER" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                                <Label Text="MANAGEMENT" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Column="1" 
+                                BackgroundColor="{StaticResource SurfaceDark}"
+                                Stroke="{StaticResource Primary}"
+                                StrokeThickness="2"
+                                StrokeShape="RoundRectangle 15"
+                                Padding="15">
+                            <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="⚙️" FontSize="32" HorizontalOptions="Center" />
+                                <Label Text="SYSTEM" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                                <Label Text="SETTINGS" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                </Grid>
+
+            </Grid>
+
+        </Grid>
+
+    </Grid>
+
+</ContentPage>

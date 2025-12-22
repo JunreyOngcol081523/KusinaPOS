@@ -1,6 +1,7 @@
 ﻿using KusinaPOS.Helpers;
 using KusinaPOS.Services;
 using KusinaPOS.ViewModel;
+using KusinaPOS.Views;
 using Microsoft.Extensions.Logging;
 
 namespace KusinaPOS
@@ -28,6 +29,10 @@ namespace KusinaPOS
             //viewmodels and pages
             builder.Services.AddSingleton<MainPage>();
             builder.Services.AddSingleton<MainViewModel>();
+            builder.Services.AddSingleton<DashboardPage>();
+            builder.Services.AddSingleton<DashboardViewModel>();
+            builder.Services.AddSingleton<MenuItemPage>();
+            builder.Services.AddSingleton<MenuItemViewModel>();
             return builder.Build();
         }
     }

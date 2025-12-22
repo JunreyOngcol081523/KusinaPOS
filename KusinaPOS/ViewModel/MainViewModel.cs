@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using KusinaPOS.Helpers;
 using KusinaPOS.Services;
+using KusinaPOS.Views;
 using System.Windows.Input;
 
 namespace KusinaPOS.ViewModel
@@ -124,12 +126,14 @@ namespace KusinaPOS.ViewModel
             SelectedUserTypeLabelColor = GetColorFromResource("Primary");
         }
 
+
+
         [RelayCommand]
         private async Task LoginAsync()
         {
             if (string.IsNullOrEmpty(_selectedUserType))
             {
-                await Application.Current.MainPage.DisplayAlert(
+                await PageHelper.DisplayAlertAsync(
                     "Error",
                     "Please select a user type",
                     "OK"
@@ -139,7 +143,7 @@ namespace KusinaPOS.ViewModel
 
             if (_currentPin.Length < 6)
             {
-                await Application.Current.MainPage.DisplayAlert(
+                await PageHelper.DisplayAlertAsync(
                     "Error",
                     "Please enter a valid PIN (minimum 6 digits)",
                     "OK"
@@ -154,7 +158,7 @@ namespace KusinaPOS.ViewModel
 
             if (user == null)
             {
-                await Application.Current.MainPage.DisplayAlert(
+                await PageHelper.DisplayAlertAsync(
                     "Login Failed",
                     $"Invalid PIN or user type",
                     "OK"
@@ -165,25 +169,25 @@ namespace KusinaPOS.ViewModel
             }
 
             // ✅ SUCCESS
-            await Application.Current.MainPage.DisplayAlert(
+            await PageHelper.DisplayAlertAsync(
                 "Welcome",
                 $"Hello {user.Name}",
                 "OK"
             );
-
-            // TODO: Navigate based on role
-            // Admin → AdminDashboard
+            Preferences.Set("LoggedInUserId", user.Id);
+            Preferences.Set("LoggedInUserName", user.Name);
+            await Shell.Current.GoToAsync(nameof(DashboardPage));
             // Cashier → POS Screen
 
             OnClearClicked();
         }
 
-
         [RelayCommand]
         private async Task OnCreateAccount()
         {
+
             // TODO: Navigate to create account page
-            await Application.Current.MainPage.DisplayAlert("Create Account",
+            await PageHelper.DisplayAlertAsync("Create Account",
                 "Navigate to create account page", "OK");
         }
         private void LoadAppLogo()

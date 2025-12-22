@@ -1,4 +1,6 @@
-﻿namespace KusinaPOS
+﻿using KusinaPOS.Views;
+
+namespace KusinaPOS
 {
     public partial class AppShell : Shell
     {
@@ -7,6 +9,8 @@
             InitializeComponent();
             // Register routes
             Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
+            Routing.RegisterRoute(nameof(DashboardPage), typeof(DashboardPage));
+            Routing.RegisterRoute(nameof(MenuItemPage), typeof(MenuItemPage));
         }
     }
 }

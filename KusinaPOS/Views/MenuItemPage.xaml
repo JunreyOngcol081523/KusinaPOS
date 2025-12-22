@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="KusinaPOS.Views.MenuItemPage"
+             Title="Manage Menu - Flavor Fusion Bistro"
+             BackgroundColor="{StaticResource BackgroundDark}">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+
+            <!-- Header -->
+            <Label Text="Edit Menu Item: Grilled Salmon"
+                   FontSize="Title"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource TextPrimary}"
+                   HorizontalOptions="Center" />
+
+            <!-- Form Section -->
+            <Border Stroke="{StaticResource Gray300}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{StaticResource CardDark}"
+                    Padding="20"
+                    Shadow="{x:Null}">
+
+                <VerticalStackLayout Spacing="15">
+
+                    <!-- Item Name -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Item Name"
+                               FontSize="Caption"
+                               TextColor="{StaticResource TextSecondary}" />
+                        <Entry Text="Grilled Salmon"
+                               FontSize="Medium"
+                               BackgroundColor="Transparent"
+                               TextColor="{StaticResource TextPrimary}"
+                               PlaceholderColor="{StaticResource TextSecondary}" />
+                    </VerticalStackLayout>
+
+                    <!-- Description -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Description"
+                               FontSize="Caption"
+                               TextColor="{StaticResource TextSecondary}" />
+                        <Editor Text="Description for textures here"
+                               HeightRequest="80"
+                               FontSize="Medium"
+                               BackgroundColor="Transparent"
+                               TextColor="{StaticResource TextPrimary}"
+                               PlaceholderColor="{StaticResource TextSecondary}"
+                               AutoSize="TextChanges" />
+                    </VerticalStackLayout>
+
+                    <!-- Price and Category Row -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
+
+                        <!-- Price -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Price"
+                                   FontSize="Caption"
+                                   TextColor="{StaticResource TextSecondary}" />
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Label Text="$"
+                                       FontSize="Medium"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       VerticalOptions="Center"
+                                       Margin="0,0,5,0" />
+                                <Entry Text=""
+                                       Grid.Column="1"
+                                       FontSize="Medium"
+                                       BackgroundColor="Transparent"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       PlaceholderColor="{StaticResource TextSecondary}"
+                                       Keyboard="Numeric"
+                                       Placeholder="0.00" />
+                            </Grid>
+                        </VerticalStackLayout>
+
+                        <!-- Category -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Category"
+                                   FontSize="Caption"
+                               TextColor="{StaticResource TextSecondary}" />
+                            <Picker Title="Select Category"
+                                    FontSize="Medium"
+                                    TextColor="{StaticResource TextPrimary}"
+                                    TitleColor="{StaticResource TextSecondary}"
+                                    BackgroundColor="Transparent">
+                                <Picker.Items>
+                                    <x:String>Appetizers</x:String>
+                                    <x:String>Main Courses</x:String>
+                                    <x:String>Desserts</x:String>
+                                    <x:String>Drinks</x:String>
+                                </Picker.Items>
+                            </Picker>
+                        </VerticalStackLayout>
+
+                    </Grid>
+
+                    <!-- Image Section -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Image"
+                               FontSize="Caption"
+                               TextColor="{StaticResource TextSecondary}" />
+                        <Border Stroke="{StaticResource Gray300}"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 10"
+                                BackgroundColor="{StaticResource Gray200}"
+                                HeightRequest="150"
+                                HorizontalOptions="Fill">
+
+                            <Grid>
+                                <!-- Placeholder for image -->
+                                <Label Text="Tap to add image"
+                                       TextColor="{StaticResource TextSecondary}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+
+                                <!-- Add/Change Image Button -->
+                                <Button Text="+"
+                                        BackgroundColor="{StaticResource Primary}"
+                                        TextColor="{StaticResource White}"
+                                        WidthRequest="40"
+                                        HeightRequest="40"
+                                        FontSize="Title"
+                                        FontAttributes="Bold"
+                                        HorizontalOptions="End"
+                                        VerticalOptions="End"
+                                        Margin="0,0,10,10"
+                                        CornerRadius="20"/>
+
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Active Toggle -->
+                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                        <Switch IsToggled="True"
+                                OnColor="{StaticResource Primary}"
+                                ThumbColor="{StaticResource White}" />
+                        <Label Text="Active"
+                               FontSize="Medium"
+                               TextColor="{StaticResource TextPrimary}"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Action Buttons -->
+            <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                <Button Text="CANCEL"
+                        BackgroundColor="{StaticResource Gray300}"
+                        TextColor="{StaticResource TextPrimary}"
+                        WidthRequest="150"
+                        HeightRequest="45"
+                        FontSize="Medium"
+                        FontAttributes="Bold"
+                        CornerRadius="10"/>
+
+                <Button Text="SAVE CHANGES"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="{StaticResource White}"
+                        WidthRequest="150"
+                        HeightRequest="45"
+                        FontSize="Medium"
+                        FontAttributes="Bold"
+                        CornerRadius="10"/>
+
+            </HorizontalStackLayout>
+
+            <!-- Divider -->
+            <BoxView HeightRequest="1"
+                     BackgroundColor="{StaticResource Gray300}"
+                     Margin="0,20,0,10" />
+
+            <!-- Menu Categories & Items Section -->
+            <VerticalStackLayout Spacing="15">
+
+                <!-- Section Header -->
+                <Label Text="Menu Categories and Items"
+                       FontSize="Subtitle"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource TextPrimary}" />
+
+                <!-- Search and Add Category -->
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <SearchBar Placeholder="Search"
+                               PlaceholderColor="{StaticResource TextSecondary}"
+                               TextColor="{StaticResource TextPrimary}"
+                               FontSize="Medium"
+                               BackgroundColor="{StaticResource Gray200}"
+                               CancelButtonColor="{StaticResource Primary}" />
+
+                    <Button Text="Add Category"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="{StaticResource White}"
+                            HeightRequest="40"
+                            FontSize="Small"
+                            FontAttributes="Bold"
+                            Padding="10,0"
+                            CornerRadius="5"/>
+
+                </Grid>
+
+                <!-- Categories and Items List -->
+                <VerticalStackLayout Spacing="10">
+
+                    <!-- Appetizers Category -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Appetizers"
+                               FontSize="Medium"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimary}"
+                               Margin="0,10,0,5" />
+
+                        <!-- Menu Item Row Template -->
+                        <Border StrokeThickness="0"
+                                StrokeShape="RoundRectangle 5"
+                                BackgroundColor="{StaticResource Gray200}"
+                                Padding="15">
+
+                            <Grid ColumnDefinitions="*,Auto,Auto" 
+                                  ColumnSpacing="10"
+                                  RowSpacing="0">
+
+                                <!-- Item Name -->
+                                <VerticalStackLayout Grid.Column="0">
+                                    <Label Text="Grilled Salmon"
+                                           FontSize="Medium"
+                                           TextColor="{StaticResource TextPrimary}" />
+                                    <Label Text="$24.99 • Appetizers"
+                                           FontSize="Small"
+                                           TextColor="{StaticResource TextSecondary}" />
+                                </VerticalStackLayout>
+
+                                <!-- Active Status -->
+                                <Label Text="Active"
+                                       Grid.Column="1"
+                                       FontSize="Small"
+                                       TextColor="{StaticResource Success}"
+                                       VerticalOptions="Center" />
+
+                                <!-- Actions -->
+                                <HorizontalStackLayout Grid.Column="2"
+                                                      Spacing="5"
+                                                      VerticalOptions="Center">
+                                    <Button Text="Edit"
+                                            BackgroundColor="{StaticResource Gray300}"
+                                            TextColor="{StaticResource TextPrimary}"
+                                            FontSize="Small"
+                                            HeightRequest="30"
+                                            WidthRequest="60"
+                                            CornerRadius="5"/>
+
+                                    <Button Text="Delete"
+                                            BackgroundColor="{StaticResource Error}"
+                                            TextColor="{StaticResource White}"
+                                            FontSize="Small"
+                                            HeightRequest="30"
+                                            WidthRequest="60"
+                                            CornerRadius="5"/>
+
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Border>
+
+                        <!-- Second Item -->
+                        <Border StrokeThickness="0"
+                                StrokeShape="RoundRectangle 5"
+                                BackgroundColor="{StaticResource Gray200}"
+                                Padding="15">
+
+                            <Grid ColumnDefinitions="*,Auto,Auto" 
+                                  ColumnSpacing="10"
+                                  RowSpacing="0">
+
+                                <VerticalStackLayout Grid.Column="0">
+                                    <Label Text="Riberg Steak"
+                                           FontSize="Medium"
+                                           TextColor="{StaticResource TextPrimary}" />
+                                    <Label Text="$32.99 • Appetizers"
+                                           FontSize="Small"
+                                           TextColor="{StaticResource TextSecondary}" />
+                                </VerticalStackLayout>
+
+                                <Label Text="Active"
+                                       Grid.Column="1"
+                                       FontSize="Small"
+                                       TextColor="{StaticResource Success}"
+                                       VerticalOptions="Center" />
+
+                                <HorizontalStackLayout Grid.Column="2"
+                                                      Spacing="5"
+                                                      VerticalOptions="Center">
+                                    <Button Text="Edit"
+                                            BackgroundColor="{StaticResource Gray300}"
+                                            TextColor="{StaticResource TextPrimary}"
+                                            FontSize="Small"
+                                            HeightRequest="30"
+                                            CornerRadius="5"
+                                            WidthRequest="60"/>
+
+                                    <Button Text="Delete"
+                                            BackgroundColor="{StaticResource Error}"
+                                            TextColor="{StaticResource White}"
+                                            FontSize="Small"
+                                            HeightRequest="30"
+                                            WidthRequest="60"
+                                            CornerRadius="5"/>
+
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Main Courses Category -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Main Courses"
+                               FontSize="Medium"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimary}"
+                               Margin="0,10,0,5" />
+
+                        <!-- Main Course Item -->
+                        <Border StrokeThickness="0"
+                                StrokeShape="RoundRectangle 5"
+                                BackgroundColor="{StaticResource Gray200}"
+                                Padding="15">
+
+                            <Grid ColumnDefinitions="*,Auto,Auto" 
+                                  ColumnSpacing="10">
+
+                                <VerticalStackLayout Grid.Column="0">
+                                    <Label Text="Caesar Salad"
+                                           FontSize="Medium"
+                                           TextColor="{StaticResource TextPrimary}" />
+                                    <Label Text="$18.99 • Main Courses"
+                                           FontSize="Small"
+                                           TextColor="{StaticResource TextSecondary}" />
+                                </VerticalStackLayout>
+
+                                <Label Text="Active"
+                                       Grid.Column="1"
+                                       FontSize="Small"
+                                       TextColor="{StaticResource Success}"
+                                       VerticalOptions="Center" />
+
+                                <HorizontalStackLayout Grid.Column="2"
+                                                      Spacing="5"
+                                                      VerticalOptions="Center">
+                                    <Button Text="Edit"
+                                            BackgroundColor="{StaticResource Gray300}"
+                                            TextColor="{StaticResource TextPrimary}"
+                                            FontSize="Small"
+                                            HeightRequest="30"
+                                            WidthRequest="60"
+                                            CornerRadius="5"/>
+
+                                    <Button Text="Delete"
+                                            BackgroundColor="{StaticResource Error}"
+                                            TextColor="{StaticResource White}"
+                                            FontSize="Small"
+                                            HeightRequest="30"
+                                            WidthRequest="60"
+                                            CornerRadius="5"/>
+
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Desserts Category -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Desserts"
+                               FontSize="Medium"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimary}"
+                               Margin="0,10,0,5" />
+
+                        <!-- Dessert Item -->
+                        <Border StrokeThickness="0"
+                                StrokeShape="RoundRectangle 5"
+                                BackgroundColor="{StaticResource Gray200}"
+                                Padding="15">
+
+                            <Grid ColumnDefinitions="*,Auto,Auto" 
+                                  ColumnSpacing="10">
+
+                                <VerticalStackLayout Grid.Column="0">
+                                    <Label Text="Tiranitsu"
+                                           FontSize="Medium"
+                                           TextColor="{StaticResource TextPrimary}" />
+                                    <Label Text="$12.99 • Desserts"
+                                           FontSize="Small"
+                                           TextColor="{StaticResource TextSecondary}" />
+                                </VerticalStackLayout>
+
+                                <Label Text="Active"
+                                       Grid.Column="1"
+                                       FontSize="Small"
+                                       TextColor="{StaticResource Success}"
+                                       VerticalOptions="Center" />
+
+                                <HorizontalStackLayout Grid.Column="2"
+                                                      Spacing="5"
+                                                      VerticalOptions="Center">
+                                    <Button Text="Edit"
+                                            BackgroundColor="{StaticResource Gray300}"
+                                            TextColor="{StaticResource TextPrimary}"
+                                            FontSize="Small"
+                                            HeightRequest="30"
+                                            WidthRequest="60"
+                                            CornerRadius="5"/>
+
+                                    <Button Text="Delete"
+                                            BackgroundColor="{StaticResource Error}"
+                                            TextColor="{StaticResource White}"
+                                            FontSize="Small"
+                                            HeightRequest="30"
+                                            CornerRadius="5"
+                                            WidthRequest="60"/>
+
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+
+                <!-- Add New Item Button -->
+                <Button Text="ADD NEW ITEM"
+                        BackgroundColor="{StaticResource Gray300}"
+                        TextColor="{StaticResource TextPrimary}"
+                        HeightRequest="45"
+                        FontSize="Medium"
+                        FontAttributes="Bold"
+                        CornerRadius="10"
+                        HorizontalOptions="Fill"/>
+
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
