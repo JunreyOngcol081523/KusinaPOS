@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input; // For MainThread
 using KusinaPOS.Helpers;
+using KusinaPOS.Services;
 using KusinaPOS.Views;
 using Microsoft.Maui.ApplicationModel;
 using System;
@@ -12,32 +13,36 @@ namespace KusinaPOS.ViewModel
 {
     public partial class DashboardViewModel : ObservableObject
     {
-        private readonly Timer _timer;
+        private readonly IDateTimeService _dateTimeService;
         [ObservableProperty]
         private string _currentDateTime;
         [ObservableProperty]
         private string _loggedInUserName;
         [ObservableProperty]
         private string _loggedInUserId;
-        public DashboardViewModel()
+        public DashboardViewModel(IDateTimeService dateTimeService)
         {
-            UpdateDateTime();
-            _timer = new Timer(_ => UpdateDateTime(), null, 0, 1000); // 1 second
+            _dateTimeService = dateTimeService;
+
+            // Subscribe to updates
+            _dateTimeService.DateTimeChanged += OnDateTimeChanged;
+            CurrentDateTime = _dateTimeService.CurrentDateTime;
+
+            // Load user info
             LoggedInUserId = Preferences.Get("LoggedInUserId", string.Empty);
             LoggedInUserName = Preferences.Get("LoggedInUserName", string.Empty);
         }
 
-        private void UpdateDateTime()
+        private void OnDateTimeChanged(object? sender, string dateTime)
         {
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                CurrentDateTime = DateTime.Now.ToString("MMMM dd, yyyy - hh:mm tt");
-            });
+            CurrentDateTime = dateTime;
         }
-        public void Dispose()
+
+        ~DashboardViewModel()
         {
-            _timer?.Dispose();
+            _dateTimeService.DateTimeChanged -= OnDateTimeChanged;
         }
+
 
         //actions
         //OpenMenuManagementCommand
