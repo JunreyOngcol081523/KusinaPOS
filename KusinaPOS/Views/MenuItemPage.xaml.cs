@@ -8,12 +8,13 @@ namespace KusinaPOS.Views;
 public partial class MenuItemPage : ContentPage
 {
     private MenuItemService _menuItemService;
-
+    private MenuItemViewModel _menuItemViewModel;
     public MenuItemPage(MenuItemViewModel vm, MenuItemService menuItemService)
 	{
 		InitializeComponent();
 		BindingContext = vm;
         _menuItemService = menuItemService;
+        _menuItemViewModel = vm;
     }
     private async void SfSwitch_StateChanged(object sender, SwitchStateChangedEventArgs e)
     {
@@ -24,7 +25,7 @@ public partial class MenuItemPage : ContentPage
             {
                 // IsActive is ALREADY updated because of TwoWay binding
                 await _menuItemService.UpdateMenuItemAsync(menuItem);
-                menuItem.StatusText  => menuItem.IsActive ? "Active" : "Inactive";
+               await _menuItemViewModel.LoadCategoriesWithMenuItems();
             }
             catch (Exception ex)
             {

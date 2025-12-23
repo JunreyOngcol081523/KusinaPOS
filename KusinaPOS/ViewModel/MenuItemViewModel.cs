@@ -10,20 +10,26 @@ namespace KusinaPOS.ViewModel
 {
     public partial class MenuItemViewModel : ObservableObject
     {
+
         private readonly CategoryService _categoryService;
         private readonly MenuItemService _menuItemService;
-
-        public MenuItemViewModel(CategoryService categoryService, MenuItemService menuItemService)
+        private readonly IDateTimeService _dateTimeService;
+        public MenuItemViewModel(CategoryService categoryService, MenuItemService menuItemService, IDateTimeService dateTimeService)
         {
             _categoryService = categoryService;
             _menuItemService = menuItemService;
-
+            _dateTimeService = dateTimeService;
             LoggedInUserId = Preferences.Get("LoggedInUserId", string.Empty);
             LoggedInUserName = Preferences.Get("LoggedInUserName", string.Empty);
-
+            CurrentDateTime = _dateTimeService.CurrentDateTime;
             _ = InitializeAsync();
         }
-
+        private void OnDateTimeChanged(object? sender, string dateTime)
+        {
+            CurrentDateTime = dateTime;
+        }
+        [ObservableProperty]
+        private string _currentDateTime;
         [ObservableProperty]
         private List<string> categories = [];
 
@@ -206,11 +212,7 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         public async Task EditMenuItem(MenuItem menuItem)
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "MenuItem", menuItem }
-            };
-            await Shell.Current.GoToAsync("editmenuitem", parameters);
+
         }
 
         [RelayCommand]

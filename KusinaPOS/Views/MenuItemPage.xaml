@@ -9,6 +9,7 @@
              x:Class="KusinaPOS.Views.MenuItemPage"
              xmlns:viewmodels="clr-namespace:KusinaPOS.ViewModel"
              xmlns:models="clr-namespace:KusinaPOS.Models"
+             xmlns:converters="clr-namespace:KusinaPOS.Converters"
              BackgroundColor="{StaticResource BackgroundDark}">
 
     <Grid Padding="20">
@@ -27,7 +28,7 @@
                    VerticalOptions="Center" />
 
             <Label Grid.Column="1" 
-                   Text="Monday, October 28, 2024 | 5:30 PM" 
+                   Text="{Binding CurrentDateTime}" 
                    FontSize="12"
                    TextColor="{StaticResource TextSecondary}"
                    VerticalOptions="Center"
@@ -157,7 +158,7 @@
                                                                        VerticalOptions="Center" />
 
                                                                 <Label Grid.Column="1"
-                                                                       Text="{Binding StatusText}"
+                                                                       Text="{Binding IsActive, Converter={StaticResource BoolToStatusConverter}}"
                                                                        FontSize="12"
                                                                        TextColor="{StaticResource TextSecondary}"
                                                                        VerticalOptions="Center" />
@@ -167,7 +168,8 @@
                                                                       WidthRequest="50"
                                                                       HeightRequest="30"
                                                                       VerticalOptions="Center"
-                                                                      StateChanged="SfSwitch_StateChanged">
+                                                                      StateChanged="SfSwitch_StateChanged"
+                                                                                  >
                                                                 </buttons:SfSwitch>
 
                                                                 <Border Grid.Column="3"
