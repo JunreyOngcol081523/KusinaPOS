@@ -1,0 +1,11 @@
+{
+  "inputs": [],
+  "servers": {
+    "AIAssistServer": {
+      "type": "stdio",
+      "command": "Assist",
+      "args": [],
+      "env": {}
+    }
+  }
+}

@@ -29,6 +29,9 @@ namespace KusinaPOS
             builder.Services.AddSingleton<UserService>();
             builder.ConfigureSyncfusionCore();
             builder.Services.AddSingleton<IDateTimeService, DateTimeService>();
+            builder.Services.AddSingleton<CategoryService>();
+            builder.Services.AddSingleton<MenuItemService>();
+            
             //viewmodels and pages
             builder.Services.AddSingleton<MainPage>();
             builder.Services.AddSingleton<MainViewModel>();
@@ -36,6 +39,8 @@ namespace KusinaPOS
             builder.Services.AddSingleton<DashboardViewModel>();
             builder.Services.AddSingleton<MenuItemPage>();
             builder.Services.AddSingleton<MenuItemViewModel>();
+
+
             return builder.Build();
         }
     }

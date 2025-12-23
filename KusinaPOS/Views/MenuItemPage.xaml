@@ -5,8 +5,10 @@
              xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
              xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:behaviors="clr-namespace:Syncfusion.Maui.Core.Internals;assembly=Syncfusion.Maui.Core"
              x:Class="KusinaPOS.Views.MenuItemPage"
              xmlns:viewmodels="clr-namespace:KusinaPOS.ViewModel"
+             xmlns:models="clr-namespace:KusinaPOS.Models"
              BackgroundColor="{StaticResource BackgroundDark}">
 
     <Grid Padding="20">
@@ -18,7 +20,7 @@
         <!-- Top Header -->
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,20">
             <Label Grid.Column="0" 
-                   Text="Manage Menu - Flavor Fusion Bistro" 
+                   Text="Manage Menu - Kusina POS" 
                    FontSize="24" 
                    FontAttributes="Bold"
                    TextColor="{StaticResource TextPrimary}"
@@ -32,7 +34,7 @@
                    Margin="0,0,15,0" />
 
             <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
-                <Label Text="Logged in: Administrator" 
+                <Label Text="{Binding LoggedInUserName}" 
                        FontSize="12"
                        TextColor="{StaticResource TextSecondary}"
                        VerticalOptions="Center" />
@@ -69,13 +71,13 @@
                     <!-- Search and Add Category -->
                     <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
                         <sf:SfTextInputLayout Grid.Column="0"
-                                                       Hint="Search"
+                                                       Hint="Category Name"
                                                        ContainerType="Outlined"
                                                        OutlineCornerRadius="10"
                                                        ContainerBackground="{StaticResource Gray200}">
-                            <Entry x:Name="SearchEntry"
-                                   TextColor="{StaticResource TextPrimary}"
-                                   PlaceholderColor="{StaticResource Gray500}" />
+                            <Entry TextColor="{StaticResource TextPrimary}"
+                                   PlaceholderColor="{StaticResource Gray500}"
+                                   Text="{Binding NewCategoryName}"/>
                         </sf:SfTextInputLayout>
 
                         <Button Grid.Column="1"
@@ -86,294 +88,144 @@
                                 FontAttributes="Bold"
                                 CornerRadius="10"
                                 HeightRequest="50"
-                                WidthRequest="130" />
+                                WidthRequest="130" 
+                                Command="{Binding AddCategoryCommand}"/>
                     </Grid>
 
                     <!-- Menu Items List with Expanders -->
                     <ScrollView Grid.Row="2">
-                        <VerticalStackLayout Spacing="10">
-
-                            <!-- Appetizers Category -->
-                            <expander:SfExpander IsExpanded="True">
-                                <expander:SfExpander.Header>
-                                    <Grid ColumnDefinitions="*,Auto" Padding="15,10">
-                                        <Label Grid.Column="0"
-                                               Text="Appetizers"
-                                               FontSize="16"
-                                               FontAttributes="Bold"
-                                               TextColor="{StaticResource TextPrimary}"
-                                               VerticalOptions="Center" />
-                                        <Label Grid.Column="1"
-                                               Text="︿"
-                                               FontSize="16"
-                                               TextColor="{StaticResource TextPrimary}"
-                                               VerticalOptions="Center" />
-                                    </Grid>
-                                </expander:SfExpander.Header>
-                                <expander:SfExpander.Content>
-                                    <VerticalStackLayout Spacing="5" Padding="10,0">
-                                        <!-- Grilled Salmon -->
-                                        <Border BackgroundColor="{StaticResource Gray200}"
-                                                StrokeShape="RoundRectangle 8"
-                                                Padding="15,10">
-                                            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="10">
+                        <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding CategoriesWithMenuItems}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewmodels:CategoryViewModel">
+                                    <expander:SfExpander IsExpanded="{Binding IsExpanded}">
+                                        <expander:SfExpander.Header>
+                                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10" Padding="15,10">
                                                 <Label Grid.Column="0"
-                                                       Text="Grilled Salmon"
-                                                       FontSize="14"
+                                                       Text="{Binding Name}"
+                                                       FontSize="16"
+                                                       FontAttributes="Bold"
                                                        TextColor="{StaticResource TextPrimary}"
                                                        VerticalOptions="Center" />
-                                                <Label Grid.Column="1"
-                                                       Text="Active"
-                                                       FontSize="12"
-                                                       TextColor="{StaticResource TextSecondary}"
-                                                       VerticalOptions="Center" />
-                                                <buttons:SfSwitch Grid.Column="2"
-                                                                  IsOn="True"
-                                                                  WidthRequest="50"
-                                                                  HeightRequest="30"
-                                                                  VerticalOptions="Center" />
-                                                <Border Grid.Column="3"
-                                                        StrokeShape="RoundRectangle 5"
-                                                        BackgroundColor="Transparent"
-                                                        Stroke="{StaticResource Gray400}"
-                                                        StrokeThickness="1"
-                                                        WidthRequest="30"
-                                                        HeightRequest="30"
-                                                        VerticalOptions="Center">
-                                                    <Label Text="✏️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                                                </Border>
-                                                <Border Grid.Column="4"
-                                                        StrokeShape="RoundRectangle 5"
-                                                        BackgroundColor="Transparent"
-                                                        Stroke="{StaticResource Gray400}"
-                                                        StrokeThickness="1"
-                                                        WidthRequest="30"
-                                                        HeightRequest="30"
-                                                        VerticalOptions="Center">
-                                                    <Label Text="🗑️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                                                </Border>
-                                            </Grid>
-                                        </Border>
 
-                                        <!-- Ribeye Steak -->
-                                        <Border BackgroundColor="{StaticResource Gray200}"
-                                                StrokeShape="RoundRectangle 8"
-                                                Padding="15,10">
-                                            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="10">
-                                                <Label Grid.Column="0"
-                                                       Text="Ribeye Steak"
-                                                       FontSize="14"
-                                                       TextColor="{StaticResource TextPrimary}"
-                                                       VerticalOptions="Center" />
-                                                <Label Grid.Column="1"
-                                                       Text="Active"
-                                                       FontSize="12"
-                                                       TextColor="{StaticResource TextSecondary}"
-                                                       VerticalOptions="Center" />
-                                                <buttons:SfSwitch Grid.Column="2"
-                                                                  IsOn="True"
-                                                                  WidthRequest="50"
-                                                                  HeightRequest="30"
-                                                                  VerticalOptions="Center" />
-                                                <Border Grid.Column="3"
+                                                <Border Grid.Column="1"
                                                         StrokeShape="RoundRectangle 5"
                                                         BackgroundColor="Transparent"
                                                         Stroke="{StaticResource Gray400}"
                                                         StrokeThickness="1"
-                                                        WidthRequest="30"
-                                                        HeightRequest="30"
+                                                        WidthRequest="28"
+                                                        HeightRequest="28"
                                                         VerticalOptions="Center">
-                                                    <Label Text="✏️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                                                    <Border.GestureRecognizers>
+                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MenuItemViewModel}}, Path=EditCategoryCommand}"
+                                                                  CommandParameter="{Binding .}" />
+                                                    </Border.GestureRecognizers>
+                                                    <Label Text="✏️" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
                                                 </Border>
-                                                <Border Grid.Column="4"
-                                                        StrokeShape="RoundRectangle 5"
-                                                        BackgroundColor="Transparent"
-                                                        Stroke="{StaticResource Gray400}"
-                                                        StrokeThickness="1"
-                                                        WidthRequest="30"
-                                                        HeightRequest="30"
-                                                        VerticalOptions="Center">
-                                                    <Label Text="🗑️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                                                </Border>
-                                            </Grid>
-                                        </Border>
-                                    </VerticalStackLayout>
-                                </expander:SfExpander.Content>
-                            </expander:SfExpander>
 
-                            <!-- Main Courses Category -->
-                            <expander:SfExpander IsExpanded="True">
-                                <expander:SfExpander.Header>
-                                    <Grid ColumnDefinitions="*,Auto" Padding="15,10">
-                                        <Label Grid.Column="0"
-                                               Text="Main Courses"
-                                               FontSize="16"
-                                               FontAttributes="Bold"
-                                               TextColor="{StaticResource TextPrimary}"
-                                               VerticalOptions="Center" />
-                                        <Label Grid.Column="1"
-                                               Text="︿"
-                                               FontSize="16"
-                                               TextColor="{StaticResource TextPrimary}"
-                                               VerticalOptions="Center" />
-                                    </Grid>
-                                </expander:SfExpander.Header>
-                                <expander:SfExpander.Content>
-                                    <VerticalStackLayout Spacing="5" Padding="10,0">
-                                        <!-- Caesar Salad -->
-                                        <Border BackgroundColor="{StaticResource Gray200}"
-                                                StrokeShape="RoundRectangle 8"
-                                                Padding="15,10">
-                                            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="10">
-                                                <Label Grid.Column="0"
-                                                       Text="Caesar Salad"
-                                                       FontSize="14"
-                                                       TextColor="{StaticResource TextPrimary}"
-                                                       VerticalOptions="Center" />
-                                                <Label Grid.Column="1"
-                                                       Text="Active"
-                                                       FontSize="12"
-                                                       TextColor="{StaticResource TextSecondary}"
-                                                       VerticalOptions="Center" />
-                                                <buttons:SfSwitch Grid.Column="2"
-                                                                  IsOn="True"
-                                                                  WidthRequest="50"
-                                                                  HeightRequest="30"
-                                                                  VerticalOptions="Center" />
-                                                <Border Grid.Column="3"
+                                                <Border Grid.Column="2"
                                                         StrokeShape="RoundRectangle 5"
                                                         BackgroundColor="Transparent"
                                                         Stroke="{StaticResource Gray400}"
                                                         StrokeThickness="1"
-                                                        WidthRequest="30"
-                                                        HeightRequest="30"
+                                                        WidthRequest="28"
+                                                        HeightRequest="28"
                                                         VerticalOptions="Center">
-                                                    <Label Text="✏️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                                                    <Border.GestureRecognizers>
+                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MenuItemViewModel}}, Path=DeleteCategoryCommand}"
+                                                                  CommandParameter="{Binding .}" />
+                                                    </Border.GestureRecognizers>
+                                                    <Label Text="🗑️" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
                                                 </Border>
-                                                <Border Grid.Column="4"
-                                                        StrokeShape="RoundRectangle 5"
-                                                        BackgroundColor="Transparent"
-                                                        Stroke="{StaticResource Gray400}"
-                                                        StrokeThickness="1"
-                                                        WidthRequest="30"
-                                                        HeightRequest="30"
-                                                        VerticalOptions="Center">
-                                                    <Label Text="🗑️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                                                </Border>
-                                            </Grid>
-                                        </Border>
 
-                                        <!-- Margarita Pizza -->
-                                        <Border BackgroundColor="{StaticResource Gray200}"
-                                                StrokeShape="RoundRectangle 8"
-                                                Padding="15,10">
-                                            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="10">
-                                                <Label Grid.Column="0"
-                                                       Text="Margarita Pizza"
-                                                       FontSize="14"
-                                                       TextColor="{StaticResource TextPrimary}"
-                                                       VerticalOptions="Center" />
-                                                <Label Grid.Column="1"
-                                                       Text="Active"
-                                                       FontSize="12"
-                                                       TextColor="{StaticResource TextSecondary}"
-                                                       VerticalOptions="Center" />
-                                                <buttons:SfSwitch Grid.Column="2"
-                                                                  IsOn="True"
-                                                                  WidthRequest="50"
-                                                                  HeightRequest="30"
-                                                                  VerticalOptions="Center" />
-                                                <Border Grid.Column="3"
-                                                        StrokeShape="RoundRectangle 5"
-                                                        BackgroundColor="Transparent"
-                                                        Stroke="{StaticResource Gray400}"
-                                                        StrokeThickness="1"
-                                                        WidthRequest="30"
-                                                        HeightRequest="30"
-                                                        VerticalOptions="Center">
-                                                    <Label Text="✏️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                                                </Border>
-                                                <Border Grid.Column="4"
-                                                        StrokeShape="RoundRectangle 5"
-                                                        BackgroundColor="Transparent"
-                                                        Stroke="{StaticResource Gray400}"
-                                                        StrokeThickness="1"
-                                                        WidthRequest="30"
-                                                        HeightRequest="30"
-                                                        VerticalOptions="Center">
-                                                    <Label Text="🗑️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                                                </Border>
                                             </Grid>
-                                        </Border>
-                                    </VerticalStackLayout>
-                                </expander:SfExpander.Content>
-                            </expander:SfExpander>
+                                        </expander:SfExpander.Header>
 
-                            <!-- Desserts Category -->
-                            <expander:SfExpander IsExpanded="True">
-                                <expander:SfExpander.Header>
-                                    <Grid ColumnDefinitions="*,Auto" Padding="15,10">
-                                        <Label Grid.Column="0"
-                                               Text="Desserts"
-                                               FontSize="16"
-                                               FontAttributes="Bold"
-                                               TextColor="{StaticResource TextPrimary}"
-                                               VerticalOptions="Center" />
-                                        <Label Grid.Column="1"
-                                               Text="︿"
-                                               FontSize="16"
-                                               TextColor="{StaticResource TextPrimary}"
-                                               VerticalOptions="Center" />
-                                    </Grid>
-                                </expander:SfExpander.Header>
-                                <expander:SfExpander.Content>
-                                    <VerticalStackLayout Spacing="5" Padding="10,0">
-                                        <!-- Tiramisu -->
-                                        <Border BackgroundColor="{StaticResource Gray200}"
-                                                StrokeShape="RoundRectangle 8"
-                                                Padding="15,10">
-                                            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="10">
-                                                <Label Grid.Column="0"
-                                                       Text="Tiramisu"
-                                                       FontSize="14"
-                                                       TextColor="{StaticResource TextPrimary}"
-                                                       VerticalOptions="Center" />
-                                                <Label Grid.Column="1"
-                                                       Text="Active"
-                                                       FontSize="12"
-                                                       TextColor="{StaticResource TextSecondary}"
-                                                       VerticalOptions="Center" />
-                                                <buttons:SfSwitch Grid.Column="2"
-                                                                  IsOn="True"
-                                                                  WidthRequest="50"
-                                                                  HeightRequest="30"
-                                                                  VerticalOptions="Center" />
-                                                <Border Grid.Column="3"
-                                                        StrokeShape="RoundRectangle 5"
-                                                        BackgroundColor="Transparent"
-                                                        Stroke="{StaticResource Gray400}"
-                                                        StrokeThickness="1"
-                                                        WidthRequest="30"
-                                                        HeightRequest="30"
-                                                        VerticalOptions="Center">
-                                                    <Label Text="✏️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                                                </Border>
-                                                <Border Grid.Column="4"
-                                                        StrokeShape="RoundRectangle 5"
-                                                        BackgroundColor="Transparent"
-                                                        Stroke="{StaticResource Gray400}"
-                                                        StrokeThickness="1"
-                                                        WidthRequest="30"
-                                                        HeightRequest="30"
-                                                        VerticalOptions="Center">
-                                                    <Label Text="🗑️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                                                </Border>
-                                            </Grid>
-                                        </Border>
-                                    </VerticalStackLayout>
-                                </expander:SfExpander.Content>
-                            </expander:SfExpander>
+                                        <expander:SfExpander.Content>
+                                            <VerticalStackLayout Spacing="5" 
+                                                   Padding="10,0"
+                                                   BindableLayout.ItemsSource="{Binding MenuItems}">
+                                                <BindableLayout.ItemTemplate>
+                                                    <DataTemplate x:DataType="models:MenuItem">
+                                                        <Border BackgroundColor="{StaticResource Gray200}"
+                                                                StrokeShape="RoundRectangle 8"
+                                                                Padding="15,10">
+                                                            <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10">
+                                                                <Label Grid.Column="0"
+                                                                       Text="{Binding Name}"
+                                                                       FontSize="14"
+                                                                       TextColor="{StaticResource TextPrimary}"
+                                                                       VerticalOptions="Center" />
 
+                                                                <Label Grid.Column="1"
+                                                                       Text="{Binding StatusText}"
+                                                                       FontSize="12"
+                                                                       TextColor="{StaticResource TextSecondary}"
+                                                                       VerticalOptions="Center" />
+
+                                                                <buttons:SfSwitch Grid.Column="2"
+                                                                      IsOn="{Binding IsActive, Mode=TwoWay}"
+                                                                      WidthRequest="50"
+                                                                      HeightRequest="30"
+                                                                      VerticalOptions="Center"
+                                                                      StateChanged="SfSwitch_StateChanged">
+                                                                </buttons:SfSwitch>
+
+                                                                <Border Grid.Column="3"
+                                                                        StrokeShape="RoundRectangle 5"
+                                                                        BackgroundColor="Transparent"
+                                                                        Stroke="{StaticResource Gray400}"
+                                                                        StrokeThickness="1"
+                                                                        WidthRequest="30"
+                                                                        HeightRequest="30"
+                                                                        VerticalOptions="Center">
+                                                                    <Border.GestureRecognizers>
+                                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MenuItemViewModel}}, Path=EditMenuItemCommand}"
+                                                                                  CommandParameter="{Binding .}" />
+                                                                    </Border.GestureRecognizers>
+                                                                    <Label Text="✏️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                                                                </Border>
+
+                                                                <!-- Toggle button - uses same command as switch -->
+                                                                <!--<Border Grid.Column="4"
+                                                                        StrokeShape="RoundRectangle 5"
+                                                                        BackgroundColor="Transparent"
+                                                                        Stroke="{StaticResource Gray400}"
+                                                                        StrokeThickness="1"
+                                                                        WidthRequest="30"
+                                                                        HeightRequest="30"
+                                                                        VerticalOptions="Center">
+                                                                    <Border.GestureRecognizers>
+                                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MenuItemViewModel}}, Path=ToggleMenuItemStatusCommand}"
+                                                                                  CommandParameter="{Binding .}" />
+                                                                    </Border.GestureRecognizers>
+                                                                    <Label Text="⊘" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                                                                </Border>-->
+                                                            </Grid>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </BindableLayout.ItemTemplate>
+
+                                                <BindableLayout.EmptyView>
+                                                    <Label Text="No menu items in this category"
+                                                           FontSize="12"
+                                                           TextColor="{StaticResource Gray500}"
+                                                           HorizontalOptions="Center"
+                                                           Margin="0,10" />
+                                                </BindableLayout.EmptyView>
+                                            </VerticalStackLayout>
+                                        </expander:SfExpander.Content>
+                                    </expander:SfExpander>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+
+                            <BindableLayout.EmptyView>
+                                <Label Text="No categories yet. Add one to get started!"
+                                       FontSize="14"
+                                       TextColor="{StaticResource Gray500}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       Margin="0,50" />
+                            </BindableLayout.EmptyView>
                         </VerticalStackLayout>
                     </ScrollView>
 

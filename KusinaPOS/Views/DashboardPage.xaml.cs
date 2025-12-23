@@ -9,13 +9,4 @@ public partial class DashboardPage : ContentPage
 		InitializeComponent();
 		BindingContext = vm;
     }
-    protected override void OnDisappearing()
-    {
-        base.OnDisappearing();
-
-        if (BindingContext is IDisposable disposable)
-        {
-            disposable.Dispose();
-        }
-    }
 }

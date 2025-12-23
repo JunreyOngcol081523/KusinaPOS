@@ -40,6 +40,7 @@ namespace KusinaPOS.Services
             await _database.CreateTableAsync<Sale>();
             await _database.CreateTableAsync<SaleItem>();
             await _database.CreateTableAsync<InventoryTransaction>();
+            await _database.CreateTableAsync<Category>();
         }
     }
 
