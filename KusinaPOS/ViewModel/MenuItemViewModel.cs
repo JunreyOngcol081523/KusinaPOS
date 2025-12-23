@@ -21,6 +21,7 @@ namespace KusinaPOS.ViewModel
             _dateTimeService = dateTimeService;
             LoggedInUserId = Preferences.Get("LoggedInUserId", string.Empty);
             LoggedInUserName = Preferences.Get("LoggedInUserName", string.Empty);
+            _dateTimeService.DateTimeChanged += OnDateTimeChanged;
             CurrentDateTime = _dateTimeService.CurrentDateTime;
             _ = InitializeAsync();
         }
