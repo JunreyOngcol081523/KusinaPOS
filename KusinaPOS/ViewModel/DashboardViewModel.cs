@@ -6,6 +6,7 @@ using KusinaPOS.Views;
 using Microsoft.Maui.ApplicationModel;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 
@@ -20,6 +21,8 @@ namespace KusinaPOS.ViewModel
         private string _loggedInUserName;
         [ObservableProperty]
         private string _loggedInUserId;
+        [ObservableProperty]
+        private string storeName;
         public DashboardViewModel(IDateTimeService dateTimeService)
         {
             _dateTimeService = dateTimeService;
@@ -27,7 +30,7 @@ namespace KusinaPOS.ViewModel
             // Subscribe to updates
             _dateTimeService.DateTimeChanged += OnDateTimeChanged;
             CurrentDateTime = _dateTimeService.CurrentDateTime;
-
+            this.StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
             // Load user info
             LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, string.Empty);
             LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);

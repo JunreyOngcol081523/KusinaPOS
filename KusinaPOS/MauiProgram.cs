@@ -11,6 +11,7 @@ namespace KusinaPOS
     {
         public static MauiApp CreateMauiApp()
         {
+            Preferences.Set(DatabaseConstants.StoreNameKey, "The Myth | Food🥄and Drinks🥂");
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1JGaF5cXGpCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWH1ccnVdRGZdUUB/XkdWYEs=");
             var builder = MauiApp.CreateBuilder();
             builder

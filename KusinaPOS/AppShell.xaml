@@ -7,7 +7,7 @@
     Title="KusinaPOS">
 
     <ShellContent
-        Title="Home"
+        Title="User Login"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
 

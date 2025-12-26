@@ -49,6 +49,9 @@ namespace KusinaPOS.ViewModel
 
         [ObservableProperty]
         private string searchText = string.Empty;
+
+        private CancellationTokenSource? _searchCts;
+        public ObservableCollection<InventoryItem> FilteredItems { get; } = new();
         private InventoryItemService _inventoryService;
 
         [ObservableProperty]
@@ -57,6 +60,8 @@ namespace KusinaPOS.ViewModel
         private readonly IDateTimeService _dateTimeService;
         [ObservableProperty]
         private string _currentDateTime;
+        [ObservableProperty]
+        private string storeName;
         // Constructor
         public InventoryItemViewModel(InventoryItemService inventoryItemService, IDateTimeService dateTimeService)
         {
@@ -67,6 +72,7 @@ namespace KusinaPOS.ViewModel
             _dateTimeService = dateTimeService;
             _dateTimeService.DateTimeChanged += OnDateTimeChanged;
             CurrentDateTime = _dateTimeService.CurrentDateTime;
+            StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
 
         }
         private void OnDateTimeChanged(object? sender, string dateTime)
@@ -240,12 +246,24 @@ namespace KusinaPOS.ViewModel
         }
 
         // Optional: Load data method
-        public async Task LoadInventoryItems()
+        public async Task LoadInventoryItems(string filter = "")
         {
-            // TODO: Load from database
             var items = await _inventoryService.GetAllInventoryItemsAsync();
-            InventoryItems = new ObservableCollection<InventoryItem>(items);
 
+            // Perform filtering logic
+            var filtered = string.IsNullOrWhiteSpace(filter)
+                ? items
+                : items.Where(i => i.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            // Update the existing collection on the UI thread
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                InventoryItems.Clear();
+                foreach (var item in filtered)
+                {
+                    InventoryItems.Add(item);
+                }
+            });
         }
         [RelayCommand]
         public async Task RefreshInventoryAsync() { 
@@ -257,5 +275,23 @@ namespace KusinaPOS.ViewModel
             await Shell.Current.GoToAsync(nameof(DashboardPage));
 
         }
+        //search functionality with debounce
+        partial void OnSearchTextChanged(string value)
+        {
+            _searchCts?.Cancel();
+            _searchCts = new CancellationTokenSource();
+            var token = _searchCts.Token;
+
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(500, token);
+                    await LoadInventoryItems(value); // Pass the search text here
+                }
+                catch (OperationCanceledException) { }
+            }, token);
+        }
+
     }
 }

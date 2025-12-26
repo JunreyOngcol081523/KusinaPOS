@@ -24,6 +24,7 @@ namespace KusinaPOS.ViewModel
             LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
             _dateTimeService.DateTimeChanged += OnDateTimeChanged;
             CurrentDateTime = _dateTimeService.CurrentDateTime;
+            StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
             _ = InitializeAsync();
         }
         private void OnDateTimeChanged(object? sender, string dateTime)
@@ -86,6 +87,9 @@ namespace KusinaPOS.ViewModel
         private string labelText = string.Empty;
         [ObservableProperty]
         private bool isActive = true;
+
+        [ObservableProperty]
+        private string storeName;
         private async Task InitializeAsync()
         {
             //await CreateSampleDataAsync();

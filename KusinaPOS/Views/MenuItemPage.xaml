@@ -28,7 +28,7 @@
                     BackgroundColor="Transparent">
             </Button>
             <Label Grid.Column="1" 
-                   Text="Manage Menu - Kusina POS" 
+                   Text="{Binding StoreName, StringFormat='Manage Menu - {0}'}"
                    FontSize="24" 
                    FontAttributes="Bold"
                    TextColor="{StaticResource TextPrimary}"

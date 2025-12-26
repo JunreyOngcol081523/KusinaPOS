@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="KusinaPOS.Views.InventoryItemPage"
              xmlns:viewmodel="clr-namespace:KusinaPOS.ViewModel"
+             xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              BackgroundColor="{StaticResource BackgroundDark}">
 
     <Grid Padding="20"
@@ -21,7 +23,7 @@
                     BackgroundColor="Transparent">
             </Button>
             <Label Grid.Column="1" 
-                   Text="Manage Inventory" 
+                   Text="{Binding StoreName, StringFormat='Manage Inventory - {0}'}"
                    FontSize="24" 
                    FontAttributes="Bold"
                    TextColor="{StaticResource TextPrimary}"
@@ -91,10 +93,12 @@
                             Padding="10,8"
                             Margin="0,0,10,0"
                             StrokeShape="RoundRectangle 5">
-                        <Entry Placeholder="Search"
-                               PlaceholderColor="{StaticResource TextDisabled}"
-                               TextColor="{StaticResource TextPrimary}"
-                               BackgroundColor="Transparent" />
+                        <SearchBar
+                                Text="{Binding SearchText}"
+                                Placeholder="Search"
+                                PlaceholderColor="{StaticResource TextDisabled}"
+                                TextColor="{StaticResource TextPrimary}"
+                                BackgroundColor="Transparent" />
                     </Border>
 
                     <Button Grid.Column="1"
@@ -204,12 +208,25 @@
             <Grid RowDefinitions="Auto,*,Auto">
 
                 <!-- Header -->
-                <Label Grid.Row="0"
-                       Text="{Binding EditPanelTitle}"
-                       FontSize="18"
-                       FontAttributes="Bold"
-                       TextColor="{StaticResource TextPrimary}"
-                       Margin="0,0,0,20" />
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0"
+                               Text="{Binding EditPanelTitle}" 
+                               FontSize="16" 
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimary}"
+                               VerticalOptions="Center" />
+
+                    <HorizontalStackLayout Grid.Column="1" Spacing="10">
+                        <Label Text="{Binding EditingIsActive, Converter={StaticResource BoolToStatusConverter}}"
+                                   FontSize="14"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   VerticalOptions="Center" />
+                        <buttons:SfSwitch IsOn="{Binding EditingIsActive, Mode=TwoWay}"
+                                              WidthRequest="60"
+                                              HeightRequest="32"
+                                                />
+                    </HorizontalStackLayout>
+                </Grid>
 
                 <!-- Form Fields -->
                 <ScrollView Grid.Row="1">
@@ -288,16 +305,7 @@
                             </Border>
                         </VerticalStackLayout>
 
-                        <!-- Active Toggle -->
-                        <HorizontalStackLayout Spacing="10">
-                            <Label Text="Active" 
-                                   TextColor="{StaticResource TextPrimary}" 
-                                   VerticalOptions="Center" />
-                            <Switch IsToggled="{Binding EditingIsActive, Mode=TwoWay}"
-                                    OnColor="{StaticResource Primary}"
-                                    ThumbColor="{StaticResource White}"
-                                    VerticalOptions="Center" />
-                        </HorizontalStackLayout>
+
 
                     </VerticalStackLayout>
                 </ScrollView>

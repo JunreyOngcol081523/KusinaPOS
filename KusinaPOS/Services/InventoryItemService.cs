@@ -33,7 +33,17 @@ namespace KusinaPOS.Services
                 .OrderBy(i => i.Name)
                 .ToListAsync();
         }
+        public async Task<List<InventoryItem>> GetFilteredInventoryItemsAsync(string filter)
+        {
+            await InitializeAsync();
+            if (string.IsNullOrWhiteSpace(filter))
+                return await GetAllInventoryItemsAsync();
 
+            return await _db.Table<InventoryItem>()
+                .Where(i => i.Name.ToLower().Contains(filter.ToLower()))
+                .OrderBy(i => i.Name)
+                .ToListAsync();
+        }
         public async Task<InventoryItem?> GetInventoryItemByIdAsync(int id)
         {
             await InitializeAsync();
