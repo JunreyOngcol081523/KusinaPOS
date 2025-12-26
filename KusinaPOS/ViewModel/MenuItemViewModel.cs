@@ -20,8 +20,8 @@ namespace KusinaPOS.ViewModel
             _categoryService = categoryService;
             _menuItemService = menuItemService;
             _dateTimeService = dateTimeService;
-            LoggedInUserId = Preferences.Get("LoggedInUserId", string.Empty);
-            LoggedInUserName = Preferences.Get("LoggedInUserName", string.Empty);
+            LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, string.Empty);
+            LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
             _dateTimeService.DateTimeChanged += OnDateTimeChanged;
             CurrentDateTime = _dateTimeService.CurrentDateTime;
             _ = InitializeAsync();

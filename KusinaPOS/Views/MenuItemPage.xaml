@@ -21,11 +21,11 @@
         <!-- Top Header -->
         <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,0,0,20">
             <Button Grid.Column="0"
-                    Text="◄ Back"
                     Margin="0,0,15,0"
+                    HeightRequest="40"
                     Command="{Binding GoBackCommand}"
-                    FontAttributes="Bold"
-                    BackgroundColor="{StaticResource Primary}">
+                    ImageSource="arrowback.png"
+                    BackgroundColor="Transparent">
             </Button>
             <Label Grid.Column="1" 
                    Text="Manage Menu - Kusina POS" 

@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="KusinaPOS.Views.InventoryItemPage"
+             xmlns:viewmodel="clr-namespace:KusinaPOS.ViewModel"
+             BackgroundColor="{StaticResource BackgroundDark}">
+
+    <Grid Padding="20"
+          RowDefinitions="Auto,*">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <!--top header-->
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,0,0,20">
+            <Button Grid.Column="0"
+                    Margin="0,0,15,0"
+                    HeightRequest="40"
+                    Command="{Binding GoBackCommand}"
+                    ImageSource="arrowback.png"
+                    BackgroundColor="Transparent">
+            </Button>
+            <Label Grid.Column="1" 
+                   Text="Manage Inventory" 
+                   FontSize="24" 
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource TextPrimary}"
+                   VerticalOptions="Center" />
+
+            <Label Grid.Column="2" 
+                   Text="{Binding CurrentDateTime}" 
+                   FontSize="12"
+                   TextColor="{StaticResource TextSecondary}"
+                   VerticalOptions="Center"
+                   Margin="0,0,15,0" />
+
+            <HorizontalStackLayout Grid.Column="3" Spacing="8" VerticalOptions="Center">
+                <Label Text="{Binding LoggedInUserName}" 
+                       FontSize="12"
+                       TextColor="{StaticResource TextSecondary}"
+                       VerticalOptions="Center" />
+                <Border StrokeShape="RoundRectangle 15"
+                        WidthRequest="30"
+                        HeightRequest="30"
+                        BackgroundColor="{StaticResource Primary}">
+                    <Label Text="⚙" 
+                           FontSize="16"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           TextColor="White" />
+                </Border>
+            </HorizontalStackLayout>
+        </Grid>
+        <!-- Left Panel: Inventory Items List -->
+        <Border Grid.Column="0"
+                Grid.Row="1"
+                BackgroundColor="{StaticResource Gray100}"
+                Stroke="{StaticResource Gray200}"
+                StrokeThickness="1"
+                Margin="0,0,10,0"
+                Padding="20"
+                StrokeShape="RoundRectangle 10">
+            <Grid RowDefinitions="Auto,Auto,*">
+
+                <!-- Header -->
+                <Grid ColumnDefinitions="Auto,*"
+                    Grid.Row="0">
+                    <Label Grid.Column="0"
+                       Text="Inventory Items List"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource TextPrimary}"
+                       Margin="0,0,0,15"
+                        HorizontalOptions="Center"/>
+                    <Button Grid.Column="1"
+                            ImageSource="refresh.png"
+                            BackgroundColor="Transparent"
+                            HeightRequest="20"
+                            Command="{Binding RefreshInventoryCommand}"
+                            HorizontalOptions="End"/>
+                </Grid>
+
+                <!-- Search and Add Button -->
+                <Grid Grid.Row="1" 
+                      ColumnDefinitions="*,Auto"
+                      Margin="0,0,0,15">
+                    <Border Grid.Column="0"
+                            BackgroundColor="{StaticResource BackgroundDark}"
+                            Stroke="{StaticResource Gray200}"
+                            StrokeThickness="1"
+                            Padding="10,8"
+                            Margin="0,0,10,0"
+                            StrokeShape="RoundRectangle 5">
+                        <Entry Placeholder="Search"
+                               PlaceholderColor="{StaticResource TextDisabled}"
+                               TextColor="{StaticResource TextPrimary}"
+                               BackgroundColor="Transparent" />
+                    </Border>
+
+                    <Button Grid.Column="1"
+                            Text="Add Item"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="{StaticResource White}"
+                            CornerRadius="5"
+                            Padding="20,10"
+                            Command="{Binding AddItemCommand}" />
+                </Grid>
+
+                <!-- Inventory List -->
+                <Border Grid.Row="2"
+                        BackgroundColor="{StaticResource BackgroundDark}"
+                        Stroke="{StaticResource Gray200}"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 5">
+                    <CollectionView ItemsSource="{Binding InventoryItems}"
+                                    SelectionMode="Single"
+                                    SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+                        <CollectionView.Header>
+                            <Grid ColumnDefinitions="2*,*,*,*,Auto,Auto"
+                                  Padding="15,10"
+                                  BackgroundColor="{StaticResource Gray100}">
+                                <Label Grid.Column="0" HorizontalTextAlignment="Start" Text="Name" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" />
+                                <Label Grid.Column="1" HorizontalTextAlignment ="Start" Text="Quantity" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" />
+                                <Label Grid.Column="2" HorizontalTextAlignment ="Start" Text="Unit" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" />
+                                <Label Grid.Column="3" HorizontalTextAlignment ="Start" Text="Active" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" />
+                                <Label Grid.Column="4" Grid.ColumnSpan="2" HorizontalTextAlignment ="Start"  Text="Action" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" />
+                            </Grid>
+                        </CollectionView.Header>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="2*,*,*,*,Auto,Auto"
+                                      Padding="15,12"
+                                      BackgroundColor="{StaticResource BackgroundDark}">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectItemCommand}"
+                                                              CommandParameter="{Binding .}" />
+                                    </Grid.GestureRecognizers>
+
+                                    <Label Grid.Column="0" 
+                                           Text="{Binding Name}" 
+                                           TextColor="{StaticResource TextPrimary}" 
+                                           VerticalOptions="Center" />
+
+                                    <Label Grid.Column="1" 
+                                           Text="{Binding QuantityOnHand}" 
+                                           TextColor="{StaticResource TextPrimary}" 
+                                           VerticalOptions="Center" />
+
+                                    <Label Grid.Column="2" 
+                                           Text="{Binding Unit}" 
+                                           TextColor="{StaticResource TextPrimary}" 
+                                           VerticalOptions="Center" />
+
+                                    <Switch Grid.Column="3" 
+                                            IsToggled="{Binding IsActive}"
+                                            OnColor="{StaticResource Primary}"
+                                            ThumbColor="{StaticResource White}"
+                                            VerticalOptions="Center" />
+
+                                    <ImageButton Grid.Column="4"
+                                                 Source="edit.png"
+                                                 BackgroundColor="Transparent"
+                                                 WidthRequest="20"
+                                                 HeightRequest="20"
+                                                 Margin="5,0"
+                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditItemCommand}"
+                                                 CommandParameter="{Binding .}" />
+
+                                    <ImageButton Grid.Column="5"
+                                                 Source="delete.png"
+                                                 BackgroundColor="Transparent"
+                                                 WidthRequest="20"
+                                                 HeightRequest="20"
+                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteItemCommand}"
+                                                 CommandParameter="{Binding .}" />
+
+                                    <BoxView Grid.ColumnSpan="6"
+                                             HeightRequest="1"
+                                             BackgroundColor="{StaticResource Gray100}"
+                                             VerticalOptions="End" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Right Panel: Edit Inventory Item -->
+        <Border Grid.Column="1"
+                Grid.Row="1"
+                BackgroundColor="{StaticResource Gray100}"
+                Stroke="{StaticResource Gray200}"
+                StrokeThickness="1"
+                Margin="10,0,0,0"
+                Padding="20"
+                StrokeShape="RoundRectangle 10"
+                IsVisible="{Binding IsEditPanelVisible}">
+            <Grid RowDefinitions="Auto,*,Auto">
+
+                <!-- Header -->
+                <Label Grid.Row="0"
+                       Text="{Binding EditPanelTitle}"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource TextPrimary}"
+                       Margin="0,0,0,20" />
+
+                <!-- Form Fields -->
+                <ScrollView Grid.Row="1">
+                    <VerticalStackLayout Spacing="15">
+
+                        <!-- Name -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Name" TextColor="{StaticResource TextSecondary}" FontSize="12" />
+                            <Border BackgroundColor="{StaticResource BackgroundDark}"
+                                    Stroke="{StaticResource Gray200}"
+                                    StrokeThickness="1"
+                                    Padding="12,10"
+                                    StrokeShape="RoundRectangle 5">
+                                <Entry Text="{Binding EditingName, Mode=TwoWay}"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       BackgroundColor="Transparent" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Unit -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Unit" TextColor="{StaticResource TextSecondary}" FontSize="12" />
+                            <Border BackgroundColor="{StaticResource BackgroundDark}"
+                                    Stroke="{StaticResource Gray200}"
+                                    StrokeThickness="1"
+                                    Padding="12,10"
+                                    StrokeShape="RoundRectangle 5">
+                                <Entry Text="{Binding EditingUnit, Mode=TwoWay}"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       BackgroundColor="Transparent" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Quantity On Hand -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Quantity On Hand" TextColor="{StaticResource TextSecondary}" FontSize="12" />
+                            <Border BackgroundColor="{StaticResource BackgroundDark}"
+                                    Stroke="{StaticResource Gray200}"
+                                    StrokeThickness="1"
+                                    Padding="12,10"
+                                    StrokeShape="RoundRectangle 5">
+                                <Entry Text="{Binding EditingQuantityOnHand, Mode=TwoWay}"
+                                       Keyboard="Numeric"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       BackgroundColor="Transparent" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Cost Per Unit -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Cost Per Unit" TextColor="{StaticResource TextSecondary}" FontSize="12" />
+                            <Border BackgroundColor="{StaticResource BackgroundDark}"
+                                    Stroke="{StaticResource Gray200}"
+                                    StrokeThickness="1"
+                                    Padding="12,10"
+                                    StrokeShape="RoundRectangle 5">
+                                <Entry Text="{Binding EditingCostPerUnit, Mode=TwoWay}"
+                                       Keyboard="Numeric"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       BackgroundColor="Transparent" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Re-Order Level -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Re-Order Level" TextColor="{StaticResource TextSecondary}" FontSize="12" />
+                            <Border BackgroundColor="{StaticResource BackgroundDark}"
+                                    Stroke="{StaticResource Gray200}"
+                                    StrokeThickness="1"
+                                    Padding="12,10"
+                                    StrokeShape="RoundRectangle 5">
+                                <Entry Text="{Binding EditingReOrderLevel, Mode=TwoWay}"
+                                       Keyboard="Numeric"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       BackgroundColor="Transparent" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Active Toggle -->
+                        <HorizontalStackLayout Spacing="10">
+                            <Label Text="Active" 
+                                   TextColor="{StaticResource TextPrimary}" 
+                                   VerticalOptions="Center" />
+                            <Switch IsToggled="{Binding EditingIsActive, Mode=TwoWay}"
+                                    OnColor="{StaticResource Primary}"
+                                    ThumbColor="{StaticResource White}"
+                                    VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+
+                    </VerticalStackLayout>
+                </ScrollView>
+
+                <!-- Action Buttons -->
+                <Grid Grid.Row="2" 
+                      ColumnDefinitions="*,*"
+                      Margin="0,20,0,0"
+                      ColumnSpacing="10">
+                    <Button Grid.Column="0"
+                            Text="CANCEL"
+                            BackgroundColor="{StaticResource Gray200}"
+                            TextColor="{StaticResource TextPrimary}"
+                            CornerRadius="5"
+                            Padding="0,12"
+                            Command="{Binding CancelCommand}" />
+
+                    <Button Grid.Column="1"
+                            Text="SAVE CHANGES"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="{StaticResource White}"
+                            CornerRadius="5"
+                            Padding="0,12"
+                            Command="{Binding SaveChangesCommand}" />
+                </Grid>
+
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

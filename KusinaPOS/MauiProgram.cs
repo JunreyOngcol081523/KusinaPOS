@@ -31,7 +31,8 @@ namespace KusinaPOS
             builder.Services.AddSingleton<IDateTimeService, DateTimeService>();
             builder.Services.AddSingleton<CategoryService>();
             builder.Services.AddSingleton<MenuItemService>();
-            builder.Services.AddSingleton<DateTimeService>(); // now DI knows both DateTimeService and IDateTimeService
+            builder.Services.AddSingleton<DateTimeService>();
+            builder.Services.AddSingleton<InventoryItemService>();
 
             //viewmodels and pages
             builder.Services.AddSingleton<MainPage>();
@@ -40,6 +41,8 @@ namespace KusinaPOS
             builder.Services.AddSingleton<DashboardViewModel>();
             builder.Services.AddSingleton<MenuItemPage>();
             builder.Services.AddSingleton<MenuItemViewModel>();
+            builder.Services.AddSingleton<InventoryItemPage>();
+            builder.Services.AddSingleton<InventoryItemViewModel    >();
 
 
             return builder.Build();

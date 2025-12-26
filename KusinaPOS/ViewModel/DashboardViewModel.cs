@@ -29,8 +29,8 @@ namespace KusinaPOS.ViewModel
             CurrentDateTime = _dateTimeService.CurrentDateTime;
 
             // Load user info
-            LoggedInUserId = Preferences.Get("LoggedInUserId", string.Empty);
-            LoggedInUserName = Preferences.Get("LoggedInUserName", string.Empty);
+            LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, string.Empty);
+            LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
         }
 
         private void OnDateTimeChanged(object? sender, string dateTime)
@@ -51,5 +51,10 @@ namespace KusinaPOS.ViewModel
         {
             await Shell.Current.GoToAsync(nameof(MenuItemPage));
         }
-    }
+        [RelayCommand]
+        private async Task OpenInventoryManagementAsync()
+        {
+            await Shell.Current.GoToAsync(nameof(InventoryItemPage));
+        }
+     }
 }

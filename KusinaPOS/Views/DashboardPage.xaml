@@ -269,6 +269,9 @@
                                 <Label Text="INVENTORY" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                                 <Label Text="MANAGEMENT" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenInventoryManagementCommand}" />
+                            </Border.GestureRecognizers>
                         </Border>
 
                         <Border Grid.Column="1" 

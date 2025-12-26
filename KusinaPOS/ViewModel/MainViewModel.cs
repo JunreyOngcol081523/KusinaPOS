@@ -174,8 +174,8 @@ namespace KusinaPOS.ViewModel
                 $"Hello {user.Name}",
                 "OK"
             );
-            Preferences.Set("LoggedInUserId", user.Id);
-            Preferences.Set("LoggedInUserName", user.Name);
+            Preferences.Set(DatabaseConstants.LoggedInUserIdKey, user.Id);
+            Preferences.Set(DatabaseConstants.LoggedInUserNameKey, user.Name);
             await Shell.Current.GoToAsync(nameof(DashboardPage));
             // Cashier → POS Screen
 
