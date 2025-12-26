@@ -23,7 +23,8 @@ namespace KusinaPOS.Models
 
         [NotNull]
         public string Type { get; set; } = string.Empty;
-        
+
+        public string ImagePath { get; set; } = string.Empty;
         public bool IsActive { get; set; } = true;
 
         [Ignore]

@@ -8,9 +8,9 @@ namespace KusinaPOS.Converters
     public class BoolToStatusConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-            => (bool)value ? "Available" : "Unavailable";
+            => (bool)value ? "Active" : "Inactive";
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => (string)value == "Available";
+            => (string)value == "Active";
     }
 }

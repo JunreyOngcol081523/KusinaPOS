@@ -236,7 +236,7 @@
                                 <TapGestureRecognizer Command="{Binding OpenMenuManagementCommand}" />
                             </Border.GestureRecognizers>
                             <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                                <Label Text="🍽️" FontSize="32" HorizontalOptions="Center" />
+                                <Image Source="menu.png" HeightRequest="40"/>
                                 <Label Text="MANAGE" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                                 <Label Text="MENU" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
@@ -249,7 +249,7 @@
                                 StrokeShape="RoundRectangle 15"
                                 Padding="15">
                             <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                                <Label Text="📖" FontSize="32" HorizontalOptions="Center" />
+                                <Image Source="recipe.png" HeightRequest="40"/>
                                 <Label Text="MANAGE" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                                 <Label Text="RECIPES" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
@@ -265,7 +265,7 @@
                                 StrokeShape="RoundRectangle 15"
                                 Padding="15">
                             <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                                <Label Text="📦" FontSize="32" HorizontalOptions="Center" />
+                                <Image Source="inventory.png" HeightRequest="40"/>
                                 <Label Text="INVENTORY" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                                 <Label Text="MANAGEMENT" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
@@ -278,7 +278,7 @@
                                 StrokeShape="RoundRectangle 15"
                                 Padding="15">
                             <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                                <Label Text="📊" FontSize="32" HorizontalOptions="Center" />
+                                <Image Source="sales.png" HeightRequest="40"/>
                                 <Label Text="SALES" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                                 <Label Text="REPORTS" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
@@ -294,7 +294,7 @@
                                 StrokeShape="RoundRectangle 15"
                                 Padding="15">
                             <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                                <Label Text="👥" FontSize="32" HorizontalOptions="Center" />
+                                <Image Source="usersettings.png" HeightRequest="40"/>
                                 <Label Text="USER" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                                 <Label Text="MANAGEMENT" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
@@ -307,7 +307,7 @@
                                 StrokeShape="RoundRectangle 15"
                                 Padding="15">
                             <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                                <Label Text="⚙️" FontSize="32" HorizontalOptions="Center" />
+                                <Image Source="settings.png" HeightRequest="40"/>
                                 <Label Text="SYSTEM" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                                 <Label Text="SETTINGS" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>

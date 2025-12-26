@@ -5,6 +5,7 @@ using KusinaPOS.Services;
 using KusinaPOS.Models;
 using System.Collections.ObjectModel;
 using MenuItem = KusinaPOS.Models.MenuItem;
+using KusinaPOS.Views;
 
 namespace KusinaPOS.ViewModel
 {
@@ -46,15 +47,51 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty]
         private string newCategoryName = string.Empty;
 
-
+        [ObservableProperty]
+        private bool isBorderVisible = false;   
 
         [ObservableProperty]
         private ObservableCollection<CategoryViewModel> categoriesWithMenuItems = [];
 
+        [ObservableProperty]
+        private string selectedMenuType = string.Empty;
+
+        [ObservableProperty]
+        private ObservableCollection<string> menuTypes;
+
+        [ObservableProperty]
+        private int selectedMenuItemId;
+
+        [ObservableProperty]
+        private string menuItemName = string.Empty;
+
+        [ObservableProperty]
+        private string menuDescription = string.Empty;
+
+        [ObservableProperty]
+        private decimal menuItemPrice;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(MenuImageSource))]
+        [NotifyPropertyChangedFor(nameof(ImageLabel))]
+        private string imagePath;
+
+        public ImageSource MenuImageSource =>
+            string.IsNullOrWhiteSpace(ImagePath)
+                ? "placeholder_food.png"
+                : ImageSource.FromFile(ImagePath);
+        public string ImageLabel => string.IsNullOrWhiteSpace(ImagePath) ? "Click to upload" : Path.GetFileName(ImagePath);
+
+        [ObservableProperty]
+        private string labelText = string.Empty;
+        [ObservableProperty]
+        private bool isActive = true;
         private async Task InitializeAsync()
         {
             //await CreateSampleDataAsync();
             await LoadCategoriesWithMenuItems();
+            IsBorderVisible = false;
+            MenuTypes = new ObservableCollection<string> { "Simple", "Composite" };
         }
 
         [RelayCommand]
@@ -213,7 +250,32 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         public async Task EditMenuItem(MenuItem menuItem)
         {
-
+            this.SelectedMenuItemId = menuItem.Id;
+            this.MenuItemName = menuItem.Name;
+            this.MenuDescription = menuItem.Description;
+            this.MenuItemPrice = menuItem.Price;
+            this.IsActive = menuItem.IsActive;
+            this.SelectedCategory = menuItem.Category;
+            this.SelectedMenuType = menuItem.Type;
+            this.LabelText = $"Edit Menu Item: {MenuItemName}";
+            ImagePath = string.IsNullOrWhiteSpace(menuItem.ImagePath)
+                ? string.Empty
+                : menuItem.ImagePath;
+            ShowBorder();
+        }
+        [RelayCommand]
+        public async Task AddMenuItem()
+        {
+            this.LabelText = "Add New Menu Item";
+            this.SelectedMenuItemId = 0;
+            this.MenuItemName = string.Empty;
+            this.MenuDescription = string.Empty;
+            this.MenuItemPrice = 0;
+            this.IsActive = false;
+            this.SelectedCategory = string.Empty;
+            this.SelectedMenuType = string.Empty;
+            this.ImagePath = string.Empty;
+            ShowBorder();
         }
 
         [RelayCommand]
@@ -321,6 +383,131 @@ namespace KusinaPOS.ViewModel
                 {
                     await PageHelper.DisplayAlertAsync("Error", $"Failed to delete category: {ex.Message}", "OK");
                 }
+            }
+        }
+        [RelayCommand]
+        public async Task GoBackAsync() {
+            await Shell.Current.GoToAsync(nameof(DashboardPage));
+
+        }
+        [RelayCommand]
+        private void ShowBorder() => IsBorderVisible = true;
+        [RelayCommand]
+        private void HideBorder()
+        {
+            this.SelectedMenuItemId = 0;
+            this.MenuItemName = string.Empty;
+            this.MenuDescription = string.Empty;
+            this.MenuItemPrice = 0;
+            this.IsActive = false;
+            this.SelectedCategory = string.Empty;
+            this.SelectedMenuType = string.Empty;
+            this.ImagePath = string.Empty;
+            IsBorderVisible = false;
+        } 
+        [RelayCommand]
+        private async Task UploadImageAsync()
+        {
+            try
+            {
+                if (this.MenuItemName == null || this.MenuItemName.Trim() == "")
+                {
+                    await PageHelper.DisplayAlertAsync("Validation", "Please enter the menu item name before uploading an image.", "OK");
+                    return;
+                }
+                // Pick photo(s) from gallery (now supports multiple selections)
+                var results = await MediaPicker.PickPhotosAsync(new MediaPickerOptions
+                {
+                    Title = "Select Menu Item Image",
+                    SelectionLimit = 1 // Only allow one image for menu item
+                });
+
+                var result = results?.FirstOrDefault();
+                if (result == null)
+                    return;
+
+                // Create folder for menu images if it doesn't exist
+                var imagesDir = Path.Combine(FileSystem.AppDataDirectory, "menu_images");
+                if (!Directory.Exists(imagesDir))
+                    Directory.CreateDirectory(imagesDir);
+
+                // Generate a unique file name
+                var fileName = $"{this.MenuItemName.Replace(" ","")}{Path.GetExtension(result.FileName)}";
+                var destinationPath = Path.Combine(imagesDir, fileName);
+
+                // Copy the picked image to app storage
+                using var sourceStream = await result.OpenReadAsync();
+                using var destinationStream = File.Create(destinationPath);
+                await sourceStream.CopyToAsync(destinationStream);
+
+                // Optional: delete old image if replacing
+                if (!string.IsNullOrWhiteSpace(ImagePath) && File.Exists(ImagePath))
+                    File.Delete(ImagePath);
+
+                // Update bound property (UI will refresh)
+                ImagePath = destinationPath;
+
+                // Save the path to SQLite here (if you want immediate save)
+                // await _menuItemService.UpdateMenuItemImageAsync(MenuItemId, ImagePath);
+            }
+            catch (Exception ex)
+            {
+                await PageHelper.DisplayAlertAsync("Error", $"Image upload failed: {ex.Message}", "OK");
+            }
+        }
+        //add new menu item or update existing
+        [RelayCommand]
+        public async Task SaveMenuItemAsync()
+        {
+            if (string.IsNullOrWhiteSpace(MenuItemName) ||
+                string.IsNullOrWhiteSpace(SelectedCategory) ||
+                string.IsNullOrWhiteSpace(SelectedMenuType) ||
+                MenuItemPrice <= 0)
+            {
+                await PageHelper.DisplayAlertAsync("Validation", "Please fill in all required fields with valid data.", "OK");
+                return;
+            }
+            try
+            {
+                var menuItem = new MenuItem
+                {
+                    Id = SelectedMenuItemId,
+                    Name = MenuItemName.Trim(),
+                    Description = MenuDescription.Trim(),
+                    Category = SelectedCategory,
+                    Price = MenuItemPrice,
+                    Type = SelectedMenuType,
+                    ImagePath = ImagePath,
+                    IsActive = IsActive
+                };
+                bool confirm = await PageHelper.DisplayConfirmAsync(
+                    "Confirm Save",
+                    SelectedMenuItemId == 0 ? "Are you sure you want to add this new menu item?" : "Are you sure you want to update this menu item?",
+                    "Yes",
+                    "No");
+                if (confirm)
+                {
+                    if (SelectedMenuItemId == 0)
+                    {
+                        // New item
+                        await _menuItemService.AddMenuItemAsync(menuItem);
+                    }
+                    else
+                    {
+                        // Existing item
+                        await _menuItemService.UpdateMenuItemAsync(menuItem);
+                    }
+                }
+                else
+                {
+                    return;
+                }
+                    await LoadCategoriesWithMenuItems();
+                HideBorder();
+            }
+            catch (Exception ex)
+            {
+                await PageHelper.DisplayAlertAsync("Error", $"Failed to save menu item: {ex.Message}", "OK");
             }
         }
     }

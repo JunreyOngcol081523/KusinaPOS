@@ -9,12 +9,14 @@ public partial class MenuItemPage : ContentPage
 {
     private MenuItemService _menuItemService;
     private MenuItemViewModel _menuItemViewModel;
-    public MenuItemPage(MenuItemViewModel vm, MenuItemService menuItemService)
+    private DateTimeService? _dateTimeService = null;
+    public MenuItemPage(MenuItemViewModel vm, MenuItemService menuItemService, DateTimeService dts)
 	{
 		InitializeComponent();
 		BindingContext = vm;
         _menuItemService = menuItemService;
         _menuItemViewModel = vm;
+        _dateTimeService = dts;
     }
     private async void SfSwitch_StateChanged(object sender, SwitchStateChangedEventArgs e)
     {
@@ -40,5 +42,14 @@ public partial class MenuItemPage : ContentPage
             }
         }
     }
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
 
+        if (_dateTimeService != null)
+        {
+            _dateTimeService.Dispose();
+            _dateTimeService = null; // prevent double-dispose
+        }
+    }
 }

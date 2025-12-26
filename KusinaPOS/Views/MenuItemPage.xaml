@@ -19,22 +19,29 @@
         </Grid.RowDefinitions>
 
         <!-- Top Header -->
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,20">
-            <Label Grid.Column="0" 
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,0,0,20">
+            <Button Grid.Column="0"
+                    Text="◄ Back"
+                    Margin="0,0,15,0"
+                    Command="{Binding GoBackCommand}"
+                    FontAttributes="Bold"
+                    BackgroundColor="{StaticResource Primary}">
+            </Button>
+            <Label Grid.Column="1" 
                    Text="Manage Menu - Kusina POS" 
                    FontSize="24" 
                    FontAttributes="Bold"
                    TextColor="{StaticResource TextPrimary}"
                    VerticalOptions="Center" />
 
-            <Label Grid.Column="1" 
+            <Label Grid.Column="2" 
                    Text="{Binding CurrentDateTime}" 
                    FontSize="12"
                    TextColor="{StaticResource TextSecondary}"
                    VerticalOptions="Center"
                    Margin="0,0,15,0" />
 
-            <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
+            <HorizontalStackLayout Grid.Column="3" Spacing="8" VerticalOptions="Center">
                 <Label Text="{Binding LoggedInUserName}" 
                        FontSize="12"
                        TextColor="{StaticResource TextSecondary}"
@@ -186,22 +193,6 @@
                                                                     </Border.GestureRecognizers>
                                                                     <Label Text="✏️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
                                                                 </Border>
-
-                                                                <!-- Toggle button - uses same command as switch -->
-                                                                <!--<Border Grid.Column="4"
-                                                                        StrokeShape="RoundRectangle 5"
-                                                                        BackgroundColor="Transparent"
-                                                                        Stroke="{StaticResource Gray400}"
-                                                                        StrokeThickness="1"
-                                                                        WidthRequest="30"
-                                                                        HeightRequest="30"
-                                                                        VerticalOptions="Center">
-                                                                    <Border.GestureRecognizers>
-                                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MenuItemViewModel}}, Path=ToggleMenuItemStatusCommand}"
-                                                                                  CommandParameter="{Binding .}" />
-                                                                    </Border.GestureRecognizers>
-                                                                    <Label Text="⊘" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                                                                </Border>-->
                                                             </Grid>
                                                         </Border>
                                                     </DataTemplate>
@@ -241,143 +232,198 @@
                             FontSize="14"
                             FontAttributes="Bold"
                             CornerRadius="10"
-                            HeightRequest="50" />
+                            HeightRequest="50"
+                            Command="{Binding AddMenuItemCommand}"/>
 
                 </Grid>
             </Border>
 
-            <!-- Right Side - Edit Menu Item Form -->
+            <!-- Right Side - Edit Menu Item Form (REORGANIZED) -->
             <Border Grid.Column="1" 
                     BackgroundColor="{StaticResource SurfaceDark}"
                     StrokeShape="RoundRectangle 15"
-                    Padding="20">
+                    Padding="20"
+                    IsVisible="{Binding IsBorderVisible}">
                 <Grid RowDefinitions="Auto,*,Auto" RowSpacing="20">
 
-                    <!-- Header -->
-                    <Label Grid.Row="0"
-                           Text="Edit Menu Item: Grilled Salmon" 
-                           FontSize="16" 
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource TextPrimary}" />
+                    <!-- Header with Active Toggle -->
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0"
+                               Text="{Binding LabelText}" 
+                               FontSize="16" 
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimary}"
+                               VerticalOptions="Center" />
+
+                        <HorizontalStackLayout Grid.Column="1" Spacing="10">
+                            <Label Text="{Binding IsActive, Converter={StaticResource BoolToStatusConverter}}"
+                                   FontSize="14"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   VerticalOptions="Center" />
+                            <buttons:SfSwitch IsOn="{Binding IsActive, Mode=TwoWay}"
+                                              WidthRequest="60"
+                                              HeightRequest="32" />
+                        </HorizontalStackLayout>
+                    </Grid>
 
                     <!-- Form Fields -->
                     <ScrollView Grid.Row="1">
-                        <VerticalStackLayout Spacing="20">
+                        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" 
+                              ColumnDefinitions="1.2*,*" 
+                              RowSpacing="10"
+                              ColumnSpacing="15">
 
-                            <!-- Item Name -->
-                            <VerticalStackLayout Spacing="8">
+                            <!-- Row 0: Item Name and Menu Type -->
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="5">
                                 <Label Text="Item Name"
                                        FontSize="13"
+                                       FontAttributes="Bold"
                                        TextColor="{StaticResource TextSecondary}" />
-                                <sf:SfTextInputLayout Hint=""
-                                                               ContainerType="Outlined"
-                                                               OutlineCornerRadius="10"
-                                                               ContainerBackground="{StaticResource Gray200}">
-                                    <Entry Text="Grilled Salmon"
+                                <sf:SfTextInputLayout Hint="Enter item name"
+                                                      ContainerType="Outlined"
+                                                      OutlineCornerRadius="10"
+                                                      
+                                                      ContainerBackground="{StaticResource Gray200}">
+                                    <Entry Text="{Binding MenuItemName, Mode=TwoWay}"
+                                           
                                            TextColor="{StaticResource TextPrimary}" />
                                 </sf:SfTextInputLayout>
                             </VerticalStackLayout>
 
-                            <!-- Description -->
-                            <VerticalStackLayout Spacing="8">
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="8">
+                                <Label Text="Menu Type"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource TextSecondary}" 
+                                       Margin="0,0,0,5"/>
+                                <editors:SfComboBox HeightRequest="66"
+                                                    TextColor="{StaticResource TextPrimary}"
+                                                    Placeholder="Select type"
+                                                    BackgroundColor="{StaticResource Gray200}"
+                                                    Stroke="{StaticResource Gray400}"
+                                                    Text="{Binding SelectedMenuType,Mode=TwoWay}"
+                                                    ItemsSource="{Binding MenuTypes}"
+                                                    DisplayMemberPath="Name"
+                                                    TextMemberPath="Name"
+                                                    IsEditable="true">
+                                </editors:SfComboBox>
+                            </VerticalStackLayout>
+
+                            <!-- Row 1: Category and Price -->
+                            <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="5">
+                                <Label Text="Category"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource TextSecondary}" 
+                                       Margin="0,0,0,5"/>
+                                <editors:SfComboBox HeightRequest="66"
+                                                    TextColor="{StaticResource TextPrimary}"
+                                                    Placeholder="Select category"
+                                                    BackgroundColor="{StaticResource Gray200}"
+                                                    Stroke="{StaticResource Gray400}"
+                                                    ItemsSource="{Binding CategoriesWithMenuItems}"
+                                                    Text="{Binding SelectedCategory,Mode=TwoWay}"
+                                                    DisplayMemberPath="Name"
+                                                    TextMemberPath="Name"
+                                                    IsEditable="true">
+                                </editors:SfComboBox>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="5">
+                                <Label Text="Price (₱)"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource TextSecondary}" />
+                                <sf:SfTextInputLayout Hint="0.00"
+                                                      ContainerType="Outlined"
+                                                      OutlineCornerRadius="10"
+                                                      ContainerBackground="{StaticResource Gray200}">
+                                    <Entry Keyboard="Numeric"
+                                           Text="{Binding MenuItemPrice, Mode=TwoWay}"
+                                           TextColor="{StaticResource TextPrimary}"
+                                           PlaceholderColor="{StaticResource Gray500}" />
+                                </sf:SfTextInputLayout>
+                            </VerticalStackLayout>
+
+                            <!-- Row 2: Description (Spans 2 columns) -->
+                            <VerticalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Spacing="8">
                                 <Label Text="Description"
                                        FontSize="13"
+                                       FontAttributes="Bold"
                                        TextColor="{StaticResource TextSecondary}" />
                                 <Border BackgroundColor="{StaticResource Gray200}"
                                         StrokeShape="RoundRectangle 10"
                                         Padding="10"
-                                        HeightRequest="100">
-                                    <Editor Placeholder="Description for textarea here"
+                                        HeightRequest="80">
+                                    <Editor Placeholder="Enter item description..."
+                                            Text="{Binding MenuDescription, Mode=TwoWay}"
                                             PlaceholderColor="{StaticResource Gray500}"
                                             TextColor="{StaticResource TextPrimary}"
                                             BackgroundColor="Transparent" />
                                 </Border>
                             </VerticalStackLayout>
 
-                            <!-- Price and Category -->
-                            <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
-                                <VerticalStackLayout Grid.Column="0" Spacing="8">
-                                    <Label Text="Price"
-                                           FontSize="13"
-                                           TextColor="{StaticResource TextSecondary}" />
-                                    <sf:SfTextInputLayout Hint="Price"
-                                                                   ContainerType="Outlined"
-                                                                   OutlineCornerRadius="10"
-                                                                   ContainerBackground="{StaticResource Gray200}">
-                                        <Entry Keyboard="Numeric"
-                                               TextColor="{StaticResource TextPrimary}"
-                                               PlaceholderColor="{StaticResource Gray500}" />
-                                    </sf:SfTextInputLayout>
-                                </VerticalStackLayout>
-
-                                <VerticalStackLayout Grid.Column="1" Spacing="8">
-                                    <Label Text="Category"
-                                           FontSize="13"
-                                           TextColor="{StaticResource TextSecondary}" />
-                                    <editors:SfComboBox HeightRequest="50"
-                                                            TextColor="{StaticResource TextPrimary}"
-                                                            Placeholder="Category"
-                                                            BackgroundColor="{StaticResource Gray200}"
-                                                            Stroke="{StaticResource Gray400}">
-                                        <editors:SfComboBox.ItemsSource>
-                                            <x:Array Type="{x:Type x:String}">
-                                                <x:String>Appetizers</x:String>
-                                                <x:String>Main Courses</x:String>
-                                                <x:String>Desserts</x:String>
-                                            </x:Array>
-                                        </editors:SfComboBox.ItemsSource>
-                                    </editors:SfComboBox>
-                                </VerticalStackLayout>
-                            </Grid>
-
-                            <!-- Image Upload -->
-                            <VerticalStackLayout Spacing="8">
-                                <Label Text="Image"
+                            <!-- Row 3: Image Upload Section (Spans 2 columns) -->
+                            <VerticalStackLayout Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Spacing="8">
+                                <Label Text="Item Image"
                                        FontSize="13"
+                                       FontAttributes="Bold"
                                        TextColor="{StaticResource TextSecondary}" />
-                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="15">
-                                    <!-- Image Preview -->
+
+                                <Grid ColumnDefinitions="120,*" ColumnSpacing="15">
+                                    <!-- Image Preview with Shadow Effect -->
                                     <Border Grid.Column="0"
-                                            StrokeShape="RoundRectangle 10"
-                                            WidthRequest="100"
-                                            HeightRequest="100"
-                                            BackgroundColor="{StaticResource Gray200}">
-                                        <Image Source="salmon.png"
-                                               Aspect="AspectFill" />
+                                            StrokeShape="RoundRectangle 12"
+                                            WidthRequest="120"
+                                            HeightRequest="120"
+                                            BackgroundColor="{StaticResource Gray200}"
+                                            Stroke="{StaticResource Gray400}"
+                                            StrokeThickness="1">
+                                        <Grid>
+                                            <Image Source="{Binding MenuImageSource}"
+                                                   Aspect="AspectFill" />
+                                            <!-- Overlay for change image -->
+                                            <Border BackgroundColor="#AA000000"
+                                                    Opacity="0">
+                                                <Label Text="Change"
+                                                       TextColor="White"
+                                                       FontSize="12"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center" />
+                                            </Border>
+                                        </Grid>
                                     </Border>
 
-                                    <!-- Upload Button -->
+                                    <!-- Upload Area -->
                                     <Border Grid.Column="1"
                                             BackgroundColor="{StaticResource Gray200}"
                                             StrokeShape="RoundRectangle 10"
-                                            Stroke="{StaticResource Gray400}"
+                                            Stroke="{StaticResource Primary}"
                                             StrokeThickness="2"
                                             StrokeDashArray="5,5"
                                             Padding="20"
                                             VerticalOptions="Center">
-                                        <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
-                                            <Label Text="⬆️" FontSize="24" HorizontalOptions="Center" />
-                                            <Label Text="Upload"
-                                                   FontSize="14"
-                                                   TextColor="{StaticResource TextSecondary}"
+                                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                                            <Label Text="📁" FontSize="32" HorizontalOptions="Center" />
+                                            <Label Text="{Binding ImageLabel}"
+                                                   FontSize="13"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{StaticResource TextPrimary}"
+                                                   HorizontalOptions="Center" />
+                                            <Label Text="PNG, JPG (max. 5MB)"
+                                                   FontSize="11"
+                                                   TextColor="{StaticResource Gray500}"
                                                    HorizontalOptions="Center" />
                                         </VerticalStackLayout>
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding UploadImageCommand}" />
+                                        </Border.GestureRecognizers>
+
                                     </Border>
                                 </Grid>
                             </VerticalStackLayout>
 
-                            <!-- Active Toggle -->
-                            <HorizontalStackLayout Spacing="10">
-                                <Label Text="Active"
-                                       FontSize="14"
-                                       TextColor="{StaticResource TextPrimary}"
-                                       VerticalOptions="Center" />
-                                <buttons:SfSwitch IsOn="True"
-                                                  WidthRequest="60"
-                                                  HeightRequest="32" />
-                            </HorizontalStackLayout>
-
-                        </VerticalStackLayout>
+                        </Grid>
                     </ScrollView>
 
                     <!-- Action Buttons -->
@@ -391,7 +437,8 @@
                                 FontSize="14"
                                 FontAttributes="Bold"
                                 CornerRadius="10"
-                                HeightRequest="50" />
+                                HeightRequest="50"
+                                Command="{Binding HideBorderCommand}"/>
 
                         <Button Grid.Column="1"
                                 Text="SAVE CHANGES"
@@ -400,7 +447,8 @@
                                 FontSize="14"
                                 FontAttributes="Bold"
                                 CornerRadius="10"
-                                HeightRequest="50" />
+                                HeightRequest="50"
+                                Command="{Binding SaveMenuItemCommand}"/>
                     </Grid>
 
                 </Grid>
