@@ -140,23 +140,27 @@
                                     <Label Grid.Column="0" 
                                            Text="{Binding Name}" 
                                            TextColor="{StaticResource TextPrimary}" 
-                                           VerticalOptions="Center" />
+                                           VerticalOptions="Center"
+                                           HorizontalTextAlignment ="Start"/>
 
                                     <Label Grid.Column="1" 
                                            Text="{Binding QuantityOnHand}" 
                                            TextColor="{StaticResource TextPrimary}" 
-                                           VerticalOptions="Center" />
+                                           VerticalOptions="Center" 
+                                           HorizontalTextAlignment ="Center"/>
 
                                     <Label Grid.Column="2" 
                                            Text="{Binding Unit}" 
                                            TextColor="{StaticResource TextPrimary}" 
-                                           VerticalOptions="Center" />
+                                           VerticalOptions="Center"
+                                           HorizontalTextAlignment ="Center"/>
 
                                     <Switch Grid.Column="3" 
                                             IsToggled="{Binding IsActive}"
                                             OnColor="{StaticResource Primary}"
                                             ThumbColor="{StaticResource White}"
-                                            VerticalOptions="Center" />
+                                            VerticalOptions="Center" 
+                                            HorizontalOptions ="End"/>
 
                                     <ImageButton Grid.Column="4"
                                                  Source="edit.png"

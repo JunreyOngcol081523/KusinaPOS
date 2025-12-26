@@ -30,7 +30,6 @@ namespace KusinaPOS.Services
             await InitializeAsync();
             return await _db
                 .Table<InventoryItem>()
-                .Where(i => i.IsActive)
                 .OrderBy(i => i.Name)
                 .ToListAsync();
         }
