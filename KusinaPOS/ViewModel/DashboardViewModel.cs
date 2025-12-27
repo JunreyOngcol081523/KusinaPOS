@@ -14,7 +14,7 @@ namespace KusinaPOS.ViewModel
 {
     public partial class DashboardViewModel : ObservableObject
     {
-        private readonly IDateTimeService _dateTimeService;
+        private readonly IDateTimeService? _dateTimeService;
         [ObservableProperty]
         private string _currentDateTime;
         [ObservableProperty]
@@ -32,7 +32,7 @@ namespace KusinaPOS.ViewModel
             CurrentDateTime = _dateTimeService.CurrentDateTime;
             this.StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
             // Load user info
-            LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, string.Empty);
+            LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey,0).ToString();
             LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
         }
 

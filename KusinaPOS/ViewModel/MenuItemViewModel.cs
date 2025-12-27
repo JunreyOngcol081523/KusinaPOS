@@ -20,7 +20,7 @@ namespace KusinaPOS.ViewModel
             _categoryService = categoryService;
             _menuItemService = menuItemService;
             _dateTimeService = dateTimeService;
-            LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, string.Empty);
+            LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey,0).ToString();
             LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
             _dateTimeService.DateTimeChanged += OnDateTimeChanged;
             CurrentDateTime = _dateTimeService.CurrentDateTime;
@@ -391,7 +391,7 @@ namespace KusinaPOS.ViewModel
         }
         [RelayCommand]
         public async Task GoBackAsync() {
-            await Shell.Current.GoToAsync(nameof(DashboardPage));
+            await Shell.Current.GoToAsync("..");
 
         }
         [RelayCommand]

@@ -253,5 +253,11 @@ namespace KusinaPOS.ViewModel
                 _ => difference.ToString()
             };
         }
+        [RelayCommand]
+        public async Task GoBackAsync()
+        {
+            await Shell.Current.GoToAsync("..");
+
+        }
     }
 }

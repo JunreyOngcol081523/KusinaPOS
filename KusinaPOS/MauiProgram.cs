@@ -32,18 +32,18 @@ namespace KusinaPOS
             builder.Services.AddSingleton<IDateTimeService, DateTimeService>();
             builder.Services.AddSingleton<CategoryService>();
             builder.Services.AddSingleton<MenuItemService>();
-            builder.Services.AddSingleton<DateTimeService>();
+           
             builder.Services.AddSingleton<InventoryItemService>();
 
             //viewmodels and pages
-            builder.Services.AddSingleton<MainPage>();
-            builder.Services.AddSingleton<MainViewModel>();
-            builder.Services.AddSingleton<DashboardPage>();
-            builder.Services.AddSingleton<DashboardViewModel>();
-            builder.Services.AddSingleton<MenuItemPage>();
-            builder.Services.AddSingleton<MenuItemViewModel>();
-            builder.Services.AddSingleton<InventoryItemPage>();
-            builder.Services.AddSingleton<InventoryItemViewModel    >();
+            builder.Services.AddTransient<MainPage>();
+            builder.Services.AddTransient<MainViewModel>();
+            builder.Services.AddTransient<DashboardPage>();
+            builder.Services.AddTransient<DashboardViewModel>();
+            builder.Services.AddTransient<MenuItemPage>();
+            builder.Services.AddTransient<MenuItemViewModel>();
+            builder.Services.AddTransient<InventoryItemPage>();
+            builder.Services.AddTransient<InventoryItemViewModel>();
 
 
             return builder.Build();

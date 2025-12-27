@@ -9,8 +9,8 @@ public partial class MenuItemPage : ContentPage
 {
     private MenuItemService _menuItemService;
     private MenuItemViewModel _menuItemViewModel;
-    private DateTimeService? _dateTimeService = null;
-    public MenuItemPage(MenuItemViewModel vm, MenuItemService menuItemService, DateTimeService dts)
+    private IDateTimeService? _dateTimeService = null;
+    public MenuItemPage(MenuItemViewModel vm, MenuItemService menuItemService, IDateTimeService dts)
 	{
 		InitializeComponent();
 		BindingContext = vm;
@@ -40,16 +40,6 @@ public partial class MenuItemPage : ContentPage
                     "OK"
                 );
             }
-        }
-    }
-    protected override void OnDisappearing()
-    {
-        base.OnDisappearing();
-
-        if (_dateTimeService != null)
-        {
-            _dateTimeService.Dispose();
-            _dateTimeService = null; // prevent double-dispose
         }
     }
 }
