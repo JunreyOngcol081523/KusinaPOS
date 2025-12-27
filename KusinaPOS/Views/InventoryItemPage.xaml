@@ -176,11 +176,11 @@
                                                  CommandParameter="{Binding .}" />
 
                                     <ImageButton Grid.Column="5"
-                                                 Source="delete.png"
+                                                 Source="view.png"
                                                  BackgroundColor="Transparent"
                                                  WidthRequest="20"
                                                  HeightRequest="20"
-                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteItemCommand}"
+                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewTransactionsCommand}"
                                                  CommandParameter="{Binding .}" />
 
                                     <BoxView Grid.ColumnSpan="6"
@@ -289,7 +289,7 @@
                                     StrokeThickness="1"
                                     Padding="12,10"
                                     StrokeShape="RoundRectangle 5">
-                                <Entry Text="{Binding QuantityChanged, Mode=TwoWay}"
+                                <Entry Text="{Binding DisplayQuantityChanged, Mode=TwoWay}"
                                         Keyboard="Numeric"
                                         IsEnabled="false"
                                         TextColor="{StaticResource TextPrimary}"
@@ -300,7 +300,7 @@
 
                         <!-- Row 2: Cost Per Unit -->
                         <VerticalStackLayout Grid.Row="2" Grid.Column="0" Spacing="5">
-                            <Label Text="Cost Per Unit" TextColor="{StaticResource TextSecondary}" FontSize="12" />
+                            <Label Text="Cost Per Unit ₱" TextColor="{StaticResource TextSecondary}" FontSize="12" />
                             <Border BackgroundColor="{StaticResource BackgroundDark}"
                                     Stroke="{StaticResource Gray200}"
                                     StrokeThickness="1"
@@ -329,7 +329,7 @@
                         </VerticalStackLayout>
 
                         <!-- Row 3: Reason -->
-                        <VerticalStackLayout Grid.Row="3" Grid.Column="1" Spacing="5">
+                        <VerticalStackLayout Grid.Row="3" Grid.Column="0" Spacing="5">
                             <Label Text="Reason for Changing the Stocks on hand"
                                     TextColor="{StaticResource TextSecondary}"
                                     FontSize="12" />
@@ -341,6 +341,22 @@
                                 <editors:SfComboBox
                                         ItemsSource="{Binding Reasons}"
                                         SelectedItem="{Binding SelectedReason}"
+                                        TextColor="{StaticResource TextPrimary}"
+                                        BackgroundColor="Transparent" />
+                            </Border>
+                        </VerticalStackLayout>
+                        <!-- Row 3: remarks -->
+                        <VerticalStackLayout Grid.Row="3" Grid.Column="1" Spacing="5">
+                            <Label Text="Remarks"
+                                    TextColor="{StaticResource TextSecondary}"
+                                    FontSize="12" />
+                            <Border BackgroundColor="{StaticResource BackgroundDark}"
+                                    Stroke="{StaticResource Gray200}"
+                                    StrokeThickness="1"
+                                    Padding="12,10"
+                                    StrokeShape="RoundRectangle 5">
+                                <Entry
+                                        Text="{Binding Remarks}"
                                         TextColor="{StaticResource TextPrimary}"
                                         BackgroundColor="Transparent" />
                             </Border>

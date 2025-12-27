@@ -237,8 +237,7 @@
                             </Border.GestureRecognizers>
                             <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
                                 <Image Source="menu.png" HeightRequest="40"/>
-                                <Label Text="MANAGE" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
-                                <Label Text="MENU" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                                <Label Text="MANAGE MENU" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
                         </Border>
 
@@ -250,7 +249,6 @@
                                 Padding="15">
                             <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
                                 <Image Source="recipe.png" HeightRequest="40"/>
-                                <Label Text="MANAGE" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                                 <Label Text="RECIPES" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
                         </Border>
@@ -267,7 +265,6 @@
                             <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
                                 <Image Source="inventory.png" HeightRequest="40"/>
                                 <Label Text="INVENTORY" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
-                                <Label Text="MANAGEMENT" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding OpenInventoryManagementCommand}" />
@@ -282,7 +279,6 @@
                                 Padding="15">
                             <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
                                 <Image Source="sales.png" HeightRequest="40"/>
-                                <Label Text="SALES" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                                 <Label Text="REPORTS" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
                         </Border>
@@ -299,7 +295,6 @@
                             <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
                                 <Image Source="usersettings.png" HeightRequest="40"/>
                                 <Label Text="USER" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
-                                <Label Text="MANAGEMENT" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
                         </Border>
 
@@ -311,7 +306,6 @@
                                 Padding="15">
                             <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
                                 <Image Source="settings.png" HeightRequest="40"/>
-                                <Label Text="SYSTEM" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                                 <Label Text="SETTINGS" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
                         </Border>

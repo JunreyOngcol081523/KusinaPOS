@@ -24,6 +24,8 @@ namespace KusinaPOS.Models
         // Sale, Void, StockIn, Adjustment
         [NotNull]
         public string Reason { get; set; } = string.Empty;
+        //can be null for cases where no remarks are needed
+        public string? Remarks { get; set; } = string.Empty;
 
         [NotNull]
         public DateTime TransactionDate { get; set; }

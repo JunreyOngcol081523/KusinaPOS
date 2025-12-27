@@ -32,7 +32,7 @@ namespace KusinaPOS
             builder.Services.AddSingleton<IDateTimeService, DateTimeService>();
             builder.Services.AddSingleton<CategoryService>();
             builder.Services.AddSingleton<MenuItemService>();
-           
+            builder.Services.AddSingleton<InventoryTransactionService>();
             builder.Services.AddSingleton<InventoryItemService>();
 
             //viewmodels and pages
