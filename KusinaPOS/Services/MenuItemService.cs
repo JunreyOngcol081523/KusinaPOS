@@ -52,5 +52,17 @@ namespace KusinaPOS.Services
             await InitializeAsync();
             await _db.DeleteAsync<Models.MenuItem>(id);
         }
+        public async Task AddAllMenuItemAsync(List<Models.MenuItem> menuItems)
+        {
+            await InitializeAsync();
+            await _db.InsertAllAsync(menuItems);
+        }
+        //delete table
+        public async Task DeleteAllMenuItemsAsync()
+        {
+            await InitializeAsync();
+            await _db.DeleteAllAsync<Models.MenuItem>();
+        }
+
     }
 }

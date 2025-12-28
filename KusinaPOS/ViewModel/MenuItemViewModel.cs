@@ -5,72 +5,84 @@ using KusinaPOS.Services;
 using KusinaPOS.Models;
 using System.Collections.ObjectModel;
 using MenuItem = KusinaPOS.Models.MenuItem;
-using KusinaPOS.Views;
 
 namespace KusinaPOS.ViewModel
 {
     public partial class MenuItemViewModel : ObservableObject
     {
-
+        #region Services
         private readonly CategoryService _categoryService;
         private readonly MenuItemService _menuItemService;
         private readonly IDateTimeService _dateTimeService;
+        #endregion
+
+        #region Constructor
         public MenuItemViewModel(CategoryService categoryService, MenuItemService menuItemService, IDateTimeService dateTimeService)
         {
             _categoryService = categoryService;
             _menuItemService = menuItemService;
             _dateTimeService = dateTimeService;
+
             LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
             LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
+            StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
+
             _dateTimeService.DateTimeChanged += OnDateTimeChanged;
             CurrentDateTime = _dateTimeService.CurrentDateTime;
-            StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
+
             _ = InitializeAsync();
+                //_=SeedMenuItemsAsync();
         }
-        private void OnDateTimeChanged(object? sender, string dateTime)
-        {
-            CurrentDateTime = dateTime;
-        }
+        #endregion
+
+        #region Properties
+
+        // Date & Time
         [ObservableProperty]
         private string _currentDateTime;
-        [ObservableProperty]
-        private List<string> categories = [];
 
-        [ObservableProperty]
-        private string selectedCategory = string.Empty;
-
+        // User info
         [ObservableProperty]
         private string loggedInUserName = string.Empty;
-
         [ObservableProperty]
         private string loggedInUserId = string.Empty;
 
+        // Store info
+        [ObservableProperty]
+        private string storeName;
+
+        // Categories
+        [ObservableProperty]
+        private List<string> categories = new();
+        [ObservableProperty]
+        private ObservableCollection<CategoryViewModel> categoriesWithMenuItems = new();
+
+        [ObservableProperty]
+        private string selectedCategory = string.Empty;
         [ObservableProperty]
         private string newCategoryName = string.Empty;
 
+        // Menu types
         [ObservableProperty]
-        private bool isBorderVisible = false;
-
-        [ObservableProperty]
-        private ObservableCollection<CategoryViewModel> categoriesWithMenuItems = [];
-
+        private ObservableCollection<string> menuTypes;
         [ObservableProperty]
         private string selectedMenuType = string.Empty;
 
-        [ObservableProperty]
-        private ObservableCollection<string> menuTypes;
-
+        // Menu item fields
         [ObservableProperty]
         private int selectedMenuItemId;
-
         [ObservableProperty]
         private string menuItemName = string.Empty;
-
         [ObservableProperty]
         private string menuDescription = string.Empty;
-
         [ObservableProperty]
         private decimal menuItemPrice;
+        [ObservableProperty]
+        private bool isActive = true;
+
+        // UI & Image
+        [ObservableProperty]
+        private bool isBorderVisible = false;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(MenuImageSource))]
@@ -78,119 +90,37 @@ namespace KusinaPOS.ViewModel
         private string imagePath;
 
         public ImageSource MenuImageSource =>
-            string.IsNullOrWhiteSpace(ImagePath)
-                ? "placeholder_food.png"
-                : ImageSource.FromFile(ImagePath);
+            string.IsNullOrWhiteSpace(ImagePath) ? "placeholder_food.png" : ImageSource.FromFile(ImagePath);
+
         public string ImageLabel => string.IsNullOrWhiteSpace(ImagePath) ? "Click to upload" : Path.GetFileName(ImagePath);
 
         [ObservableProperty]
         private string labelText = string.Empty;
-        [ObservableProperty]
-        private bool isActive = true;
 
-        [ObservableProperty]
-        private string storeName;
+        #endregion
+
+        #region Event Handlers
+        private void OnDateTimeChanged(object? sender, string dateTime)
+        {
+            CurrentDateTime = dateTime;
+        }
+        #endregion
+
+        #region Initialization
         private async Task InitializeAsync()
         {
-            //await CreateSampleDataAsync();
             await LoadCategoriesWithMenuItems();
             IsBorderVisible = false;
             MenuTypes = new ObservableCollection<string> { "Unit-Based", "Recipe-Based" };
         }
+        #endregion
 
-        [RelayCommand]
-        public async Task CreateSampleDataAsync()
-        {
-            try
-            {
-                // Check if we already have data
-                var existingCategories = await _categoryService.GetAllCategoriesAsync();
-                if (existingCategories.Count > 0)
-                    return;
-
-                // Create sample categories
-                await _categoryService.AddCategoryAsync("Appetizers");
-                await _categoryService.AddCategoryAsync("Main Courses");
-                await _categoryService.AddCategoryAsync("Desserts");
-
-                // Create sample menu items
-                var sampleMenuItems = new List<MenuItem>
-                {
-                    // Appetizers
-                    new MenuItem
-                    {
-                        Name = "Grilled Salmon",
-                        Description = "Fresh Atlantic salmon grilled to perfection",
-                        Category = "Appetizers",
-                        Price = 299.99m,
-                        Type = "simple",
-                        IsActive = true
-                    },
-                    new MenuItem
-                    {
-                        Name = "Ribeye Steak",
-                        Description = "Premium 12oz ribeye steak",
-                        Category = "Appetizers",
-                        Price = 599.99m,
-                        Type = "simple",
-                        IsActive = true
-                    },
-                    // Main Courses
-                    new MenuItem
-                    {
-                        Name = "Caesar Salad",
-                        Description = "Classic Caesar salad with fresh romaine lettuce",
-                        Category = "Main Courses",
-                        Price = 149.99m,
-                        Type = "simple",
-                        IsActive = true
-                    },
-                    new MenuItem
-                    {
-                        Name = "Margherita Pizza",
-                        Description = "Traditional Italian pizza with fresh mozzarella",
-                        Category = "Main Courses",
-                        Price = 399.99m,
-                        Type = "simple",
-                        IsActive = true
-                    },
-                    // Desserts
-                    new MenuItem
-                    {
-                        Name = "Tiramisu",
-                        Description = "Classic Italian dessert with espresso and mascarpone",
-                        Category = "Desserts",
-                        Price = 199.99m,
-                        Type = "simple",
-                        IsActive = true
-                    },
-                    new MenuItem
-                    {
-                        Name = "Chocolate Lava Cake",
-                        Description = "Warm chocolate cake with molten center",
-                        Category = "Desserts",
-                        Price = 249.99m,
-                        Type = "simple",
-                        IsActive = false // One inactive item for testing
-                    }
-                };
-
-                foreach (var item in sampleMenuItems)
-                {
-                    await _menuItemService.AddMenuItemAsync(item);
-                }
-            }
-            catch (Exception ex)
-            {
-                await PageHelper.DisplayAlertAsync("Error", $"Failed to create sample data: {ex.Message}", "OK");
-            }
-        }
-
+        #region CRUD: Categories
         [RelayCommand]
         public async Task LoadCategories()
         {
             var categoryList = await _categoryService.GetActiveCategoriesAsync();
-            Categories = [];
+            Categories = new List<string>();
             foreach (var category in categoryList)
             {
                 Categories.Add(category.Name);
@@ -216,10 +146,11 @@ namespace KusinaPOS.ViewModel
                         .ToList();
 
                     categoryVM.MenuItems = new ObservableCollection<MenuItem>(categoryMenuItems);
+                    categoryVM.FilteredMenuItems = new ObservableCollection<MenuItem>(categoryMenuItems);
+
                     newCollection.Add(categoryVM);
                 }
 
-                // Replace the entire collection instead of clearing
                 CategoriesWithMenuItems = newCollection;
             }
             catch (Exception ex)
@@ -242,82 +173,11 @@ namespace KusinaPOS.ViewModel
                 await _categoryService.AddCategoryAsync(NewCategoryName.Trim());
                 await LoadCategories();
                 await LoadCategoriesWithMenuItems();
-
                 NewCategoryName = string.Empty;
             }
             catch (Exception ex)
             {
                 await PageHelper.DisplayAlertAsync("Error", $"Failed to add category: {ex.Message}", "OK");
-            }
-        }
-
-        [RelayCommand]
-        public async Task EditMenuItem(MenuItem menuItem)
-        {
-            this.SelectedMenuItemId = menuItem.Id;
-            this.MenuItemName = menuItem.Name;
-            this.MenuDescription = menuItem.Description;
-            this.MenuItemPrice = menuItem.Price;
-            this.IsActive = menuItem.IsActive;
-            this.SelectedCategory = menuItem.Category;
-            this.SelectedMenuType = menuItem.Type;
-            this.LabelText = $"Edit Menu Item: {MenuItemName}";
-            ImagePath = string.IsNullOrWhiteSpace(menuItem.ImagePath)
-                ? string.Empty
-                : menuItem.ImagePath;
-            ShowBorder();
-        }
-        [RelayCommand]
-        public async Task AddMenuItem()
-        {
-            this.LabelText = "Add New Menu Item";
-            this.SelectedMenuItemId = 0;
-            this.MenuItemName = string.Empty;
-            this.MenuDescription = string.Empty;
-            this.MenuItemPrice = 0;
-            this.IsActive = false;
-            this.SelectedCategory = string.Empty;
-            this.SelectedMenuType = string.Empty;
-            this.ImagePath = string.Empty;
-            ShowBorder();
-        }
-
-        [RelayCommand]
-        public async Task DeleteMenuItem(MenuItem menuItem)
-        {
-            bool confirm = await PageHelper.DisplayConfirmAsync(
-                "Confirm Delete",
-                $"Are you sure you want to delete '{menuItem.Name}'?",
-                "Yes",
-                "No");
-
-            if (confirm)
-            {
-                try
-                {
-                    await _menuItemService.DeleteMenuItemAsync(menuItem.Id);
-                    await LoadCategoriesWithMenuItems();
-                }
-                catch (Exception ex)
-                {
-                    await PageHelper.DisplayAlertAsync("Error", $"Failed to delete item: {ex.Message}", "OK");
-                }
-            }
-        }
-
-        [RelayCommand]
-        public async Task ToggleMenuItemStatus(Models.MenuItem menuItem)
-        {
-            try
-            {
-                menuItem.IsActive = !menuItem.IsActive;
-                await _menuItemService.UpdateMenuItemAsync(menuItem);
-                await LoadCategoriesWithMenuItems();
-            }
-            catch (Exception ex)
-            {
-                menuItem.IsActive = !menuItem.IsActive;
-                await PageHelper.DisplayAlertAsync("Error", $"Failed to update status: {ex.Message}", "OK");
             }
         }
 
@@ -389,78 +249,72 @@ namespace KusinaPOS.ViewModel
                 }
             }
         }
-        [RelayCommand]
-        public async Task GoBackAsync()
-        {
-            await Shell.Current.GoToAsync("..");
+        #endregion
 
-        }
+        #region CRUD: Menu Items
         [RelayCommand]
-        private void ShowBorder() => IsBorderVisible = true;
-        [RelayCommand]
-        private void HideBorder()
+        public async Task AddMenuItem()
         {
-            this.SelectedMenuItemId = 0;
-            this.MenuItemName = string.Empty;
-            this.MenuDescription = string.Empty;
-            this.MenuItemPrice = 0;
-            this.IsActive = false;
-            this.SelectedCategory = string.Empty;
-            this.SelectedMenuType = string.Empty;
-            this.ImagePath = string.Empty;
-            IsBorderVisible = false;
+            SelectedMenuItemId = 0;
+            MenuItemName = MenuDescription = SelectedCategory = SelectedMenuType = ImagePath = string.Empty;
+            MenuItemPrice = 0;
+            IsActive = false;
+            LabelText = "Add New Menu Item";
+            ShowBorder();
         }
+
         [RelayCommand]
-        private async Task UploadImageAsync()
+        public async Task EditMenuItem(MenuItem menuItem)
         {
+            SelectedMenuItemId = menuItem.Id;
+            MenuItemName = menuItem.Name;
+            MenuDescription = menuItem.Description;
+            MenuItemPrice = menuItem.Price;
+            IsActive = menuItem.IsActive;
+            SelectedCategory = menuItem.Category;
+            SelectedMenuType = menuItem.Type;
+            ImagePath = string.IsNullOrWhiteSpace(menuItem.ImagePath) ? string.Empty : menuItem.ImagePath;
+            LabelText = $"Edit Menu Item: {MenuItemName}";
+            ShowBorder();
+        }
+
+        [RelayCommand]
+        public async Task DeleteMenuItemAsync(MenuItem menuItem)
+        {
+            bool confirm = await PageHelper.DisplayConfirmAsync(
+                "Confirm Delete",
+                $"Are you sure you want to delete '{menuItem.Name}'?",
+                "Yes", "No");
+
+            if (!confirm) return;
+
             try
             {
-                if (this.MenuItemName == null || this.MenuItemName.Trim() == "")
-                {
-                    await PageHelper.DisplayAlertAsync("Validation", "Please enter the menu item name before uploading an image.", "OK");
-                    return;
-                }
-                // Pick photo(s) from gallery (now supports multiple selections)
-                var results = await MediaPicker.PickPhotosAsync(new MediaPickerOptions
-                {
-                    Title = "Select Menu Item Image",
-                    SelectionLimit = 1 // Only allow one image for menu item
-                });
-
-                var result = results?.FirstOrDefault();
-                if (result == null)
-                    return;
-
-                // Create folder for menu images if it doesn't exist
-                var imagesDir = Path.Combine(FileSystem.AppDataDirectory, "menu_images");
-                if (!Directory.Exists(imagesDir))
-                    Directory.CreateDirectory(imagesDir);
-
-                // Generate a unique file name
-                var fileName = $"{this.MenuItemName.Replace(" ", "")}{Path.GetExtension(result.FileName)}";
-                var destinationPath = Path.Combine(imagesDir, fileName);
-
-                // Copy the picked image to app storage
-                using var sourceStream = await result.OpenReadAsync();
-                using var destinationStream = File.Create(destinationPath);
-                await sourceStream.CopyToAsync(destinationStream);
-
-                // Optional: delete old image if replacing
-                if (!string.IsNullOrWhiteSpace(ImagePath) && File.Exists(ImagePath))
-                    File.Delete(ImagePath);
-
-                // Update bound property (UI will refresh)
-                ImagePath = destinationPath;
-
-                // Save the path to SQLite here (if you want immediate save)
-                // await _menuItemService.UpdateMenuItemImageAsync(MenuItemId, ImagePath);
+                await _menuItemService.DeleteMenuItemAsync(menuItem.Id);
+                await LoadCategoriesWithMenuItems();
             }
             catch (Exception ex)
             {
-                await PageHelper.DisplayAlertAsync("Error", $"Image upload failed: {ex.Message}", "OK");
+                await PageHelper.DisplayAlertAsync("Error", $"Failed to delete item: {ex.Message}", "OK");
             }
         }
-        //add new menu item or update existing
+
+        [RelayCommand]
+        public async Task ToggleMenuItemStatus(MenuItem menuItem)
+        {
+            try
+            {
+                menuItem.IsActive = !menuItem.IsActive;
+                await _menuItemService.UpdateMenuItemAsync(menuItem);
+                await LoadCategoriesWithMenuItems();
+            }
+            catch
+            {
+                menuItem.IsActive = !menuItem.IsActive;
+                await PageHelper.DisplayAlertAsync("Error", "Failed to update status", "OK");
+            }
+        }
+
         [RelayCommand]
         public async Task SaveMenuItemAsync()
         {
@@ -472,41 +326,33 @@ namespace KusinaPOS.ViewModel
                 await PageHelper.DisplayAlertAsync("Validation", "Please fill in all required fields with valid data.", "OK");
                 return;
             }
+
+            var menuItem = new MenuItem
+            {
+                Id = SelectedMenuItemId,
+                Name = MenuItemName.Trim(),
+                Description = MenuDescription.Trim(),
+                Category = SelectedCategory,
+                Price = MenuItemPrice,
+                Type = SelectedMenuType,
+                ImagePath = ImagePath,
+                IsActive = IsActive
+            };
+
+            bool confirm = await PageHelper.DisplayConfirmAsync(
+                "Confirm Save",
+                SelectedMenuItemId == 0 ? "Add this new menu item?" : "Update this menu item?",
+                "Yes", "No");
+
+            if (!confirm) return;
+
             try
             {
-                var menuItem = new MenuItem
-                {
-                    Id = SelectedMenuItemId,
-                    Name = MenuItemName.Trim(),
-                    Description = MenuDescription.Trim(),
-                    Category = SelectedCategory,
-                    Price = MenuItemPrice,
-                    Type = SelectedMenuType,
-                    ImagePath = ImagePath,
-                    IsActive = IsActive
-                };
-                bool confirm = await PageHelper.DisplayConfirmAsync(
-                    "Confirm Save",
-                    SelectedMenuItemId == 0 ? "Are you sure you want to add this new menu item?" : "Are you sure you want to update this menu item?",
-                    "Yes",
-                    "No");
-                if (confirm)
-                {
-                    if (SelectedMenuItemId == 0)
-                    {
-                        // New item
-                        await _menuItemService.AddMenuItemAsync(menuItem);
-                    }
-                    else
-                    {
-                        // Existing item
-                        await _menuItemService.UpdateMenuItemAsync(menuItem);
-                    }
-                }
+                if (SelectedMenuItemId == 0)
+                    await _menuItemService.AddMenuItemAsync(menuItem);
                 else
-                {
-                    return;
-                }
+                    await _menuItemService.UpdateMenuItemAsync(menuItem);
+
                 await LoadCategoriesWithMenuItems();
                 HideBorder();
             }
@@ -515,18 +361,108 @@ namespace KusinaPOS.ViewModel
                 await PageHelper.DisplayAlertAsync("Error", $"Failed to save menu item: {ex.Message}", "OK");
             }
         }
-        //show dialog explaining what is menu types
+        #endregion
+
+        #region UI Helpers
+        [RelayCommand]
+        private void ShowBorder() => IsBorderVisible = true;
+
+        [RelayCommand]
+        private void HideBorder()
+        {
+            SelectedMenuItemId = 0;
+            MenuItemName = MenuDescription = SelectedCategory = SelectedMenuType = ImagePath = string.Empty;
+            MenuItemPrice = 0;
+            IsActive = false;
+            IsBorderVisible = false;
+        }
+
         [RelayCommand]
         public async Task ShowMenuTypeDialogAsync()
         {
             string message = "Unit-Based Menu Item: An item that is stocked and sold in the same unit. " +
-                             "For example, a 1-liter Coke is stocked by the bottle and sold by the bottle.\n\n" +
-                             "Recipe-Based Menu Item: An item that is made from ingredients in inventory. " +
-                             "The system tracks ingredient usage per serving. For example, Pork Sisig uses pork by kilograms " +
-                             "but is sold in portions (e.g., 250g per serving).";
+                             "Recipe-Based Menu Item: An item made from ingredients in inventory. " +
+                             "Tracks ingredient usage per serving.";
 
             await PageHelper.DisplayAlertAsync("Menu Item Types", message, "OK");
         }
 
+        [RelayCommand]
+        public async Task UploadImageAsync()
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(MenuItemName))
+                {
+                    await PageHelper.DisplayAlertAsync("Validation", "Please enter the menu item name before uploading an image.", "OK");
+                    return;
+                }
+
+                var results = await MediaPicker.PickPhotosAsync(new MediaPickerOptions { Title = "Select Menu Item Image", SelectionLimit = 1 });
+                var result = results?.FirstOrDefault();
+                if (result == null) return;
+
+                var imagesDir = Path.Combine(FileSystem.AppDataDirectory, "menu_images");
+                if (!Directory.Exists(imagesDir)) Directory.CreateDirectory(imagesDir);
+
+                var fileName = $"{MenuItemName.Replace(" ", "")}{Path.GetExtension(result.FileName)}";
+                var destinationPath = Path.Combine(imagesDir, fileName);
+
+                using var sourceStream = await result.OpenReadAsync();
+                using var destinationStream = File.Create(destinationPath);
+                await sourceStream.CopyToAsync(destinationStream);
+
+                if (!string.IsNullOrWhiteSpace(ImagePath) && File.Exists(ImagePath))
+                    File.Delete(ImagePath);
+
+                ImagePath = destinationPath;
+            }
+            catch (Exception ex)
+            {
+                await PageHelper.DisplayAlertAsync("Error", $"Image upload failed: {ex.Message}", "OK");
+            }
+        }
+
+        [RelayCommand]
+        public async Task GoBackAsync() => await Shell.Current.GoToAsync("..");
+        #endregion
+
+        public async Task SeedMenuItemsAsync()
+        {
+            await InitializeAsync();
+            var menuItems = new List<MenuItem>
+            {
+                // Main Courses
+                new MenuItem { Name = "Pork Sisig", Description = "Sizzling chopped pork with onions and chili", Category = "Main Courses", Price = 180, Type = "Recipe-Based", IsActive = true },
+                new MenuItem { Name = "Chicken Adobo", Description = "Classic Filipino braised chicken in soy and vinegar", Category = "Main Courses", Price = 150, Type = "Recipe-Based", IsActive = true },
+                new MenuItem { Name = "Beef Kare-Kare", Description = "Oxtail and vegetables in peanut sauce", Category = "Main Courses", Price = 220, Type = "Recipe-Based", IsActive = true },
+                new MenuItem { Name = "Grilled Bangus", Description = "Grilled milkfish stuffed with tomatoes and onions", Category = "Main Courses", Price = 170, Type = "Recipe-Based", IsActive = true },
+                new MenuItem { Name = "Crispy Pata", Description = "Deep-fried pork knuckles until crispy", Category = "Main Courses", Price = 380, Type = "Recipe-Based", IsActive = true },
+    
+                // Appetizers
+                new MenuItem { Name = "Lumpia Shanghai", Description = "Crispy spring rolls filled with pork and vegetables", Category = "Appetizers", Price = 120, Type = "Recipe-Based", IsActive = true },
+                new MenuItem { Name = "Calamares", Description = "Crispy fried squid rings with garlic mayo", Category = "Appetizers", Price = 140, Type = "Recipe-Based", IsActive = true },
+                new MenuItem { Name = "Chicken Wings", Description = "Buffalo-style or garlic parmesan chicken wings", Category = "Appetizers", Price = 160, Type = "Recipe-Based", IsActive = true },
+                new MenuItem { Name = "Tokwa't Baboy", Description = "Fried tofu and pork with soy-vinegar dressing", Category = "Appetizers", Price = 110, Type = "Recipe-Based", IsActive = true },
+                new MenuItem { Name = "Dynamite Lumpia", Description = "Cheese-stuffed chili peppers wrapped in spring roll", Category = "Appetizers", Price = 130, Type = "Recipe-Based", IsActive = true },
+    
+                // Desserts
+                new MenuItem { Name = "Leche Flan", Description = "Creamy caramel custard", Category = "Desserts", Price = 80, Type = "Recipe-Based", IsActive = true },
+                new MenuItem { Name = "Halo-Halo", Description = "Mixed shaved ice with beans, fruits, and ube ice cream", Category = "Desserts", Price = 95, Type = "Recipe-Based", IsActive = true },
+                new MenuItem { Name = "Ube Cake", Description = "Purple yam cake with cream cheese frosting", Category = "Desserts", Price = 120, Type = "Unit-Based", IsActive = true },
+                new MenuItem { Name = "Turon", Description = "Fried banana spring rolls with jackfruit", Category = "Desserts", Price = 70, Type = "Recipe-Based", IsActive = true },
+                new MenuItem { Name = "Buko Pandan", Description = "Young coconut and pandan-flavored gelatin dessert", Category = "Desserts", Price = 65, Type = "Recipe-Based", IsActive = true },
+    
+                // Drinks
+                new MenuItem { Name = "Iced Tea", Description = "Refreshing house-brewed iced tea", Category = "Drinks", Price = 40, Type = "Unit-Based", IsActive = true },
+                new MenuItem { Name = "Calamansi Juice", Description = "Fresh Philippine lime juice", Category = "Drinks", Price = 50, Type = "Unit-Based", IsActive = true },
+                new MenuItem { Name = "Mango Shake", Description = "Creamy fresh mango smoothie", Category = "Drinks", Price = 85, Type = "Unit-Based", IsActive = true },
+                new MenuItem { Name = "Sago't Gulaman", Description = "Sweet tapioca pearls and gelatin drink", Category = "Drinks", Price = 45, Type = "Unit-Based", IsActive = true },
+                new MenuItem { Name = "Buko Juice", Description = "Fresh young coconut water", Category = "Drinks", Price = 60, Type = "Unit-Based", IsActive = true }
+            };
+
+            await _menuItemService.AddAllMenuItemAsync(menuItems);
+        }
+        
     }
 }

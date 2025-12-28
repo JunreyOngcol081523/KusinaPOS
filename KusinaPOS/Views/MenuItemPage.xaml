@@ -80,7 +80,8 @@
                     <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
                         <sf:SfTextInputLayout Grid.Column="0"
                                                        Hint="Category Name"
-                                                       ContainerType="Outlined"
+                                                       HelperText="Add new Category"
+                                                       ContainerType="None"
                                                        OutlineCornerRadius="10"
                                                        ContainerBackground="{StaticResource Gray200}">
                             <Entry TextColor="{StaticResource TextPrimary}"
@@ -95,7 +96,7 @@
                                 FontSize="14"
                                 FontAttributes="Bold"
                                 CornerRadius="10"
-                                HeightRequest="50"
+                                
                                 WidthRequest="130" 
                                 Command="{Binding AddCategoryCommand}"/>
                     </Grid>
@@ -109,102 +110,123 @@
                                         <expander:SfExpander.Header>
                                             <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10" Padding="15,10">
                                                 <Label Grid.Column="0"
-                                                       Text="{Binding Name}"
-                                                       FontSize="16"
-                                                       FontAttributes="Bold"
-                                                       TextColor="{StaticResource TextPrimary}"
-                                                       VerticalOptions="Center" />
+                                   Text="{Binding Name}"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   VerticalOptions="Center" />
 
                                                 <Border Grid.Column="1"
-                                                        StrokeShape="RoundRectangle 5"
-                                                        BackgroundColor="Transparent"
-                                                        Stroke="{StaticResource Gray400}"
-                                                        StrokeThickness="1"
-                                                        WidthRequest="28"
-                                                        HeightRequest="28"
-                                                        VerticalOptions="Center">
+                                    StrokeShape="RoundRectangle 5"
+                                    BackgroundColor="Transparent"
+                                    Stroke="{StaticResource Gray400}"
+                                    StrokeThickness="1"
+                                    WidthRequest="28"
+                                    HeightRequest="28"
+                                    VerticalOptions="Center">
                                                     <Border.GestureRecognizers>
                                                         <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MenuItemViewModel}}, Path=EditCategoryCommand}"
-                                                                  CommandParameter="{Binding .}" />
+                                                          CommandParameter="{Binding .}" />
                                                     </Border.GestureRecognizers>
                                                     <Label Text="✏️" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
                                                 </Border>
 
                                                 <Border Grid.Column="2"
-                                                        StrokeShape="RoundRectangle 5"
-                                                        BackgroundColor="Transparent"
-                                                        Stroke="{StaticResource Gray400}"
-                                                        StrokeThickness="1"
-                                                        WidthRequest="28"
-                                                        HeightRequest="28"
-                                                        VerticalOptions="Center">
+                                    StrokeShape="RoundRectangle 5"
+                                    BackgroundColor="Transparent"
+                                    Stroke="{StaticResource Gray400}"
+                                    StrokeThickness="1"
+                                    WidthRequest="28"
+                                    HeightRequest="28"
+                                    VerticalOptions="Center">
                                                     <Border.GestureRecognizers>
                                                         <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MenuItemViewModel}}, Path=DeleteCategoryCommand}"
-                                                                  CommandParameter="{Binding .}" />
+                                                          CommandParameter="{Binding .}" />
                                                     </Border.GestureRecognizers>
                                                     <Label Text="🗑️" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
                                                 </Border>
-
                                             </Grid>
                                         </expander:SfExpander.Header>
 
                                         <expander:SfExpander.Content>
-                                            <VerticalStackLayout Spacing="5" 
-                                                   Padding="10,0"
-                                                   BindableLayout.ItemsSource="{Binding MenuItems}">
-                                                <BindableLayout.ItemTemplate>
-                                                    <DataTemplate x:DataType="models:MenuItem">
-                                                        <Border BackgroundColor="{StaticResource Gray200}"
-                                                                StrokeShape="RoundRectangle 8"
-                                                                Padding="15,10">
-                                                            <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10">
-                                                                <Label Grid.Column="0"
-                                                                       Text="{Binding Name}"
-                                                                       FontSize="14"
-                                                                       TextColor="{StaticResource TextPrimary}"
-                                                                       VerticalOptions="Center" />
+                                            <VerticalStackLayout Spacing="5" Padding="10,0">
 
-                                                                <Label Grid.Column="1"
-                                                                       Text="{Binding IsActive, Converter={StaticResource BoolToStatusConverter}}"
-                                                                       FontSize="12"
-                                                                       TextColor="{StaticResource TextSecondary}"
-                                                                       VerticalOptions="Center" />
+                                                <!-- Per-Category Search -->
+  
+                                                    <SearchBar Text="{Binding SearchText, Mode=TwoWay}"
+                                                               Placeholder="Search Menu Item"
+                                                           TextColor="{StaticResource TextPrimary}"
+                                                           PlaceholderColor="{StaticResource Gray500}" />
 
-                                                                <buttons:SfSwitch Grid.Column="2"
-                                                                      IsOn="{Binding IsActive, Mode=TwoWay}"
-                                                                      WidthRequest="50"
-                                                                      HeightRequest="30"
-                                                                      VerticalOptions="Center"
-                                                                      StateChanged="SfSwitch_StateChanged"
-                                                                                  >
-                                                                </buttons:SfSwitch>
 
-                                                                <Border Grid.Column="3"
-                                                                        StrokeShape="RoundRectangle 5"
-                                                                        BackgroundColor="Transparent"
-                                                                        Stroke="{StaticResource Gray400}"
-                                                                        StrokeThickness="1"
-                                                                        WidthRequest="30"
-                                                                        HeightRequest="30"
-                                                                        VerticalOptions="Center">
-                                                                    <Border.GestureRecognizers>
-                                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MenuItemViewModel}}, Path=EditMenuItemCommand}"
-                                                                                  CommandParameter="{Binding .}" />
-                                                                    </Border.GestureRecognizers>
-                                                                    <Label Text="✏️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                                                                </Border>
-                                                            </Grid>
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </BindableLayout.ItemTemplate>
+                                                <!-- Filtered Menu Items List -->
+                                                <VerticalStackLayout Spacing="5" BindableLayout.ItemsSource="{Binding FilteredMenuItems}">
+                                                    <BindableLayout.ItemTemplate>
+                                                        <DataTemplate x:DataType="models:MenuItem">
+                                                            <Border BackgroundColor="{StaticResource Gray200}"
+                                                                    StrokeShape="RoundRectangle 8"
+                                                                    Padding="15,10">
+                                                                <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="10">
+                                                                    <Label Grid.Column="0"
+                                                                            Text="{Binding Name}"
+                                                                            FontSize="14"
+                                                                            TextColor="{StaticResource TextPrimary}"
+                                                                            VerticalOptions="Center" />
 
-                                                <BindableLayout.EmptyView>
-                                                    <Label Text="No menu items in this category"
-                                                           FontSize="12"
-                                                           TextColor="{StaticResource Gray500}"
-                                                           HorizontalOptions="Center"
-                                                           Margin="0,10" />
-                                                </BindableLayout.EmptyView>
+                                                                    <Label Grid.Column="1"
+                                                                           Text="{Binding IsActive, Converter={StaticResource BoolToStatusConverter}}"
+                                                                           FontSize="12"
+                                                                           TextColor="{StaticResource TextSecondary}"
+                                                                           VerticalOptions="Center" />
+
+                                                                    <buttons:SfSwitch Grid.Column="2"
+                                                                              IsOn="{Binding IsActive, Mode=TwoWay}"
+                                                                              WidthRequest="50"
+                                                                              HeightRequest="30"
+                                                                              VerticalOptions="Center"
+                                                                              StateChanged="SfSwitch_StateChanged" />
+
+                                                                    <Border Grid.Column="3"
+                                                                            StrokeShape="RoundRectangle 5"
+                                                                            BackgroundColor="Transparent"
+                                                                            Stroke="{StaticResource Gray400}"
+                                                                            StrokeThickness="1"
+                                                                            WidthRequest="30"
+                                                                            HeightRequest="30"
+                                                                            VerticalOptions="Center">
+                                                                        <Border.GestureRecognizers>
+                                                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MenuItemViewModel}}, Path=EditMenuItemCommand}"
+                                                                              CommandParameter="{Binding .}" />
+                                                                        </Border.GestureRecognizers>
+                                                                        <Image Source="edit.png" HeightRequest="30"/>
+                                                                    </Border>
+                                                                    <Border Grid.Column="4"
+                                                                            StrokeShape="RoundRectangle 5"
+                                                                            BackgroundColor="Transparent"
+                                                                            Stroke="{StaticResource Gray400}"
+                                                                            StrokeThickness="1"
+                                                                            WidthRequest="30"
+                                                                            HeightRequest="30"
+                                                                            VerticalOptions="Center">
+                                                                        <Border.GestureRecognizers>
+                                                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MenuItemViewModel}}, Path=DeleteMenuItemCommand}"
+                                                                              CommandParameter="{Binding .}" />
+                                                                        </Border.GestureRecognizers>
+                                                                        <Image Source="delete.png" HeightRequest="30"/>
+                                                                    </Border>
+                                                                </Grid>
+                                                            </Border>
+                                                        </DataTemplate>
+                                                    </BindableLayout.ItemTemplate>
+
+                                                    <BindableLayout.EmptyView>
+                                                        <Label Text="No menu items match your search"
+                                           FontSize="12"
+                                           TextColor="{StaticResource Gray500}"
+                                           HorizontalOptions="Center"
+                                           Margin="0,10" />
+                                                    </BindableLayout.EmptyView>
+                                                </VerticalStackLayout>
                                             </VerticalStackLayout>
                                         </expander:SfExpander.Content>
                                     </expander:SfExpander>
@@ -213,14 +235,15 @@
 
                             <BindableLayout.EmptyView>
                                 <Label Text="No categories yet. Add one to get started!"
-                                       FontSize="14"
-                                       TextColor="{StaticResource Gray500}"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center"
-                                       Margin="0,50" />
+                   FontSize="14"
+                   TextColor="{StaticResource Gray500}"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   Margin="0,50" />
                             </BindableLayout.EmptyView>
                         </VerticalStackLayout>
                     </ScrollView>
+
 
                     <!-- Add New Item Button -->
                     <Button Grid.Row="3"

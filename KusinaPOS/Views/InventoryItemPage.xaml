@@ -246,9 +246,10 @@
 
                         <!-- Row 3: Reason -->
                         <VerticalStackLayout Grid.Row="3" Grid.Column="0" Spacing="5">
-                            <Label Text="Reason for Changing the Stocks on hand" TextColor="{StaticResource TextSecondary}" FontSize="12"/>
-                            <sfeditors:SfComboBox ItemsSource="{Binding Reasons}" SelectedItem="{Binding SelectedReason}" TextColor="{StaticResource TextPrimary}" BackgroundColor="{StaticResource BackgroundDark}" Placeholder="Select Reason" />
-                        </VerticalStackLayout>
+                            <inputLayout:SfTextInputLayout Hint="Reason" HelperText="Reason for adjusting quantity" ContainerType="None" ContainerBackground="{StaticResource BackgroundDark}">
+                                <sfeditors:SfComboBox HeightRequest="45" ItemsSource="{Binding Reasons}" SelectedItem="{Binding SelectedReason}" TextColor="{StaticResource TextPrimary}" BackgroundColor="{StaticResource BackgroundDark}"/>
+                            </inputLayout:SfTextInputLayout>
+                            </VerticalStackLayout>
 
                         <!-- Row 3: Remarks -->
                         <VerticalStackLayout Grid.Row="3" Grid.Column="1" Spacing="5">

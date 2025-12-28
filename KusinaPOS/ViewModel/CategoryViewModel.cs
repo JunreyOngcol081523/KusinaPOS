@@ -1,47 +1,61 @@
-﻿
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using KusinaPOS.Models;
 using System.Collections.ObjectModel;
+using System.Linq;
+using MenuItem = KusinaPOS.Models.MenuItem;
 
 namespace KusinaPOS.ViewModel
 {
     public partial class CategoryViewModel : ObservableObject
     {
-        [ObservableProperty]
-        private int _id;
-
-        [ObservableProperty]
-        private string _name = string.Empty;
-
-        [ObservableProperty]
-        private bool _isActive;
-
-        [ObservableProperty]
-        private bool _isExpanded = false;
-
-        [ObservableProperty]
-        private ObservableCollection<Models.MenuItem> _menuItems = [];
-
-        public CategoryViewModel()
+        public CategoryViewModel(Category model)
         {
+            Id = model.Id;
+            Name = model.Name;
+            MenuItems = new ObservableCollection<MenuItem>();
+            FilteredMenuItems = new ObservableCollection<MenuItem>();
         }
 
-        public CategoryViewModel(Category category)
+        [ObservableProperty]
+        private int id;
+
+        [ObservableProperty]
+        private string name;
+
+        [ObservableProperty]
+        private ObservableCollection<Models.MenuItem> menuItems;
+
+        [ObservableProperty]
+        private ObservableCollection<MenuItem> filteredMenuItems;
+
+        [ObservableProperty]
+        private bool isExpanded;
+
+        [ObservableProperty]
+        private string searchText;
+
+        partial void OnSearchTextChanged(string value)
         {
-            Id = category.Id;
-            Name = category.Name;
-            IsActive = category.IsActive;
-            MenuItems = [];
+            FilterMenuItems();
         }
 
-        public Category ToModel()
+        private void FilterMenuItems()
         {
-            return new Category
+            if (string.IsNullOrWhiteSpace(SearchText))
             {
-                Id = Id,
-                Name = Name,
-                IsActive = IsActive
-            };
+                FilteredMenuItems = new ObservableCollection<MenuItem>(MenuItems);
+            }
+            else
+            {
+                var filtered = MenuItems
+                    .Where(mi => mi.Name.Contains(SearchText, System.StringComparison.OrdinalIgnoreCase));
+                FilteredMenuItems = new ObservableCollection<MenuItem>(filtered);
+            }
         }
+        public Category ToModel() => new Category
+        {
+            Id = this.Id,
+            Name = this.Name
+        };
     }
 }
