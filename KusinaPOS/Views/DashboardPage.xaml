@@ -251,6 +251,9 @@
                                 <Image Source="recipe.png" HeightRequest="40"/>
                                 <Label Text="RECIPES" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenRecipeManagementCommand}" />
+                            </Border.GestureRecognizers>
                         </Border>
                     </Grid>
 

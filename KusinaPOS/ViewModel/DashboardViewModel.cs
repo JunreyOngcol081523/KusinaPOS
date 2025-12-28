@@ -32,7 +32,7 @@ namespace KusinaPOS.ViewModel
             CurrentDateTime = _dateTimeService.CurrentDateTime;
             this.StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
             // Load user info
-            LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey,0).ToString();
+            LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
             LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
         }
 
@@ -59,5 +59,10 @@ namespace KusinaPOS.ViewModel
         {
             await Shell.Current.GoToAsync(nameof(InventoryItemPage));
         }
-     }
+        [RelayCommand]
+        private async Task OpenRecipeManagementAsync()
+        {
+            await Shell.Current.GoToAsync(nameof(MenuItemIngredientsPage));
+        }
+    }
 }

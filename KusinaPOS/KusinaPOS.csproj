@@ -89,6 +89,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Converters\BoolToCategoryBgConverter.cs" />
 	  <Compile Remove="Helpers\DialogHelper.cs" />
 	</ItemGroup>
 

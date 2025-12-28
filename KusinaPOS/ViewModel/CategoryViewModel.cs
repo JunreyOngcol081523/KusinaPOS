@@ -33,7 +33,8 @@ namespace KusinaPOS.ViewModel
 
         [ObservableProperty]
         private string searchText;
-
+        [ObservableProperty]
+        private bool isSelected;
         partial void OnSearchTextChanged(string value)
         {
             FilterMenuItems();
