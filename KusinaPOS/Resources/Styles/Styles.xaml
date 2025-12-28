@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    
+    xmlns:syncfusion="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid">
 
     <Style TargetType="ActivityIndicator">
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
@@ -441,5 +444,47 @@
         <Setter Property="Stroke" Value="{StaticResource Gray200}" />
         <Setter Property="StrokeShape" Value="RoundRectangle 5" />
     </Style>
+    <!-- Syncfusion DataGrid Dark Theme Style -->
+    <!-- Syncfusion DataGrid Dark Theme Style -->
+    <Style TargetType="syncfusion:DataGridHeaderCell">
+        <Setter Property="Background" Value="{StaticResource Gray100}"/>
+        <Setter Property="TextColor" Value="{StaticResource TextSecondary}"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Padding" Value="15,10"/>
+    </Style>
 
+    <Style TargetType="syncfusion:DataGridCell">
+        <Setter Property="Background" Value="{StaticResource BackgroundDark}"/>
+        <Setter Property="TextColor" Value="{StaticResource TextPrimary}"/>
+        <Setter Property="BorderColor" Value="{StaticResource Gray100}"/>
+        <Setter Property="Padding" Value="15,12"/>
+    </Style>
+    <!-- Global Style for SfTextInputLayout using your theme -->
+    <Style TargetType="inputLayout:SfTextInputLayout">
+        <!-- Container and Background -->
+        <Setter Property="ContainerType" Value="None"/>
+        <Setter Property="BackgroundColor" Value="{StaticResource BackgroundDark}"/>
+
+        <!-- Hint Label Style -->
+        <Setter Property="HintLabelStyle">
+            <Setter.Value>
+                <inputLayout:LabelStyle TextColor="{StaticResource TextPrimary}" FontSize="16"/>
+            </Setter.Value>
+        </Setter>
+
+        <!-- Helper Text Style -->
+        <Setter Property="HelperLabelStyle">
+            <Setter.Value>
+                <inputLayout:LabelStyle TextColor="{StaticResource TextSecondary}" FontSize="12"/>
+            </Setter.Value>
+        </Setter>
+
+        <!-- Error Text Style (optional) -->
+        <Setter Property="ErrorLabelStyle">
+            <Setter.Value>
+                <inputLayout:LabelStyle TextColor="Red" FontSize="12"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

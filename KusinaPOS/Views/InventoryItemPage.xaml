@@ -3,8 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="KusinaPOS.Views.InventoryItemPage"
              xmlns:viewmodel="clr-namespace:KusinaPOS.ViewModel"
-             xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
-             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:sfeditors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:sfbuttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:sfdatagrid="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
+             xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
              BackgroundColor="{StaticResource BackgroundDark}">
 
     <Grid Padding="20"
@@ -13,15 +15,16 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <!--top header-->
+
+        <!-- Top Header -->
         <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,0,0,20">
             <Button Grid.Column="0"
                     Margin="0,0,15,0"
                     HeightRequest="40"
                     Command="{Binding GoBackCommand}"
                     ImageSource="arrowback.png"
-                    BackgroundColor="Transparent">
-            </Button>
+                    BackgroundColor="Transparent" />
+
             <Label Grid.Column="1" 
                    Text="{Binding StoreName, StringFormat='Manage Inventory - {0}'}"
                    FontSize="24" 
@@ -41,6 +44,7 @@
                        FontSize="12"
                        TextColor="{StaticResource TextSecondary}"
                        VerticalOptions="Center" />
+
                 <Border StrokeShape="RoundRectangle 15"
                         WidthRequest="30"
                         HeightRequest="30"
@@ -53,6 +57,7 @@
                 </Border>
             </HorizontalStackLayout>
         </Grid>
+
         <!-- Left Panel: Inventory Items List -->
         <Border Grid.Column="0"
                 Grid.Row="1"
@@ -62,30 +67,30 @@
                 Margin="0,0,10,0"
                 Padding="20"
                 StrokeShape="RoundRectangle 10">
+
             <Grid RowDefinitions="Auto,Auto,*">
 
                 <!-- Header -->
                 <Grid ColumnDefinitions="Auto,*"
-                    Grid.Row="0">
+                      Grid.Row="0">
                     <Label Grid.Column="0"
-                       Text="Inventory Items List"
-                       FontSize="18"
-                       FontAttributes="Bold"
-                       TextColor="{StaticResource TextPrimary}"
-                       Margin="0,0,0,15"
-                        HorizontalOptions="Center"/>
+                           Text="Inventory Items List"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextPrimary}"
+                           Margin="0,0,0,15"
+                           HorizontalOptions="Center" />
+
                     <Button Grid.Column="1"
                             ImageSource="refresh.png"
                             BackgroundColor="Transparent"
                             HeightRequest="20"
                             Command="{Binding RefreshInventoryCommand}"
-                            HorizontalOptions="End"/>
+                            HorizontalOptions="End" />
                 </Grid>
 
                 <!-- Search and Add Button -->
-                <Grid Grid.Row="1" 
-                      ColumnDefinitions="*,Auto"
-                      Margin="0,0,0,15">
+                <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,0,0,15">
                     <Border Grid.Column="0"
                             BackgroundColor="{StaticResource BackgroundDark}"
                             Stroke="{StaticResource Gray200}"
@@ -93,12 +98,11 @@
                             Padding="10,8"
                             Margin="0,0,10,0"
                             StrokeShape="RoundRectangle 5">
-                        <SearchBar
-                                Text="{Binding SearchText}"
-                                Placeholder="Search"
-                                PlaceholderColor="{StaticResource TextDisabled}"
-                                TextColor="{StaticResource TextPrimary}"
-                                BackgroundColor="Transparent" />
+                        <SearchBar Text="{Binding SearchText}"
+                                   Placeholder="Search"
+                                   PlaceholderColor="{StaticResource TextDisabled}"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   BackgroundColor="Transparent" />
                     </Border>
 
                     <Button Grid.Column="1"
@@ -123,11 +127,11 @@
                             <Grid ColumnDefinitions="2*,*,*,*,Auto,Auto"
                                   Padding="15,10"
                                   BackgroundColor="{StaticResource Gray100}">
-                                <Label Grid.Column="0" HorizontalTextAlignment="Start" Text="Name" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" />
-                                <Label Grid.Column="1" HorizontalTextAlignment ="Start" Text="Quantity" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" />
-                                <Label Grid.Column="2" HorizontalTextAlignment ="Start" Text="Unit" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" />
-                                <Label Grid.Column="3" HorizontalTextAlignment ="Start" Text="Active" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" />
-                                <Label Grid.Column="4" Grid.ColumnSpan="2" HorizontalTextAlignment ="Start"  Text="Action" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" />
+                                <Label Grid.Column="0" Text="Name" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" HorizontalTextAlignment="Start" />
+                                <Label Grid.Column="1" Text="Quantity" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" HorizontalTextAlignment="Start" />
+                                <Label Grid.Column="2" Text="Unit" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" HorizontalTextAlignment="Start" />
+                                <Label Grid.Column="3" Text="Active" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" HorizontalTextAlignment="Start" />
+                                <Label Grid.Column="4" Grid.ColumnSpan="2" Text="Action" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" HorizontalTextAlignment="Start" />
                             </Grid>
                         </CollectionView.Header>
 
@@ -141,52 +145,16 @@
                                                               CommandParameter="{Binding .}" />
                                     </Grid.GestureRecognizers>
 
-                                    <Label Grid.Column="0" 
-                                           Text="{Binding Name}" 
-                                           TextColor="{StaticResource TextPrimary}" 
-                                           VerticalOptions="Center"
-                                           HorizontalTextAlignment ="Start"/>
+                                    <Label Grid.Column="0" Text="{Binding Name}" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center" HorizontalTextAlignment="Start" />
+                                    <Label Grid.Column="1" Text="{Binding QuantityOnHand}" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center" HorizontalTextAlignment="Center" />
+                                    <Label Grid.Column="2" Text="{Binding Unit}" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center" HorizontalTextAlignment="Center" />
 
-                                    <Label Grid.Column="1" 
-                                           Text="{Binding QuantityOnHand}" 
-                                           TextColor="{StaticResource TextPrimary}" 
-                                           VerticalOptions="Center" 
-                                           HorizontalTextAlignment ="Center"/>
+                                    <Switch Grid.Column="3" IsToggled="{Binding IsActive}" OnColor="{StaticResource Primary}" ThumbColor="{StaticResource White}" VerticalOptions="Center" HorizontalOptions="End" />
 
-                                    <Label Grid.Column="2" 
-                                           Text="{Binding Unit}" 
-                                           TextColor="{StaticResource TextPrimary}" 
-                                           VerticalOptions="Center"
-                                           HorizontalTextAlignment ="Center"/>
+                                    <ImageButton Grid.Column="4" Source="edit.png" BackgroundColor="Transparent" WidthRequest="20" HeightRequest="20" Margin="5,0" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditItemCommand}" CommandParameter="{Binding .}" />
+                                    <ImageButton Grid.Column="5" Source="view.png" BackgroundColor="Transparent" WidthRequest="20" HeightRequest="20" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewTransactionsCommand}" CommandParameter="{Binding .}" />
 
-                                    <Switch Grid.Column="3" 
-                                            IsToggled="{Binding IsActive}"
-                                            OnColor="{StaticResource Primary}"
-                                            ThumbColor="{StaticResource White}"
-                                            VerticalOptions="Center" 
-                                            HorizontalOptions ="End"/>
-
-                                    <ImageButton Grid.Column="4"
-                                                 Source="edit.png"
-                                                 BackgroundColor="Transparent"
-                                                 WidthRequest="20"
-                                                 HeightRequest="20"
-                                                 Margin="5,0"
-                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditItemCommand}"
-                                                 CommandParameter="{Binding .}" />
-
-                                    <ImageButton Grid.Column="5"
-                                                 Source="view.png"
-                                                 BackgroundColor="Transparent"
-                                                 WidthRequest="20"
-                                                 HeightRequest="20"
-                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewTransactionsCommand}"
-                                                 CommandParameter="{Binding .}" />
-
-                                    <BoxView Grid.ColumnSpan="6"
-                                             HeightRequest="1"
-                                             BackgroundColor="{StaticResource Gray100}"
-                                             VerticalOptions="End" />
+                                    <BoxView Grid.ColumnSpan="6" HeightRequest="1" BackgroundColor="{StaticResource Gray100}" VerticalOptions="End" />
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
@@ -209,189 +177,128 @@
 
                 <!-- Header -->
                 <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
-                    <Label Grid.Column="0"
-                               Text="{Binding EditPanelTitle}" 
-                               FontSize="16" 
-                               FontAttributes="Bold"
-                               TextColor="{StaticResource TextPrimary}"
-                               VerticalOptions="Center" />
+                    <Label Grid.Column="0" Text="{Binding EditPanelTitle}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center" />
 
                     <HorizontalStackLayout Grid.Column="1" Spacing="10">
-                        <Label Text="{Binding EditingIsActive, Converter={StaticResource BoolToStatusConverter}}"
-                                   FontSize="14"
-                                   TextColor="{StaticResource TextPrimary}"
-                                   VerticalOptions="Center" />
-                        <buttons:SfSwitch IsOn="{Binding EditingIsActive, Mode=TwoWay}"
-                                              WidthRequest="60"
-                                              HeightRequest="32"
-                                                />
+                        <Label Text="{Binding EditingIsActive, Converter={StaticResource BoolToStatusConverter}}" FontSize="14" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center" />
+                        <sfbuttons:SfSwitch IsOn="{Binding EditingIsActive, Mode=TwoWay}" WidthRequest="60" HeightRequest="32" />
                     </HorizontalStackLayout>
                 </Grid>
 
                 <!-- Form Fields -->
                 <ScrollView Grid.Row="1">
                     <Grid ColumnDefinitions="*,*"
-                            RowDefinitions="Auto,Auto,Auto,Auto"
-                            ColumnSpacing="15"
-                            RowSpacing="15">
+                          RowDefinitions="Auto,Auto,Auto,Auto"
+                          ColumnSpacing="15"
+                          RowSpacing="15">
 
                         <!-- Row 0: Name -->
-                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="5">
-                            <Label Text="Name" TextColor="{StaticResource TextSecondary}" FontSize="12" />
-                            <Border BackgroundColor="{StaticResource BackgroundDark}"
-                                    Stroke="{StaticResource Gray200}"
-                                    StrokeThickness="1"
-                                    Padding="12,10"
-                                    StrokeShape="RoundRectangle 5">     
-                                <Entry Text="{Binding EditingName, Mode=TwoWay}"
-                                        TextColor="{StaticResource TextPrimary}"
-                                        BackgroundColor="Transparent" />
-                            </Border>
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="5" VerticalOptions="End">
+                            <inputLayout:SfTextInputLayout Hint="Name" HelperText="Enter the item name" ContainerType="None" ContainerBackground="{StaticResource BackgroundDark}">
+                                <Entry Text="{Binding EditingName, Mode=TwoWay}" TextColor="{StaticResource TextPrimary}" BackgroundColor="Transparent"/>
+                            </inputLayout:SfTextInputLayout>
                         </VerticalStackLayout>
 
                         <!-- Row 0: Unit -->
-                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="5">
-                            <Label Text="Unit" TextColor="{StaticResource TextSecondary}" FontSize="12" />
-                            <Border BackgroundColor="{StaticResource BackgroundDark}"
-                                    Stroke="{StaticResource Gray200}"
-                                    StrokeThickness="1"
-                                    Padding="12,10"
-                                    StrokeShape="RoundRectangle 5">
-                                <Entry Text="{Binding EditingUnit, Mode=TwoWay}"
-                                        TextColor="{StaticResource TextPrimary}"
-                                        BackgroundColor="Transparent" />
-                            </Border>
+                        <!-- Row 0: Unit / Category Selection -->
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="10">
+
+                            <!-- Autocomplete for Unit Selection -->
+                            <inputLayout:SfTextInputLayout Hint="Unit" HelperText="grams/pcs/kg/liter/bottle" ContainerType="None" ContainerBackground="{StaticResource BackgroundDark}">
+                                <sfeditors:SfAutocomplete x:Name="autocomplete"
+                                            Placeholder="Select Unit"
+                                            TextColor="{StaticResource TextPrimary}"
+                                            HeightRequest="45"             
+                                            ItemsSource="{Binding UnitMeasurements}"
+                                            SelectedItem="{Binding EditingUnit, Mode=TwoWay}" />
+                            </inputLayout:SfTextInputLayout>
                         </VerticalStackLayout>
+
+
 
                         <!-- Row 1: Quantity On Hand -->
                         <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="5">
-                            <Label  Text="{Binding OriginalQuantityOnHand, StringFormat='Quantity on Hand Before editing : {0}'}" 
-                                   TextColor="{StaticResource TextSecondary}" FontSize="12" />
-                            <Border BackgroundColor="{StaticResource BackgroundDark}"
-                                    Stroke="{StaticResource Gray200}"
-                                    StrokeThickness="1"
-                                    Padding="12,10"
-                                    StrokeShape="RoundRectangle 5">
-                                <Entry Text="{Binding EditingQuantityOnHand, Mode=TwoWay}"
-                                        Keyboard="Numeric"
-                                        TextColor="{StaticResource TextPrimary}"
-                                        BackgroundColor="Transparent" />
-                            </Border>
+                            <inputLayout:SfTextInputLayout Hint="Quantity On Hand" HelperText="Current stock quantity" ContainerType="None" ContainerBackground="{StaticResource BackgroundDark}">
+                                <Entry Text="{Binding EditingQuantityOnHand, Mode=TwoWay}" Keyboard="Numeric" TextColor="{StaticResource TextPrimary}" BackgroundColor="Transparent"/>
+                            </inputLayout:SfTextInputLayout>
                         </VerticalStackLayout>
 
                         <!-- Row 1: Quantity Changed -->
                         <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="5">
-                            <Label Text="Quantity Changed (+ / -)" 
-                                    TextColor="{StaticResource TextSecondary}" 
-                                    FontSize="12" />
-                            <Border BackgroundColor="{StaticResource BackgroundDark}"
-                                    Stroke="{StaticResource Gray200}"
-                                    StrokeThickness="1"
-                                    Padding="12,10"
-                                    StrokeShape="RoundRectangle 5">
-                                <Entry Text="{Binding DisplayQuantityChanged, Mode=TwoWay}"
-                                        Keyboard="Numeric"
-                                        IsEnabled="false"
-                                        TextColor="{StaticResource TextPrimary}"
-                                        BackgroundColor="Transparent"
-                                        />
-                            </Border>
+                            <inputLayout:SfTextInputLayout Hint="Quantity Changed (+/-)" HelperText="Auto-calculated" ContainerType="None" ContainerBackground="{StaticResource BackgroundDark}">
+                                <Entry Text="{Binding DisplayQuantityChanged, Mode=TwoWay}" Keyboard="Numeric" IsEnabled="False" TextColor="{StaticResource TextPrimary}" BackgroundColor="Transparent"/>
+                            </inputLayout:SfTextInputLayout>
                         </VerticalStackLayout>
 
                         <!-- Row 2: Cost Per Unit -->
                         <VerticalStackLayout Grid.Row="2" Grid.Column="0" Spacing="5">
-                            <Label Text="Cost Per Unit ₱" TextColor="{StaticResource TextSecondary}" FontSize="12" />
-                            <Border BackgroundColor="{StaticResource BackgroundDark}"
-                                    Stroke="{StaticResource Gray200}"
-                                    StrokeThickness="1"
-                                    Padding="12,10"
-                                    StrokeShape="RoundRectangle 5">
-                                <Entry Text="{Binding EditingCostPerUnit, Mode=TwoWay}"
-                                        Keyboard="Numeric"
-                                        TextColor="{StaticResource TextPrimary}"
-                                        BackgroundColor="Transparent" />
-                            </Border>
+                            <inputLayout:SfTextInputLayout Hint="{Binding CostPerUnitLabel}" HelperText="{Binding CostPerUnitLabel}" ContainerType="None" ContainerBackground="{StaticResource BackgroundDark}">
+                                <Entry Text="{Binding EditingCostPerUnit, Mode=TwoWay}" Keyboard="Numeric" TextColor="{StaticResource TextPrimary}" BackgroundColor="Transparent"/>
+                            </inputLayout:SfTextInputLayout>
                         </VerticalStackLayout>
 
                         <!-- Row 2: Re-Order Level -->
                         <VerticalStackLayout Grid.Row="2" Grid.Column="1" Spacing="5">
-                            <Label Text="Re-Order Level" TextColor="{StaticResource TextSecondary}" FontSize="12" />
-                            <Border BackgroundColor="{StaticResource BackgroundDark}"
-                                    Stroke="{StaticResource Gray200}"
-                                    StrokeThickness="1"
-                                    Padding="12,10"
-                                    StrokeShape="RoundRectangle 5">
-                                <Entry Text="{Binding EditingReOrderLevel, Mode=TwoWay}"
-                                        Keyboard="Numeric"
-                                        TextColor="{StaticResource TextPrimary}"
-                                        BackgroundColor="Transparent" />
-                            </Border>
+                            <inputLayout:SfTextInputLayout Hint="Re-Order Level" HelperText="Minimum stock before re-order" ContainerType="None" ContainerBackground="{StaticResource BackgroundDark}">
+                                <Entry Text="{Binding EditingReOrderLevel, Mode=TwoWay}" Keyboard="Numeric" TextColor="{StaticResource TextPrimary}" BackgroundColor="Transparent"/>
+                            </inputLayout:SfTextInputLayout>
                         </VerticalStackLayout>
 
                         <!-- Row 3: Reason -->
                         <VerticalStackLayout Grid.Row="3" Grid.Column="0" Spacing="5">
-                            <Label Text="Reason for Changing the Stocks on hand"
-                                    TextColor="{StaticResource TextSecondary}"
-                                    FontSize="12" />
-                            <Border BackgroundColor="{StaticResource BackgroundDark}"
-                                    Stroke="{StaticResource Gray200}"
-                                    StrokeThickness="1"
-                                    Padding="12,10"
-                                    StrokeShape="RoundRectangle 5">
-                                <editors:SfComboBox
-                                        ItemsSource="{Binding Reasons}"
-                                        SelectedItem="{Binding SelectedReason}"
-                                        TextColor="{StaticResource TextPrimary}"
-                                        BackgroundColor="Transparent" />
-                            </Border>
+                            <Label Text="Reason for Changing the Stocks on hand" TextColor="{StaticResource TextSecondary}" FontSize="12"/>
+                            <sfeditors:SfComboBox ItemsSource="{Binding Reasons}" SelectedItem="{Binding SelectedReason}" TextColor="{StaticResource TextPrimary}" BackgroundColor="{StaticResource BackgroundDark}" Placeholder="Select Reason" />
                         </VerticalStackLayout>
-                        <!-- Row 3: remarks -->
+
+                        <!-- Row 3: Remarks -->
                         <VerticalStackLayout Grid.Row="3" Grid.Column="1" Spacing="5">
-                            <Label Text="Remarks"
-                                    TextColor="{StaticResource TextSecondary}"
-                                    FontSize="12" />
-                            <Border BackgroundColor="{StaticResource BackgroundDark}"
-                                    Stroke="{StaticResource Gray200}"
-                                    StrokeThickness="1"
-                                    Padding="12,10"
-                                    StrokeShape="RoundRectangle 5">
-                                <Entry
-                                        Text="{Binding Remarks}"
-                                        TextColor="{StaticResource TextPrimary}"
-                                        BackgroundColor="Transparent" />
-                            </Border>
+                            <inputLayout:SfTextInputLayout Hint="Remarks" HelperText="Additional notes" ContainerType="None" ContainerBackground="{StaticResource BackgroundDark}">
+                                <Entry Text="{Binding Remarks, Mode=TwoWay}" TextColor="{StaticResource TextPrimary}" BackgroundColor="Transparent"/>
+                            </inputLayout:SfTextInputLayout>
                         </VerticalStackLayout>
 
                     </Grid>
                 </ScrollView>
 
-
-
                 <!-- Action Buttons -->
-                <Grid Grid.Row="2" 
-                      ColumnDefinitions="*,*"
-                      Margin="0,20,0,0"
-                      ColumnSpacing="10">
-                    <Button Grid.Column="0"
-                            Text="CANCEL"
-                            BackgroundColor="{StaticResource Gray200}"
-                            TextColor="{StaticResource TextPrimary}"
-                            CornerRadius="5"
-                            Padding="0,12"
-                            Command="{Binding CancelCommand}" />
-
-                    <Button Grid.Column="1"
-                            Text="SAVE CHANGES"
-                            BackgroundColor="{StaticResource Primary}"
-                            TextColor="{StaticResource White}"
-                            CornerRadius="5"
-                            Padding="0,12"
-                            Command="{Binding SaveChangesCommand}" />
+                <Grid Grid.Row="2" ColumnDefinitions="*,*" Margin="0,20,0,0" ColumnSpacing="10">
+                    <Button Grid.Column="0" Text="CANCEL" BackgroundColor="{StaticResource Gray200}" TextColor="{StaticResource TextPrimary}" CornerRadius="5" Padding="0,12" Command="{Binding CancelCommand}" />
+                    <Button Grid.Column="1" Text="SAVE CHANGES" BackgroundColor="{StaticResource Primary}" TextColor="{StaticResource White}" CornerRadius="5" Padding="0,12" Command="{Binding SaveChangesCommand}" />
                 </Grid>
 
             </Grid>
         </Border>
 
-    </Grid>
+        <!-- Right Panel: Show inventory transaction logs per item -->
+        <Border Grid.Column="1" Grid.Row="1" BackgroundColor="{StaticResource Gray100}" Margin="10,0,0,0" Padding="20" Style="{StaticResource CardBorder}" IsVisible="{Binding IsTransactionPanelVisible}">
+            <Grid RowDefinitions="Auto,*,Auto">
 
+                <!-- Header -->
+                <Label Grid.Row="0" Text="{Binding TransactionLogPanelTitle}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" Margin="0,0,0,20"/>
+
+                <!-- Table -->
+                
+                    <sfdatagrid:SfDataGrid Grid.Row="1"
+                                       GridLinesVisibility="Horizontal"
+                                       HeaderGridLinesVisibility="None"
+                                       AutoGenerateColumnsMode="None"
+                                       ItemsSource="{Binding TransactionLogs}"
+                                       ColumnWidthMode="Fill"
+                                       SortingMode="Single">
+                        <sfdatagrid:SfDataGrid.Columns>
+                            <sfdatagrid:DataGridTextColumn MappingName="TransactionDate" Format="MMM dd, yyyy hh:mm tt" HeaderText="Log Date"/>
+                            <sfdatagrid:DataGridTextColumn MappingName="QuantityChange" HeaderText="Quantity Changed" Format="N2"/>
+                            <sfdatagrid:DataGridTextColumn MappingName="Reason" HeaderText="Reason" />
+                            <sfdatagrid:DataGridTextColumn MappingName="Remarks" HeaderText="Remarks" />
+                        </sfdatagrid:SfDataGrid.Columns>
+                    </sfdatagrid:SfDataGrid>
+                
+
+                <!-- Close Button -->
+                <Button Grid.Row="2" Text="CLOSE" BackgroundColor="{StaticResource Gray200}" TextColor="{StaticResource TextPrimary}" Padding="0,12" Command="{Binding CloseTransactionPanelCommand}" />
+
+            </Grid>
+        </Border>
+
+    </Grid>
 </ContentPage>

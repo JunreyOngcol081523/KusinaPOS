@@ -291,11 +291,24 @@
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="8">
-                                <Label Text="Menu Type"
+                                <HorizontalStackLayout Spacing="10"  Margin="0,0,0,5">
+                                    <Label Text="Menu Type"
                                        FontSize="13"
                                        FontAttributes="Bold"
                                        TextColor="{StaticResource TextSecondary}" 
-                                       Margin="0,0,0,5"/>
+                                       Margin="0,0,100,0"
+                                      />
+                                    <Label Text="What's this?"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextDecorations="Underline"
+                                       TextColor="Blue"
+                                       Margin="0,0,0,5">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding ShowMenuTypeDialogCommand}" />
+                                    </Label.GestureRecognizers>
+                                    </Label>
+                                </HorizontalStackLayout>
                                 <editors:SfComboBox HeightRequest="66"
                                                     TextColor="{StaticResource TextPrimary}"
                                                     Placeholder="Select type"

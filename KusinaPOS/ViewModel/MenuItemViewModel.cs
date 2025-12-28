@@ -20,7 +20,7 @@ namespace KusinaPOS.ViewModel
             _categoryService = categoryService;
             _menuItemService = menuItemService;
             _dateTimeService = dateTimeService;
-            LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey,0).ToString();
+            LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
             LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
             _dateTimeService.DateTimeChanged += OnDateTimeChanged;
             CurrentDateTime = _dateTimeService.CurrentDateTime;
@@ -49,7 +49,7 @@ namespace KusinaPOS.ViewModel
         private string newCategoryName = string.Empty;
 
         [ObservableProperty]
-        private bool isBorderVisible = false;   
+        private bool isBorderVisible = false;
 
         [ObservableProperty]
         private ObservableCollection<CategoryViewModel> categoriesWithMenuItems = [];
@@ -95,7 +95,7 @@ namespace KusinaPOS.ViewModel
             //await CreateSampleDataAsync();
             await LoadCategoriesWithMenuItems();
             IsBorderVisible = false;
-            MenuTypes = new ObservableCollection<string> { "Simple", "Composite" };
+            MenuTypes = new ObservableCollection<string> { "Unit-Based", "Recipe-Based" };
         }
 
         [RelayCommand]
@@ -390,7 +390,8 @@ namespace KusinaPOS.ViewModel
             }
         }
         [RelayCommand]
-        public async Task GoBackAsync() {
+        public async Task GoBackAsync()
+        {
             await Shell.Current.GoToAsync("..");
 
         }
@@ -408,7 +409,7 @@ namespace KusinaPOS.ViewModel
             this.SelectedMenuType = string.Empty;
             this.ImagePath = string.Empty;
             IsBorderVisible = false;
-        } 
+        }
         [RelayCommand]
         private async Task UploadImageAsync()
         {
@@ -436,7 +437,7 @@ namespace KusinaPOS.ViewModel
                     Directory.CreateDirectory(imagesDir);
 
                 // Generate a unique file name
-                var fileName = $"{this.MenuItemName.Replace(" ","")}{Path.GetExtension(result.FileName)}";
+                var fileName = $"{this.MenuItemName.Replace(" ", "")}{Path.GetExtension(result.FileName)}";
                 var destinationPath = Path.Combine(imagesDir, fileName);
 
                 // Copy the picked image to app storage
@@ -506,7 +507,7 @@ namespace KusinaPOS.ViewModel
                 {
                     return;
                 }
-                    await LoadCategoriesWithMenuItems();
+                await LoadCategoriesWithMenuItems();
                 HideBorder();
             }
             catch (Exception ex)
@@ -514,5 +515,18 @@ namespace KusinaPOS.ViewModel
                 await PageHelper.DisplayAlertAsync("Error", $"Failed to save menu item: {ex.Message}", "OK");
             }
         }
+        //show dialog explaining what is menu types
+        [RelayCommand]
+        public async Task ShowMenuTypeDialogAsync()
+        {
+            string message = "Unit-Based Menu Item: An item that is stocked and sold in the same unit. " +
+                             "For example, a 1-liter Coke is stocked by the bottle and sold by the bottle.\n\n" +
+                             "Recipe-Based Menu Item: An item that is made from ingredients in inventory. " +
+                             "The system tracks ingredient usage per serving. For example, Pork Sisig uses pork by kilograms " +
+                             "but is sold in portions (e.g., 250g per serving).";
+
+            await PageHelper.DisplayAlertAsync("Menu Item Types", message, "OK");
+        }
+
     }
 }
