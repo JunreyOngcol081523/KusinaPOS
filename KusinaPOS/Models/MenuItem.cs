@@ -29,5 +29,9 @@ namespace KusinaPOS.Models
 
         [Ignore]
         public string StatusText => IsActive ? "Active" : "Inactive";
+        [Ignore]
+        public string IngredientsText { get; set; }
+        [Ignore]
+        public List<MenuItemIngredient> Ingredients { get; set; }
     }
 }

@@ -5,6 +5,8 @@
              x:Class="KusinaPOS.Views.MenuItemIngredientsPage"
              xmlns:viewmodel="clr-namespace:KusinaPOS.ViewModel"
              xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:behaviors="clr-namespace:CommunityToolkit.Maui.Behaviors;assembly=CommunityToolkit.Maui"
              BackgroundColor="{StaticResource BackgroundDark}">
 
     <Grid RowDefinitions="Auto,*" 
@@ -13,20 +15,23 @@
 
         <!-- Header with Back Button -->
         <Grid Grid.Row="0" 
-              ColumnDefinitions="Auto,*"
-              ColumnSpacing="10">
+              ColumnDefinitions="Auto,Auto,*"
+              ColumnSpacing="5">
             <ImageButton Grid.Column="0"
                         Source="arrowback.png"
                         BackgroundColor="Transparent"
                         WidthRequest="30"
                         HeightRequest="30"
-                        Command="{Binding BackCommand}"/>
+                        Command="{Binding GoBackCommand}"/>
             <Label Grid.Column="1"
-                   Text="Manage Menu Items Recipe"
+                   Text="Manage Menu - Ingredients Per Serving"
                    TextColor="{StaticResource TextPrimary}"
                    FontSize="24"
                    FontAttributes="Bold"
                    VerticalOptions="Center"/>
+            <Image Grid.Column="2" Source="weighingscale.png" HeightRequest="40" HorizontalOptions="Start"/>
+
+
         </Grid>
 
         <!-- Main Content -->
@@ -42,7 +47,7 @@
                     StrokeShape="RoundRectangle 10"
                     Padding="15">
 
-                <Grid RowDefinitions="Auto,Auto,*"
+                <Grid RowDefinitions="Auto,Auto,*,Auto"
                       RowSpacing="15"
                       >
                     <CollectionView 
@@ -92,82 +97,66 @@
                     </Border>
 
                     <!-- Menu Items List -->
-                    <ScrollView Grid.Row="2">
-                        <CollectionView ItemsSource="{Binding FilteredMenuItems}"
+
+                    <CollectionView Grid.Row="2" ItemsSource="{Binding FilteredMenuItems}"
                                        SelectionMode="Single"
                                        SelectedItem="{Binding SelectedMenuItem}">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <Border BackgroundColor="Transparent"
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border BackgroundColor="Transparent"
                                             StrokeThickness="0"
                                             Padding="0,0,0,15">
-                                        <Grid ColumnDefinitions="80,*"
+                                    <Grid ColumnDefinitions="80,*"
+                                              Style="{StaticResource IngredientItemStyle}"
                                               ColumnSpacing="15">
 
-                                            <!-- Menu Image -->
-                                            <Border Grid.Column="0"
+                                        <!-- Menu Image -->
+                                        <Border Grid.Column="0"
                                                     Style="{StaticResource RoundedImageContainerStyle}"
                                                     StrokeShape="RoundRectangle 8"
                                                     WidthRequest="80"
                                                     HeightRequest="80">
-                                                <Image Source="{Binding ImagePath, FallbackValue=placeholder_food.png}"
+                                            <Image Source="{Binding ImagePath, FallbackValue=placeholder_food.png}"
                                                        Aspect="AspectFill"
                                                        />
-                                            </Border>
+                                        </Border>
 
-                                            <!-- Menu Details -->
-                                            <VerticalStackLayout Grid.Column="1"
+                                        <!-- Menu Details -->
+                                        <VerticalStackLayout Grid.Column="1"
                                                                 Spacing="4">
-                                                <Label Text="Menu/Item:"
+                                            <Label Text="Menu/Item:"
                                                        TextColor="{StaticResource Gray500}"
                                                        FontSize="10"/>
-                                                <Label Text="{Binding Name}"
+                                            <Label Text="{Binding Name}"
                                                        TextColor="{StaticResource TextPrimary}"
                                                        FontSize="14"
                                                        FontAttributes="Bold"/>
-                                                <Label TextColor="{StaticResource TextPrimary}"
+                                            <Label TextColor="{StaticResource TextPrimary}"
                                                        FontSize="12">
-                                                    <Label.FormattedText>
-                                                        <FormattedString>
-                                                            <Span Text="Price: "/>
-                                                            <Span Text="{Binding Price, StringFormat='${0:F2}'}"
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="Price: "/>
+                                                        <Span Text="{Binding Price, StringFormat='${0:F2}'}"
                                                                   TextColor="{StaticResource Primary}"
                                                                   FontAttributes="Bold"/>
-                                                        </FormattedString>
-                                                    </Label.FormattedText>
-                                                </Label>
-                                                <Label Text="Main Ingredients:"
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                            <Label Text="Main Ingredients:"
                                                        TextColor="{StaticResource Gray500}"
                                                        FontSize="10"
                                                        Margin="0,4,0,0"/>
-                                                <Label Text="{Binding IngredientsText}"
+                                            <Label Text="{Binding IngredientsText}"
                                                        TextColor="{StaticResource TextPrimary}"
                                                        FontSize="11"/>
-                                                <Label TextColor="{StaticResource TextPrimary}"
-                                                       FontSize="11">
-                                                    <Label.FormattedText>
-                                                        <FormattedString>
-                                                            <Span Text="Quantity per serving: "/>
-                                                            <Span Text="{Binding QuantityPerServing, StringFormat='{0:F3}'}"
-                                                                  FontAttributes="Bold"/>
-                                                        </FormattedString>
-                                                    </Label.FormattedText>
-                                                </Label>
-                                            </VerticalStackLayout>
-                                        </Grid>
-                                        
-                                        <!--when item clicked-->
-                                        <Border.GestureRecognizers>
-                                            <TapGestureRecognizer
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MenuItemIngredientsViewModel}},
-                                                                  Path=SelectMenuItemCommand}"
-                                                CommandParameter="{Binding .}"/>
-                                        </Border.GestureRecognizers>
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </ScrollView>
+
+                                        </VerticalStackLayout>
+                                    </Grid>
+
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
 
                 </Grid>
             </Border>
@@ -180,7 +169,7 @@
                     StrokeShape="RoundRectangle 10"
                     Padding="15">
 
-                <Grid RowDefinitions="Auto,Auto,Auto,*"
+                <Grid RowDefinitions="Auto,Auto,Auto,*,Auto"
                       RowSpacing="15">
 
                     <!-- Title -->
@@ -206,12 +195,15 @@
                                        HeightRequest="16"
                                        VerticalOptions="Center"
                                        Margin="0,0,8,0"/>
-                                <Entry Grid.Column="1"
+                                <editors:SfAutocomplete Grid.Column="1"
                                        Placeholder="Search"
+                                       DisplayMemberPath="Name"
+                                       SelectedValuePath="Id"
                                        PlaceholderColor="{StaticResource Gray500}"
                                        TextColor="{StaticResource TextPrimary}"
                                        BackgroundColor="Transparent"
-                                       Text="{Binding InventorySearchText}"/>
+                                       ItemsSource="{Binding InventoryItems}"
+                                       SelectedItem="{Binding SelectedInventoryItem}"/>
                             </Grid>
                         </Border>
                         <Button Grid.Column="1"
@@ -222,75 +214,66 @@
                                 FontAttributes="Bold"
                                 CornerRadius="5"
                                 Padding="20,8"
-                                Command="{Binding AddInventoryItemCommand}"/>
+                                Command="{Binding AddInventoryItemServingCommand}"/>
                     </Grid>
 
                     <!-- Table Header -->
                     <Grid Grid.Row="2"
-                          ColumnDefinitions="2*,*,*,*,1.5*"
+                          ColumnDefinitions="*,*,*,*"
                           Padding="10,8"
                           BackgroundColor="{StaticResource Gray100}">
+
                         <Label Grid.Column="0" 
                                Text="Name" 
-                               TextColor="{StaticResource TextSecondary}" 
+                               TextColor="{StaticResource White}" 
                                FontSize="11" 
+                               HorizontalTextAlignment="Center"
                                FontAttributes="Bold"/>
                         <Label Grid.Column="1" 
                                Text="Unit" 
-                               TextColor="{StaticResource TextSecondary}" 
+                               TextColor="{StaticResource White}" 
                                FontSize="11" 
                                FontAttributes="Bold"
                                HorizontalTextAlignment="Center"/>
+
                         <Label Grid.Column="2" 
-                               Text="Quantity On Hand" 
-                               TextColor="{StaticResource TextSecondary}" 
+                               Text="Qty per Serving" 
+                               TextColor="{StaticResource White}" 
                                FontSize="11" 
                                FontAttributes="Bold"
                                HorizontalTextAlignment="Center"/>
                         <Label Grid.Column="3" 
-                               Text="Qty per Serving" 
-                               TextColor="{StaticResource TextSecondary}" 
-                               FontSize="11" 
-                               FontAttributes="Bold"
-                               HorizontalTextAlignment="Center"/>
-                        <Label Grid.Column="4" 
                                Text="Action" 
-                               TextColor="{StaticResource TextSecondary}" 
+                               TextColor="{StaticResource White}" 
                                FontSize="11" 
                                FontAttributes="Bold"
                                HorizontalTextAlignment="Center"/>
                     </Grid>
 
                     <!-- Inventory Items List -->
-                    <ScrollView Grid.Row="3">
-                        <CollectionView ItemsSource="{Binding RecipeIngredients}">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid ColumnDefinitions="2*,*,*,*,1.5*"
+
+                    <CollectionView Grid.Row="3" ItemsSource="{Binding MenuItemIngredients}" VerticalOptions="Fill">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="*,*,*,*"
                                           Padding="10,12"
                                           BackgroundColor="{StaticResource BackgroundDark}">
 
-                                        <Label Grid.Column="0" 
+                                    <Label Grid.Column="0" 
+                                               HorizontalTextAlignment="Center"
                                                Text="{Binding InventoryItemName}" 
                                                TextColor="{StaticResource TextPrimary}" 
                                                FontSize="12"
                                                VerticalOptions="Center"/>
 
-                                        <Label Grid.Column="1" 
-                                               Text="{Binding Unit}" 
+                                    <Label Grid.Column="1" 
+                                               Text="{Binding UnitOfMeasurement}" 
                                                TextColor="{StaticResource TextPrimary}" 
                                                FontSize="12"
                                                VerticalOptions="Center"
                                                HorizontalTextAlignment="Center"/>
 
-                                        <Label Grid.Column="2" 
-                                               Text="{Binding QuantityOnHand, StringFormat='{0:F1}'}" 
-                                               TextColor="{StaticResource TextPrimary}" 
-                                               FontSize="12"
-                                               VerticalOptions="Center"
-                                               HorizontalTextAlignment="Center"/>
-
-                                        <Border Grid.Column="3"
+                                    <Border Grid.Column="2"
                                                 BackgroundColor="{StaticResource Gray100}"
                                                 StrokeThickness="1"
                                                 Stroke="{StaticResource Gray300}"
@@ -298,14 +281,23 @@
                                                 Padding="8,4"
                                                 HorizontalOptions="Center"
                                                 VerticalOptions="Center">
-                                            <Label Text="{Binding QuantityNeeded, StringFormat='{0:F3}'}"
+                                        <Entry Text="{Binding QuantityPerMenu, Mode=TwoWay, StringFormat='{0:N2}'}"
                                                    TextColor="{StaticResource TextPrimary}"
                                                    FontSize="12"
-                                                   HorizontalTextAlignment="Center"/>
-                                        </Border>
+                                                   Keyboard="Numeric"
+                                                   Unfocused="OnQuantityEntryUnfocused"
+                                                   HorizontalTextAlignment="Center">
+                                            <!--<Entry.Behaviors>
+                                                <behaviors:EventToCommandBehavior EventName="Unfocused"
+                                                          Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MenuItemIngredientsViewModel}}, Path=DebouncedQuantityChangedCommand}"
+                                                          CommandParameter="{Binding .}"/>
+                                            </Entry.Behaviors>-->
+                                            
+                                        </Entry>
+                                    </Border>
 
-                                        <Button Grid.Column="4"
-                                                Text="REMOVE FROM MENU"
+                                    <Button Grid.Column="3"
+                                                Text="🗑️"
                                                 BackgroundColor="{StaticResource Primary}"
                                                 TextColor="White"
                                                 FontSize="9"
@@ -317,15 +309,20 @@
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveIngredientCommand}"
                                                 CommandParameter="{Binding .}"/>
 
-                                        <BoxView Grid.ColumnSpan="5"
+                                    <BoxView Grid.ColumnSpan="5"
                                                  HeightRequest="1"
                                                  BackgroundColor="{StaticResource Gray100}"
                                                  VerticalOptions="End"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </ScrollView>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                        <CollectionView.EmptyView>
+                            <Label Text="NO INGREDIENTS FOUND"
+                               TextColor="Red"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"/>
+                        </CollectionView.EmptyView>
+                    </CollectionView>
 
                 </Grid>
             </Border>

@@ -1,4 +1,5 @@
-﻿using KusinaPOS.Helpers;
+﻿using CommunityToolkit.Maui;
+using KusinaPOS.Helpers;
 using KusinaPOS.Services;
 using KusinaPOS.ViewModel;
 using KusinaPOS.Views;
@@ -16,6 +17,7 @@ namespace KusinaPOS
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

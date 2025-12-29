@@ -14,15 +14,15 @@ namespace KusinaPOS.Services
         }
         public async Task InitializeAsync()
         {
-            await _db.CreateTableAsync<InventoryItem>();
+            await _db.CreateTableAsync<MenuItemIngredient>();
         }
         // =====================
         // Create
         // =====================
-        public async Task AddAsync(MenuItemIngredient item)
+        public async Task<int> AddAsync(MenuItemIngredient item)
         {
             await InitializeAsync();
-            await _db.InsertAsync(item);
+            return await _db.InsertAsync(item);
         }
 
         // =====================
@@ -33,14 +33,35 @@ namespace KusinaPOS.Services
             await InitializeAsync();
             await _db.UpdateAsync(item);
         }
+        public async Task UpdateQuantityAsync(int menuItemId, int inventoryItemId, decimal quantityPerMenu)
+        {
+            // Ensure table exists
+            await InitializeAsync();
+
+            // Find the specific MenuItemIngredient in DB
+            var ingredient = await _db.Table<MenuItemIngredient>()
+                                      .FirstOrDefaultAsync(i => i.MenuItemId == menuItemId &&
+                                                               i.InventoryItemId == inventoryItemId);
+
+            if (ingredient == null)
+                return; // Nothing to update
+
+            // Update quantity
+            ingredient.QuantityPerMenu = quantityPerMenu;
+
+            // Save change to DB
+            await _db.UpdateAsync(ingredient);
+        }
+
+
 
         // =====================
         // Delete
         // =====================
-        public async Task DeleteAsync(int id)
+        public async Task<int> DeleteAsync(MenuItemIngredient item)
         {
             await InitializeAsync();
-            await _db.DeleteAsync(id);
+            return await _db.DeleteAsync(item.Id);
         }
 
         // =====================
@@ -52,12 +73,28 @@ namespace KusinaPOS.Services
                       .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Task<List<MenuItemIngredient>> GetByMenuItemIdAsync(int menuItemId)
+        public async Task<List<MenuItemIngredient>> GetByMenuItemIdAsync(int menuItemId)
         {
-            return _db.Table<MenuItemIngredient>()
-                      .Where(x => x.MenuItemId == menuItemId)
-                      .ToListAsync();
+            // Get all ingredients for this menu item
+            var ingredients = await _db.Table<MenuItemIngredient>()
+                                       .Where(x => x.MenuItemId == menuItemId)
+                                       .ToListAsync();
+
+            // Optional: if you want to refresh names from InventoryItem table
+            foreach (var ing in ingredients)
+            {
+                var inv = await _db.Table<InventoryItem>()
+                                   .FirstOrDefaultAsync(i => i.Id == ing.InventoryItemId);
+                if (inv != null)
+                {
+                    ing.InventoryItemName = inv.Name;
+                    ing.UnitOfMeasurement = inv.Unit;
+                }
+            }
+
+            return ingredients;
         }
+
 
         public Task<List<MenuItemIngredient>> GetByInventoryItemIdAsync(int inventoryItemId)
         {

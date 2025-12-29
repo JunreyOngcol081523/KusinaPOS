@@ -248,8 +248,8 @@
                                 StrokeShape="RoundRectangle 15"
                                 Padding="15">
                             <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                                <Image Source="recipe.png" HeightRequest="40"/>
-                                <Label Text="RECIPES" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                                <Image Source="weighingscale.png" HeightRequest="40"/>
+                                <Label Text="MANAGE PER SERVING" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding OpenRecipeManagementCommand}" />

@@ -15,11 +15,15 @@ namespace KusinaPOS.Models
 
         [Indexed]
         public int InventoryItemId { get; set; }
+        [NotNull]
+        public string InventoryItemName { get; set; }
+        [NotNull]
+        public string UnitOfMeasurement { get; set; }
 
         // Exact grams or pcs deducted per sale
         [NotNull]
         public decimal QuantityPerMenu { get; set; }
-    }
 
+    }
 
 }
