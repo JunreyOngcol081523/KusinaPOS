@@ -73,6 +73,10 @@ namespace KusinaPOS.Services
                             .Where(c => c.Id == id)
                             .FirstOrDefaultAsync();
         }
-
+        // add all categories async
+        public async Task AddAllCategoriesAsync(List<Category> categories)
+        {
+            await _db.InsertAllAsync(categories);
+        }
     }
 }

@@ -31,7 +31,7 @@ namespace KusinaPOS.ViewModel
             CurrentDateTime = _dateTimeService.CurrentDateTime;
 
             _ = InitializeAsync();
-                //_=SeedMenuItemsAsync();
+             //_=SeedMenuItemsAsync();
         }
         #endregion
 
@@ -460,7 +460,14 @@ namespace KusinaPOS.ViewModel
                 new MenuItem { Name = "Sago't Gulaman", Description = "Sweet tapioca pearls and gelatin drink", Category = "Drinks", Price = 45, Type = "Unit-Based", IsActive = true },
                 new MenuItem { Name = "Buko Juice", Description = "Fresh young coconut water", Category = "Drinks", Price = 60, Type = "Unit-Based", IsActive = true }
             };
+            var categories = new List<Category> { 
+                new Category { Name = "Main Courses", IsActive = true },
+                new Category { Name = "Appetizers", IsActive = true },
+                new Category { Name = "Desserts", IsActive = true },
+                new Category { Name = "Drinks", IsActive = true }
+            };
 
+            await _categoryService.AddAllCategoriesAsync(categories);
             await _menuItemService.AddAllMenuItemAsync(menuItems);
         }
         

@@ -487,4 +487,18 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <!-- Rounded Image Container -->
+    <Style x:Key="RoundedImageContainerStyle"
+       TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource Gray100}" />
+        <Setter Property="Stroke" Value="{StaticResource Gray300}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="10" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Padding" Value="4" />
+    </Style>
+
 </ResourceDictionary>
