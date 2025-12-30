@@ -61,7 +61,7 @@ namespace KusinaPOS.Services
         public async Task<int> DeleteAsync(MenuItemIngredient item)
         {
             await InitializeAsync();
-            return await _db.DeleteAsync(item.Id);
+            return await _db.DeleteAsync(item);
         }
 
         // =====================
