@@ -131,6 +131,7 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         private async Task LoginAsync()
         {
+            
             if (string.IsNullOrEmpty(_selectedUserType))
             {
                 await PageHelper.DisplayAlertAsync(

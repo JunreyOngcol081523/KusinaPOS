@@ -24,7 +24,7 @@
                         HeightRequest="30"
                         Command="{Binding GoBackCommand}"/>
             <Label Grid.Column="1"
-                   Text="Manage Menu - Ingredients Per Serving"
+                   Text="{Binding StoreName, StringFormat='Manage Menu - Ingredients Per Serving - {0}'}"
                    TextColor="{StaticResource TextPrimary}"
                    FontSize="24"
                    FontAttributes="Bold"

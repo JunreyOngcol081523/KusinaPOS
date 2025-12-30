@@ -20,13 +20,14 @@
 
         <!-- Top Header -->
         <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,0,0,20">
-            <Button Grid.Column="0"
+            <ImageButton Grid.Column="0"
                     Margin="0,0,15,0"
-                    HeightRequest="40"
+                    WidthRequest="30"
+                    HeightRequest="30"
                     Command="{Binding GoBackCommand}"
-                    ImageSource="arrowback.png"
+                    Source="arrowback.png"
                     BackgroundColor="Transparent">
-            </Button>
+            </ImageButton>
             <Label Grid.Column="1" 
                    Text="{Binding StoreName, StringFormat='Manage Menu - {0}'}"
                    FontSize="24" 

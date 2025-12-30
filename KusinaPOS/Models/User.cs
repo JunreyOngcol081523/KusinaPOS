@@ -23,8 +23,6 @@ namespace KusinaPOS.Models
         [NotNull]
         public string Role { get; set; }          // Admin, Cashier, Kitchen
 
-        public bool IsActive { get; set; } = true;
-
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="KusinaPOS.Views.UserPage"
+             xmlns:viewmodel="clr-namespace:KusinaPOS.ViewModel"
+             BackgroundColor="{StaticResource BackgroundDark}"
+             Title="UserPage">
+
+    <Grid RowDefinitions="Auto,*" 
+          Padding="20"
+          RowSpacing="15">
+        <!-- Header with Back Button -->
+        <Grid Grid.Row="0" 
+              ColumnDefinitions="Auto,Auto,*"
+              ColumnSpacing="5">
+            <ImageButton Grid.Column="0"
+                        Source="arrowback.png"
+                        BackgroundColor="Transparent"
+                        WidthRequest="30"
+                        HeightRequest="30"
+                        Command="{Binding GoBackCommand}"/>
+            <Label Grid.Column="1"
+                   Text="{Binding StoreName, StringFormat='Manage Users - {0}'}"
+                   TextColor="{StaticResource TextPrimary}"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   VerticalOptions="Center"/>
+            <Image Grid.Column="2" Source="usersettings.png" HeightRequest="40" HorizontalOptions="Start"/>
+
+
+        </Grid>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1" 
+              ColumnDefinitions="*,1.5*"
+              ColumnSpacing="20">
+
+            <!-- Left Side - User Management -->
+            <ScrollView Grid.Column="0">
+                <Border 
+                    BackgroundColor="{StaticResource SurfaceDark}"
+                    Stroke="{StaticResource Gray200}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    Padding="20">
+
+                    <VerticalStackLayout Spacing="20">
+                        <Label Text="User Management"
+                           TextColor="{StaticResource TextPrimary}"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+
+                        <!-- Admin User Card -->
+                        <Border BackgroundColor="{StaticResource BackgroundDark}"
+                            Stroke="{StaticResource Gray300}"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 10"
+                            Padding="20">
+                            <Grid RowDefinitions="Auto,Auto,Auto"
+                              RowSpacing="10">
+
+                                <!-- Active Badge -->
+                                <Border Grid.Row="0"
+                                    BackgroundColor="#4CAF50"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 12"
+                                    Padding="8,4"
+                                    HorizontalOptions="Start">
+                                    <Label Text="● Active"
+                                       TextColor="White"
+                                       FontSize="10"
+                                       FontAttributes="Bold"/>
+                                </Border>
+
+                                <!-- User Icon -->
+                                <Border Grid.Row="1"
+                                    BackgroundColor="#FF6B35"
+                                    StrokeThickness="0"
+                                    WidthRequest="100"
+                                    HeightRequest="100"
+                                    HorizontalOptions="Center">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="50"/>
+                                    </Border.StrokeShape>
+                                    <Image Source="adminicon.png"
+                                       WidthRequest="60"
+                                       HeightRequest="60"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"/>
+                                </Border>
+
+                                <!-- User Name -->
+                                <Label Grid.Row="2"
+                                   Text="Admin"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   HorizontalOptions="Center"/>
+                            </Grid>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding TapAdminCommand}"/>
+                            </Border.GestureRecognizers>
+                        </Border>
+
+                        <!-- Cashier User Card -->
+                        <Border BackgroundColor="{StaticResource BackgroundDark}"
+                            Stroke="{StaticResource Gray300}"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 10"
+                            Padding="20">
+                            <Grid RowDefinitions="Auto,Auto,Auto"
+                              RowSpacing="10">
+
+                                <!-- Active Badge -->
+                                <Border Grid.Row="0"
+                                    BackgroundColor="#4CAF50"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 12"
+                                    Padding="8,4"
+                                    HorizontalOptions="Start">
+                                    <Label Text="● Active"
+                                       TextColor="White"
+                                       FontSize="10"
+                                       FontAttributes="Bold"/>
+                                </Border>
+
+                                <!-- User Icon -->
+                                <Border Grid.Row="1"
+                                    BackgroundColor="#FF6B35"
+                                    StrokeThickness="0"
+                                    WidthRequest="100"
+                                    HeightRequest="100"
+                                    HorizontalOptions="Center">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="50"/>
+                                    </Border.StrokeShape>
+                                    <Image Source="cashiericon.png"
+                                       WidthRequest="60"
+                                       HeightRequest="60"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"/>
+                                </Border>
+
+                                <!-- User Name -->
+                                <Label Grid.Row="2"
+                                   Text="Cashier"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   HorizontalOptions="Center"/>
+                            </Grid>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding TapCashierCommand}"/>
+                            </Border.GestureRecognizers>
+                        </Border>
+                        <Button Text="Reset all User" Command="{Binding ResetUsersCommand}"/>
+                    </VerticalStackLayout>
+                </Border>
+            </ScrollView>
+
+            <!-- Right Side - Add/Edit User Form -->
+            <ScrollView  Grid.Column="1">
+                <Border
+                    BackgroundColor="{StaticResource SurfaceDark}"
+                    Stroke="{StaticResource Gray200}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    Padding="30">
+
+                    <VerticalStackLayout Spacing="25" VerticalOptions="Center">
+                        <Label Text="Add/Edit User Form"
+                           TextColor="{StaticResource TextPrimary}"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+
+                        <!-- Name Field -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Name"
+                               TextColor="{StaticResource TextPrimary}"
+                               FontSize="14"/>
+                            <Border BackgroundColor="{StaticResource BackgroundDark}"
+                                Stroke="{StaticResource Primary}"
+                                StrokeThickness="2"
+                                StrokeShape="RoundRectangle 8"
+                                Padding="15,12">
+                                <Entry Placeholder="Enter user's full name"
+                                   PlaceholderColor="{StaticResource Gray500}"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   BackgroundColor="Transparent"
+                                   Text="{Binding Name}"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Role Field -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Role"
+                               TextColor="{StaticResource TextPrimary}"
+                               FontSize="14"/>
+                            <Border BackgroundColor="{StaticResource BackgroundDark}"
+                                Stroke="{StaticResource Primary}"
+                                StrokeThickness="2"
+                                StrokeShape="RoundRectangle 8"
+                                Padding="15,12">
+                                <Entry
+                                   IsReadOnly="True"
+                                   PlaceholderColor="{StaticResource Gray500}"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   BackgroundColor="Transparent"
+                                   Text="{Binding Role}"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- PIN Field -->
+                        <VerticalStackLayout Spacing="8">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0"
+                                   Text="PIN"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   FontSize="14"/>
+                            </Grid>
+                            <Border BackgroundColor="{StaticResource BackgroundDark}"
+                                Stroke="{StaticResource Gray300}"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 8"
+                                Padding="15,12">
+                                <Entry Placeholder="••••••••••"
+                                   PlaceholderColor="{StaticResource Gray500}"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   BackgroundColor="Transparent"
+                                   IsPassword="{Binding IsPasswordHidden}"
+                                   Text="{Binding Pin}"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Confirm PIN Field -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Confirm"
+                               TextColor="{StaticResource TextPrimary}"
+                               FontSize="14"/>
+                            <Border BackgroundColor="{StaticResource BackgroundDark}"
+                                Stroke="{StaticResource Gray300}"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 8"
+                                Padding="15,12">
+                                <Entry Placeholder="Confirm PIN"
+                                   PlaceholderColor="{StaticResource Gray500}"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   BackgroundColor="Transparent"
+                                   IsPassword="True"
+                                   Text="{Binding ConfirmPin}"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Action Buttons -->
+                        <Grid ColumnDefinitions="*,*"
+                          ColumnSpacing="15"
+                          Margin="0,20,0,0">
+                            <Button Grid.Column="0"
+                                Text="CANCEL"
+                                BackgroundColor="{StaticResource Gray600}"
+                                TextColor="White"
+                                FontSize="16"
+                                FontAttributes="Bold"
+                                CornerRadius="8"
+                                Padding="20,15"
+                                Command="{Binding CancelCommand}"/>
+
+                            <Button Grid.Column="1"
+                                Text="SAVE"
+                                BackgroundColor="{StaticResource Primary}"
+                                TextColor="White"
+                                FontSize="16"
+                                FontAttributes="Bold"
+                                CornerRadius="8"
+                                Padding="20,15"
+                                Command="{Binding SaveUserCommand}"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+            </ScrollView>
+
+        </Grid>
+
+    </Grid>
+</ContentPage>

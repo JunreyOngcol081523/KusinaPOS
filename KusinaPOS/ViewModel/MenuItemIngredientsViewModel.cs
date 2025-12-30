@@ -47,6 +47,7 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty] private string selectedMenuItemName;
         [ObservableProperty] private MenuItem selectedMenuItem;
         [ObservableProperty] private string searchText;
+        [ObservableProperty] private string storeName;
         [ObservableProperty] private InventoryItem selectedInventoryItem;
 
         // ======================
@@ -62,7 +63,7 @@ namespace KusinaPOS.ViewModel
             this.menuItemService = menuItemService;
             this.inventoryItemService = inventoryItemService;
             this.categoryService = categoryService;
-
+            StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "KusinaPOS");
             _ = InitializeCollectionsAsync();
         }
 

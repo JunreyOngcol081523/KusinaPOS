@@ -64,5 +64,10 @@ namespace KusinaPOS.ViewModel
         {
             await Shell.Current.GoToAsync(nameof(MenuItemIngredientsPage));
         }
+        [RelayCommand]
+        private async Task OpenUserManagementAsync()
+        {
+            await Shell.Current.GoToAsync(nameof(UserPage));
+        }
     }
 }

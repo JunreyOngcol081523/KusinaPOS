@@ -299,6 +299,9 @@
                                 <Image Source="usersettings.png" HeightRequest="40"/>
                                 <Label Text="USER" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenUserManagementCommand}" />
+                            </Border.GestureRecognizers>
                         </Border>
 
                         <Border Grid.Column="1" 

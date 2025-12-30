@@ -18,11 +18,12 @@
 
         <!-- Top Header -->
         <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,0,0,20">
-            <Button Grid.Column="0"
+            <ImageButton Grid.Column="0"
                     Margin="0,0,15,0"
-                    HeightRequest="40"
+                    WidthRequest="30"
+                    HeightRequest="30"
                     Command="{Binding GoBackCommand}"
-                    ImageSource="arrowback.png"
+                    Source="arrowback.png"
                     BackgroundColor="Transparent" />
 
             <Label Grid.Column="1" 
