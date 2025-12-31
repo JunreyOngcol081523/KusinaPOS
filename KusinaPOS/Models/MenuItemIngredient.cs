@@ -1,11 +1,12 @@
-﻿using SQLite;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace KusinaPOS.Models
 {
-    public class MenuItemIngredient
+    public class MenuItemIngredient : ObservableObject
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }

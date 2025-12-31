@@ -423,6 +423,7 @@ namespace KusinaPOS.ViewModel
 
                     // Refresh the ingredients text in the list
                     await RefreshMenuItemIngredientsText(ingredient.MenuItemId);
+                    await PageHelper.DisplayAlertAsync("Success", "Ingredient quantity updated.", "OK");
                 }
             }
             catch (TaskCanceledException) { }

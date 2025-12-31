@@ -52,8 +52,8 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty] private decimal editingReOrderLevel;
         [ObservableProperty] private bool editingIsActive = true;
         [ObservableProperty] private string remarks = string.Empty;
-        
-       
+
+
         // ======================================================
         // UI STATE
         // ======================================================
@@ -63,7 +63,7 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty] private bool isTransactionPanelVisible;
         [ObservableProperty] private string transactionLogPanelTitle;
         [ObservableProperty] private string costPerUnitLabel = "Cost Per Unit (₱)";
-        
+
         // =========================
         // Units (Autocomplete)
         // =========================
@@ -97,25 +97,34 @@ namespace KusinaPOS.ViewModel
             _dateTimeService = dateTimeService;
             _inventoryTransactionService = inventoryTransactionService;
 
-            // Load initial inventory list
-            _ = LoadInventoryItems();
+            try
+            {
+                // Load initial inventory list
+                _ = LoadInventoryItems();
 
-            // Load persisted session values
-            LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
-            StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
+                // Load persisted session values
+                LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
+                StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
 
-            // Predefined stock adjustment reasons
-            Reasons = new() { "Initial Stock", "Purchase", "Adjustment" };
+                // Predefined stock adjustment reasons
+                Reasons = new() { "Initial Stock", "Purchase", "Adjustment" };
 
-            // Live date/time updates
-            _dateTimeService.DateTimeChanged += (_, dt) => CurrentDateTime = dt;
-            CurrentDateTime = _dateTimeService.CurrentDateTime;
+                // Live date/time updates
+                _dateTimeService.DateTimeChanged += (_, dt) => CurrentDateTime = dt;
+                CurrentDateTime = _dateTimeService.CurrentDateTime;
 
-            // Ensure quantity change display is initialized
-            InitializeQuantityChange();
-            // Load all unit measurements initially
-            UnitMeasurements = UnitMeasurementService.AllUnits;
-            //_=SeedInventoryDataAsync();
+                // Ensure quantity change display is initialized
+                InitializeQuantityChange();
+
+                // Load all unit measurements initially
+                UnitMeasurements = UnitMeasurementService.AllUnits;
+
+                //_ = SeedInventoryDataAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in InventoryItemViewModel constructor: {ex.Message}");
+            }
         }
 
         // ======================================================
@@ -124,26 +133,33 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         private void AddItem()
         {
-            // Reset editing fields
-            EditingId = 0;
-            EditingName = string.Empty;
-            EditingUnit = string.Empty;
-            EditingQuantityOnHand = 0;
-            EditingCostPerUnit = 0;
-            EditingReOrderLevel = 0;
-            EditingIsActive = true;
+            try
+            {
+                // Reset editing fields
+                EditingId = 0;
+                EditingName = string.Empty;
+                EditingUnit = string.Empty;
+                EditingQuantityOnHand = 0;
+                EditingCostPerUnit = 0;
+                EditingReOrderLevel = 0;
+                EditingIsActive = true;
 
-            // Reset baseline quantity
-            OriginalQuantityOnHand = 0;
-            QuantityChanged = 0;
+                // Reset baseline quantity
+                OriginalQuantityOnHand = 0;
+                QuantityChanged = 0;
 
-            // Initialize quantity change display
-            InitializeQuantityChange();
-            SelectedReason = string.Empty;
-            Remarks = string.Empty;
-            EditPanelTitle = "Add Inventory Item";
-            IsEditPanelVisible = true;
-            IsTransactionPanelVisible = !IsEditPanelVisible;
+                // Initialize quantity change display
+                InitializeQuantityChange();
+                SelectedReason = string.Empty;
+                Remarks = string.Empty;
+                EditPanelTitle = "Add Inventory Item";
+                IsEditPanelVisible = true;
+                IsTransactionPanelVisible = !IsEditPanelVisible;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in AddItem: {ex.Message}");
+            }
         }
 
         // ======================================================
@@ -152,27 +168,34 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         private void EditItem(InventoryItem item)
         {
-            if (item == null) return;
+            try
+            {
+                if (item == null) return;
 
-            // Populate editing fields from selected item
-            EditingId = item.Id;
-            EditingName = item.Name;
-            EditingUnit = item.Unit;
-            EditingQuantityOnHand = item.QuantityOnHand;
-            EditingCostPerUnit = item.CostPerUnit;
-            EditingReOrderLevel = item.ReOrderLevel;
-            EditingIsActive = item.IsActive;
+                // Populate editing fields from selected item
+                EditingId = item.Id;
+                EditingName = item.Name;
+                EditingUnit = item.Unit;
+                EditingQuantityOnHand = item.QuantityOnHand;
+                EditingCostPerUnit = item.CostPerUnit;
+                EditingReOrderLevel = item.ReOrderLevel;
+                EditingIsActive = item.IsActive;
 
-            // Capture original quantity for diff calculation
-            OriginalQuantityOnHand = item.QuantityOnHand;
-            QuantityChanged = 0;
+                // Capture original quantity for diff calculation
+                OriginalQuantityOnHand = item.QuantityOnHand;
+                QuantityChanged = 0;
 
-            InitializeQuantityChange();
-            SelectedReason = string.Empty;
-            Remarks = string.Empty;
-            EditPanelTitle = $"Edit Inventory Item: {item.Name}";
-            IsEditPanelVisible = true;
-            IsTransactionPanelVisible = !IsEditPanelVisible;
+                InitializeQuantityChange();
+                SelectedReason = string.Empty;
+                Remarks = string.Empty;
+                EditPanelTitle = $"Edit Inventory Item: {item.Name}";
+                IsEditPanelVisible = true;
+                IsTransactionPanelVisible = !IsEditPanelVisible;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in EditItem: {ex.Message}");
+            }
         }
 
         // ======================================================
@@ -181,20 +204,27 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         private void Cancel()
         {
-            IsEditPanelVisible = false;
-            SelectedItem = null;
+            try
+            {
+                IsEditPanelVisible = false;
+                SelectedItem = null;
 
-            // Clear editing state
-            EditingId = 0;
-            EditingName = string.Empty;
-            EditingUnit = string.Empty;
-            EditingQuantityOnHand = 0;
-            EditingCostPerUnit = 0;
-            EditingReOrderLevel = 0;
-            EditingIsActive = true;
+                // Clear editing state
+                EditingId = 0;
+                EditingName = string.Empty;
+                EditingUnit = string.Empty;
+                EditingQuantityOnHand = 0;
+                EditingCostPerUnit = 0;
+                EditingReOrderLevel = 0;
+                EditingIsActive = true;
 
-            QuantityChanged = 0;
-            OriginalQuantityOnHand = 0;
+                QuantityChanged = 0;
+                OriginalQuantityOnHand = 0;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in Cancel: {ex.Message}");
+            }
         }
 
         // ======================================================
@@ -203,83 +233,93 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         private async Task SaveChanges()
         {
-            // Validation checks
-            if (string.IsNullOrWhiteSpace(EditingName) ||
-                string.IsNullOrWhiteSpace(EditingUnit))
+            try
             {
-                await PageHelper.DisplayAlertAsync("Error", "Name and Unit are required", "OK");
-                return;
-            }
-
-            if (EditingQuantityOnHand < 0 || EditingCostPerUnit < 0)
-            {
-                await PageHelper.DisplayAlertAsync("Error", "Values cannot be negative", "OK");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(SelectedReason))
-            {
-                await PageHelper.DisplayAlertAsync("Error", "Please select a reason for the adjustment", "OK");
-                return;
-            }
-
-            // ADD MODE
-            if (EditingId == 0)
-            {
-                var item = new InventoryItem
+                // Validation checks
+                if (string.IsNullOrWhiteSpace(EditingName) ||
+                    string.IsNullOrWhiteSpace(EditingUnit))
                 {
-                    Name = EditingName,
-                    Unit = EditingUnit,
-                    QuantityOnHand = EditingQuantityOnHand,
-                    CostPerUnit = EditingCostPerUnit,
-                    ReOrderLevel = EditingReOrderLevel,
-                    IsActive = EditingIsActive
-                };
+                    await PageHelper.DisplayAlertAsync("Error", "Name and Unit are required", "OK");
+                    return;
+                }
 
-                await _inventoryService.AddInventoryItemAsync(item);
-                InventoryItems.Add(item);
-                // Create transaction log
-                var inventoryTransaction = new InventoryTransaction
+                if (EditingQuantityOnHand < 0 || EditingCostPerUnit < 0)
                 {
-                    InventoryItemId = item.Id,
-                    QuantityChange = QuantityChanged,
-                    Reason = SelectedReason,
-                    Remarks = Remarks,
-                    TransactionDate = DateTime.Now,
-                };
-                // Save transaction
-                await _inventoryTransactionService.AddInventoryTransactionAsync(inventoryTransaction);
+                    await PageHelper.DisplayAlertAsync("Error", "Values cannot be negative", "OK");
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(SelectedReason))
+                {
+                    await PageHelper.DisplayAlertAsync("Error", "Please select a reason for the adjustment", "OK");
+                    return;
+                }
+
+                // ADD MODE
+                if (EditingId == 0)
+                {
+                    var item = new InventoryItem
+                    {
+                        Name = EditingName,
+                        Unit = EditingUnit,
+                        QuantityOnHand = EditingQuantityOnHand,
+                        CostPerUnit = EditingCostPerUnit,
+                        ReOrderLevel = EditingReOrderLevel,
+                        IsActive = EditingIsActive
+                    };
+
+                    await _inventoryService.AddInventoryItemAsync(item);
+                    InventoryItems.Add(item);
+
+                    // Create transaction log
+                    var inventoryTransaction = new InventoryTransaction
+                    {
+                        InventoryItemId = item.Id,
+                        QuantityChange = QuantityChanged,
+                        Reason = SelectedReason,
+                        Remarks = Remarks,
+                        TransactionDate = DateTime.Now,
+                    };
+
+                    // Save transaction
+                    await _inventoryTransactionService.AddInventoryTransactionAsync(inventoryTransaction);
+                }
+                // UPDATE MODE
+                else
+                {
+                    var item = new InventoryItem
+                    {
+                        Id = EditingId,
+                        Name = EditingName,
+                        Unit = EditingUnit,
+                        QuantityOnHand = EditingQuantityOnHand,
+                        CostPerUnit = EditingCostPerUnit,
+                        ReOrderLevel = EditingReOrderLevel,
+                        IsActive = EditingIsActive
+                    };
+
+                    // Create transaction log
+                    var inventoryTransaction = new InventoryTransaction
+                    {
+                        InventoryItemId = item.Id,
+                        QuantityChange = QuantityChanged,
+                        Reason = SelectedReason,
+                        Remarks = Remarks,
+                        TransactionDate = DateTime.Now,
+                    };
+
+                    await _inventoryService.UpdateInventoryItemAsync(item);
+                    await _inventoryTransactionService.AddInventoryTransactionAsync(inventoryTransaction);
+                }
+
+                await LoadInventoryItems();
+                Cancel();
             }
-            // UPDATE MODE
-            else
+            catch (Exception ex)
             {
-                var item = new InventoryItem
-                {
-                    Id = EditingId,
-                    Name = EditingName,
-                    Unit = EditingUnit,
-                    QuantityOnHand = EditingQuantityOnHand,
-                    CostPerUnit = EditingCostPerUnit,
-                    ReOrderLevel = EditingReOrderLevel,
-                    IsActive = EditingIsActive
-                };
-
-                // Create transaction log
-                var inventoryTransaction = new InventoryTransaction
-                {
-                    InventoryItemId = item.Id,
-                    QuantityChange = QuantityChanged,
-                    Reason = SelectedReason,
-                    Remarks = Remarks,
-                    TransactionDate = DateTime.Now,
-                };
-
-                await _inventoryService.UpdateInventoryItemAsync(item);
-                await _inventoryTransactionService.AddInventoryTransactionAsync(inventoryTransaction);
+                Debug.WriteLine($"Error in SaveChanges: {ex.Message}");
+                await PageHelper.DisplayAlertAsync("Error", "Failed to save inventory item. Please try again.", "OK");
             }
-
-            await LoadInventoryItems();
-            Cancel();
         }
 
         // ======================================================
@@ -287,18 +327,26 @@ namespace KusinaPOS.ViewModel
         // ======================================================
         public async Task LoadInventoryItems(string filter = "")
         {
-            var items = await _inventoryService.GetAllInventoryItemsAsync();
-
-            var filtered = string.IsNullOrWhiteSpace(filter)
-                ? items
-                : items.Where(i => i.Name.Contains(filter, StringComparison.OrdinalIgnoreCase));
-
-            MainThread.BeginInvokeOnMainThread(() =>
+            try
             {
-                InventoryItems.Clear();
-                foreach (var item in filtered)
-                    InventoryItems.Add(item);
-            });
+                var items = await _inventoryService.GetAllInventoryItemsAsync();
+
+                var filtered = string.IsNullOrWhiteSpace(filter)
+                    ? items
+                    : items.Where(i => i.Name.Contains(filter, StringComparison.OrdinalIgnoreCase));
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    InventoryItems.Clear();
+                    foreach (var item in filtered)
+                        InventoryItems.Add(item);
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error loading inventory items: {ex.Message}");
+                await PageHelper.DisplayAlertAsync("Error", "Failed to load inventory items.", "OK");
+            }
         }
 
         // ======================================================
@@ -306,19 +354,30 @@ namespace KusinaPOS.ViewModel
         // ======================================================
         partial void OnSearchTextChanged(string value)
         {
-            _searchCts?.Cancel();
-            _searchCts = new CancellationTokenSource();
-            var token = _searchCts.Token;
-
-            Task.Run(async () =>
+            try
             {
-                try
+                _searchCts?.Cancel();
+                _searchCts = new CancellationTokenSource();
+                var token = _searchCts.Token;
+
+                Task.Run(async () =>
                 {
-                    await Task.Delay(500, token);
-                    await LoadInventoryItems(value);
-                }
-                catch (OperationCanceledException) { }
-            }, token);
+                    try
+                    {
+                        await Task.Delay(500, token);
+                        await LoadInventoryItems(value);
+                    }
+                    catch (OperationCanceledException) { }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error in debounced search: {ex.Message}");
+                    }
+                }, token);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in OnSearchTextChanged: {ex.Message}");
+            }
         }
 
         // ======================================================
@@ -326,48 +385,71 @@ namespace KusinaPOS.ViewModel
         // ======================================================
         partial void OnEditingQuantityOnHandChanged(decimal newValue)
         {
-            var difference = newValue - OriginalQuantityOnHand;
+            try
+            {
+                var difference = newValue - OriginalQuantityOnHand;
 
-            // Treat unchanged values as zero
-            if (Math.Abs(difference) < 0.0001m)
-            {
-                QuantityChanged = 0;
-                DisplayQuantityChanged = "0";
+                // Treat unchanged values as zero
+                if (Math.Abs(difference) < 0.0001m)
+                {
+                    QuantityChanged = 0;
+                    DisplayQuantityChanged = "0";
+                }
+                else
+                {
+                    QuantityChanged = difference;
+                    DisplayQuantityChanged = difference > 0
+                        ? $"+{difference:N0}"
+                        : difference.ToString("N0");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                QuantityChanged = difference;
-                DisplayQuantityChanged = difference > 0
-                    ? $"+{difference:N0}"
-                    : difference.ToString("N0");
+                Debug.WriteLine($"Error in OnEditingQuantityOnHandChanged: {ex.Message}");
             }
         }
+
         //=====================================================
         // INITIALIZE QUANTITY CHANGE DISPLAY
         //=====================================================
         partial void OnEditingUnitChanged(string value)
         {
-            this.CostPerUnitLabel = $"Cost Per {value} (₱)";
+            try
+            {
+                this.CostPerUnitLabel = $"Cost Per {value} (₱)";
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in OnEditingUnitChanged: {ex.Message}");
+            }
         }
+
         /// <summary>
         /// Initializes quantity change display when entering edit/add mode.
         /// Prevents showing incorrect values before user input.
         /// </summary>
         private void InitializeQuantityChange()
         {
-            var difference = EditingQuantityOnHand - OriginalQuantityOnHand;
+            try
+            {
+                var difference = EditingQuantityOnHand - OriginalQuantityOnHand;
 
-            if (Math.Abs(difference) < 0.0001m)
-            {
-                QuantityChanged = 0;
-                DisplayQuantityChanged = "0";
+                if (Math.Abs(difference) < 0.0001m)
+                {
+                    QuantityChanged = 0;
+                    DisplayQuantityChanged = "0";
+                }
+                else
+                {
+                    QuantityChanged = difference;
+                    DisplayQuantityChanged = difference > 0
+                        ? $"+{difference:N0}"
+                        : difference.ToString("N0");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                QuantityChanged = difference;
-                DisplayQuantityChanged = difference > 0
-                    ? $"+{difference:N0}"
-                    : difference.ToString("N0");
+                Debug.WriteLine($"Error in InitializeQuantityChange: {ex.Message}");
             }
         }
 
@@ -377,7 +459,14 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         public async Task GoBackAsync()
         {
-            await Shell.Current.GoToAsync("..");
+            try
+            {
+                await Shell.Current.GoToAsync("..");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error navigating back: {ex.Message}");
+            }
         }
 
         //======================================================
@@ -386,92 +475,115 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         public async Task ViewTransactionsAsync(InventoryItem item)
         {
-            if (item == null) return;
+            try
+            {
+                if (item == null) return;
 
-            // Hide edit panel, show transaction panel
-            IsEditPanelVisible = false;
-            IsTransactionPanelVisible = true;
-            TransactionLogPanelTitle = $"Transaction Logs: {item.Name}";
-            var transactions = await _inventoryTransactionService
-                .GetTransactionsByInventoryItemAsync(item.Id);
+                // Hide edit panel, show transaction panel
+                IsEditPanelVisible = false;
+                IsTransactionPanelVisible = true;
+                TransactionLogPanelTitle = $"Transaction Logs: {item.Name}";
 
-            this.TransactionLogs = new ObservableCollection<InventoryTransaction>(transactions);
+                var transactions = await _inventoryTransactionService
+                    .GetTransactionsByInventoryItemAsync(item.Id);
+
+                this.TransactionLogs = new ObservableCollection<InventoryTransaction>(transactions);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error viewing transactions: {ex.Message}");
+                await PageHelper.DisplayAlertAsync("Error", "Failed to load transaction logs.", "OK");
+            }
         }
+
         [RelayCommand]
         private void CloseTransactionPanel()
         {
-            IsTransactionPanelVisible = false;
-            TransactionLogs.Clear();
+            try
+            {
+                IsTransactionPanelVisible = false;
+                TransactionLogs.Clear();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error closing transaction panel: {ex.Message}");
+            }
         }
+
         //=====================
         // SEEDING DATA
         //=====================
         private async Task SeedInventoryDataAsync()
         {
-            var random = new Random();
-
-            // Main ingredients and drinks
-            var sampleItems = new[]
+            try
             {
-                new { Name = "Ground Pork", Unit = "grams" },
-                new { Name = "Pork Belly", Unit = "grams" },
-                new { Name = "Beef", Unit = "grams" },
-                new { Name = "Chicken Breast", Unit = "grams" },
-                new { Name = "Eggs", Unit = "pcs" },
-                new { Name = "Cooking Oil", Unit = "liters" },
-                new { Name = "Soy Sauce", Unit = "liters" },
-                new { Name = "Rice", Unit = "kg" },
-                new { Name = "Coke", Unit = "bottle" },
-                new { Name = "Sprite", Unit = "bottle" }
-            };
+                var random = new Random();
 
-            var sampleReasons = new[] { "Initial Stock", "Purchase", "Adjustment" };
-
-            for (int i = 0; i < sampleItems.Length; i++)
-            {
-                var itemData = sampleItems[i];
-
-                // Generate decimal quantity based on unit type
-                decimal quantity = itemData.Unit switch
+                // Main ingredients and drinks
+                var sampleItems = new[]
                 {
-                    "grams" => Math.Round((decimal)(random.NextDouble() * (5000 - 500) + 500), 2), // 500g to 5000g
-                    "kg" => Math.Round((decimal)(random.NextDouble() * (50 - 10) + 10), 2),          // 10kg to 50kg
-                    "liters" => Math.Round((decimal)(random.NextDouble() * 20 + 1), 2),             // 1L to 21L
-                    _ => Math.Round((decimal)(random.NextDouble() * 90 + 10), 2)                     // pcs or bottles 10 to 100
+                    new { Name = "Ground Pork", Unit = "grams" },
+                    new { Name = "Pork Belly", Unit = "grams" },
+                    new { Name = "Beef", Unit = "grams" },
+                    new { Name = "Chicken Breast", Unit = "grams" },
+                    new { Name = "Eggs", Unit = "pcs" },
+                    new { Name = "Cooking Oil", Unit = "liters" },
+                    new { Name = "Soy Sauce", Unit = "liters" },
+                    new { Name = "Rice", Unit = "kg" },
+                    new { Name = "Coke", Unit = "bottle" },
+                    new { Name = "Sprite", Unit = "bottle" }
                 };
 
-                decimal cost = Math.Round((decimal)(random.NextDouble() * 100 + 5), 2); // cost per unit
+                var sampleReasons = new[] { "Initial Stock", "Purchase", "Adjustment" };
 
-                var item = new InventoryItem
+                for (int i = 0; i < sampleItems.Length; i++)
                 {
-                    Name = itemData.Name,
-                    Unit = itemData.Unit,
-                    QuantityOnHand = quantity,
-                    CostPerUnit = cost,
-                    ReOrderLevel = Math.Max(5, Math.Round(quantity / 10, 2)), // simple re-order level
-                    IsActive = true
-                };
+                    var itemData = sampleItems[i];
 
-                // Save inventory item
-                await _inventoryService.AddInventoryItemAsync(item);
-                InventoryItems.Add(item);
+                    // Generate decimal quantity based on unit type
+                    decimal quantity = itemData.Unit switch
+                    {
+                        "grams" => Math.Round((decimal)(random.NextDouble() * (5000 - 500) + 500), 2), // 500g to 5000g
+                        "kg" => Math.Round((decimal)(random.NextDouble() * (50 - 10) + 10), 2),          // 10kg to 50kg
+                        "liters" => Math.Round((decimal)(random.NextDouble() * 20 + 1), 2),             // 1L to 21L
+                        _ => Math.Round((decimal)(random.NextDouble() * 90 + 10), 2)                     // pcs or bottles 10 to 100
+                    };
 
-                // Create corresponding transaction
-                var transaction = new InventoryTransaction
-                {
-                    InventoryItemId = item.Id,
-                    QuantityChange = quantity,
-                    Reason = sampleReasons[random.Next(sampleReasons.Length)],
-                    Remarks = "Seeded initial stock",
-                    TransactionDate = DateTime.Now.AddDays(-random.Next(30)) // random date in last 30 days
-                };
+                    decimal cost = Math.Round((decimal)(random.NextDouble() * 100 + 5), 2); // cost per unit
 
-                await _inventoryTransactionService.AddInventoryTransactionAsync(transaction);
+                    var item = new InventoryItem
+                    {
+                        Name = itemData.Name,
+                        Unit = itemData.Unit,
+                        QuantityOnHand = quantity,
+                        CostPerUnit = cost,
+                        ReOrderLevel = Math.Max(5, Math.Round(quantity / 10, 2)), // simple re-order level
+                        IsActive = true
+                    };
+
+                    // Save inventory item
+                    await _inventoryService.AddInventoryItemAsync(item);
+                    InventoryItems.Add(item);
+
+                    // Create corresponding transaction
+                    var transaction = new InventoryTransaction
+                    {
+                        InventoryItemId = item.Id,
+                        QuantityChange = quantity,
+                        Reason = sampleReasons[random.Next(sampleReasons.Length)],
+                        Remarks = "Seeded initial stock",
+                        TransactionDate = DateTime.Now.AddDays(-random.Next(30)) // random date in last 30 days
+                    };
+
+                    await _inventoryTransactionService.AddInventoryTransactionAsync(transaction);
+                }
+
+                await LoadInventoryItems();
             }
-
-            await LoadInventoryItems();
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error seeding inventory data: {ex.Message}");
+            }
         }
-
-
     }
 }

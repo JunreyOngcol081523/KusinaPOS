@@ -2,6 +2,7 @@ using KusinaPOS.Helpers;
 using KusinaPOS.Services;
 using KusinaPOS.ViewModel;
 using Syncfusion.Maui.Buttons;
+using System.Diagnostics;
 
 namespace KusinaPOS.Views;
 
@@ -40,6 +41,24 @@ public partial class MenuItemPage : ContentPage
                     "OK"
                 );
             }
+        }
+    }
+    //onapppearing
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        _ = SeedOnceAsync();
+    }
+
+    private async Task SeedOnceAsync()
+    {
+        try
+        {
+            await _menuItemViewModel.SeedMenuItemsAsync();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Seed failed: {ex}");
         }
     }
 }

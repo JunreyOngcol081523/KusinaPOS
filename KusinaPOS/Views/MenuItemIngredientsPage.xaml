@@ -281,34 +281,37 @@
                                                 Padding="8,4"
                                                 HorizontalOptions="Center"
                                                 VerticalOptions="Center">
-                                        <Entry Text="{Binding QuantityPerMenu, Mode=TwoWay, StringFormat='{0:N0}'}"
+                                        <Entry x:Name="QtyPerServe" 
+                                               Text="{Binding QuantityPerMenu, Mode=TwoWay, StringFormat='{0:N2}'}"
                                                    TextColor="{StaticResource TextPrimary}"
                                                    FontSize="12"
                                                    Keyboard="Numeric"
                                                    Unfocused="OnQuantityEntryUnfocused"
+                                                   
                                                    HorizontalTextAlignment="Center">
-                                            <!--<Entry.Behaviors>
-                                                <behaviors:EventToCommandBehavior EventName="Unfocused"
-                                                          Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MenuItemIngredientsViewModel}}, Path=DebouncedQuantityChangedCommand}"
-                                                          CommandParameter="{Binding .}"/>
-                                            </Entry.Behaviors>-->
-                                            
+
                                         </Entry>
                                     </Border>
 
-                                    <Button Grid.Column="3"
-                                                Text="🗑️"
-                                                BackgroundColor="{StaticResource Primary}"
-                                                TextColor="White"
-                                                FontSize="9"
-                                                FontAttributes="Bold"
+                                    <HorizontalStackLayout Grid.Column="3" Spacing="5" HorizontalOptions="Center">
+                                        <ImageButton 
+                                                HeightRequest="30"
+                                                Source="check.png"
+                                                CornerRadius="5"
+                                                Padding="8,6"
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Center"
+                                                Clicked="ImageButton_Clicked"/>
+                                        <ImageButton 
+                                                HeightRequest="30"
+                                                Source="delete.png"
                                                 CornerRadius="5"
                                                 Padding="8,6"
                                                 HorizontalOptions="Center"
                                                 VerticalOptions="Center"
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveIngredientCommand}"
                                                 CommandParameter="{Binding .}"/>
-
+                                    </HorizontalStackLayout>
                                     <BoxView Grid.ColumnSpan="5"
                                                  HeightRequest="1"
                                                  BackgroundColor="{StaticResource Gray100}"
