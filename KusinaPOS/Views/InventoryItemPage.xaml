@@ -285,10 +285,10 @@
                                        HeaderGridLinesVisibility="None"
                                        AutoGenerateColumnsMode="None"
                                        ItemsSource="{Binding TransactionLogs}"
-                                       ColumnWidthMode="Fill"
+                                       ColumnWidthMode="Auto"
                                        SortingMode="Single">
                         <sfdatagrid:SfDataGrid.Columns>
-                            <sfdatagrid:DataGridTextColumn MappingName="TransactionDate" Format="MMM dd, yyyy hh:mm tt" HeaderText="Log Date"/>
+                            <sfdatagrid:DataGridTextColumn  MappingName="TransactionDate" Format="MMM dd, yyyy hh:mm tt" HeaderText="Log Date"/>
                             <sfdatagrid:DataGridTextColumn MappingName="QuantityChange" HeaderText="Quantity Changed" Format="N2"/>
                             <sfdatagrid:DataGridTextColumn MappingName="Reason" HeaderText="Reason" />
                             <sfdatagrid:DataGridTextColumn MappingName="Remarks" HeaderText="Remarks" />

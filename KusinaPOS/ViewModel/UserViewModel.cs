@@ -109,23 +109,52 @@ namespace KusinaPOS.ViewModel
                 if (string.IsNullOrWhiteSpace(Name))
                     return;
 
-                if (Pin != 0 && Pin != ConfirmPin)
+                bool pinEntered = Pin > 0 || ConfirmPin > 0;
+
+                if (pinEntered)
                 {
-                    await PageHelper.DisplayAlertAsync("Error", "PIN and Confirm PIN do not match.", "OK");
-                    return;
+                    // Both fields required
+                    if (Pin == 0 || ConfirmPin == 0)
+                    {
+                        await PageHelper.DisplayAlertAsync(
+                            "Error",
+                            "Both PIN and Confirm PIN are required.",
+                            "OK");
+                        return;
+                    }
+
+                    // Must be exactly 6 digits
+                    if (Pin < 100000 || Pin > 999999)
+                    {
+                        await PageHelper.DisplayAlertAsync(
+                            "Error",
+                            "PIN must be exactly 6 digits.",
+                            "OK");
+                        return;
+                    }
+
+                    // Must match
+                    if (Pin != ConfirmPin)
+                    {
+                        await PageHelper.DisplayAlertAsync(
+                            "Error",
+                            "PIN and Confirm PIN do not match.",
+                            "OK");
+                        return;
+                    }
                 }
 
-                // Update editing user
+                // Update user data
                 EditingUser.Name = Name.Trim();
 
-                string pinToUpdate = Pin > 0 ? Pin.ToString() : null;
+                string pinToUpdate = pinEntered ? Pin.ToString() : null;
 
                 if (EditingUser.Id == 0)
                 {
                     // New user
                     await _userService.InsertUserAsync(EditingUser);
 
-                    if (!string.IsNullOrWhiteSpace(pinToUpdate))
+                    if (pinToUpdate != null)
                         await _userService.SaveUserAsync(EditingUser, pinToUpdate);
                 }
                 else
@@ -134,7 +163,7 @@ namespace KusinaPOS.ViewModel
                     await _userService.SaveUserAsync(EditingUser, pinToUpdate);
                 }
 
-                await LoadActiveUsersAsync(); // Refresh list
+                await LoadActiveUsersAsync();
                 await PageHelper.DisplayAlertAsync("Success", "User saved successfully.", "OK");
 
                 // Clear PIN fields
@@ -144,8 +173,17 @@ namespace KusinaPOS.ViewModel
             catch (Exception ex)
             {
                 Debug.WriteLine($"UserViewModel SaveUserAsync Error: {ex.Message}");
-                await PageHelper.DisplayAlertAsync("Error", $"Failed to save user. {ex.Message}", "OK");
+                await PageHelper.DisplayAlertAsync(
+                    "Error",
+                    $"Failed to save user. {ex.Message}",
+                    "OK");
             }
+        }
+
+        [RelayCommand]
+        public async Task GoBackAsync()
+        {
+            await Shell.Current.GoToAsync("..");
         }
     }
 }

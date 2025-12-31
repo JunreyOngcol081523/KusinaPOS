@@ -281,7 +281,7 @@
                                                 Padding="8,4"
                                                 HorizontalOptions="Center"
                                                 VerticalOptions="Center">
-                                        <Entry Text="{Binding QuantityPerMenu, Mode=TwoWay, StringFormat='{0:N2}'}"
+                                        <Entry Text="{Binding QuantityPerMenu, Mode=TwoWay, StringFormat='{0:N0}'}"
                                                    TextColor="{StaticResource TextPrimary}"
                                                    FontSize="12"
                                                    Keyboard="Numeric"

@@ -63,7 +63,17 @@ namespace KusinaPOS.ViewModel
             this.menuItemService = menuItemService;
             this.inventoryItemService = inventoryItemService;
             this.categoryService = categoryService;
-            StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "KusinaPOS");
+
+            try
+            {
+                StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "KusinaPOS");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error loading preferences: {ex.Message}");
+                StoreName = "KusinaPOS";
+            }
+
             _ = InitializeCollectionsAsync();
         }
 
@@ -119,6 +129,7 @@ namespace KusinaPOS.ViewModel
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error initializing collections: {ex.Message}");
+                await PageHelper.DisplayAlertAsync("Error", "Failed to load data. Please restart the application.", "OK");
             }
         }
 
@@ -127,22 +138,29 @@ namespace KusinaPOS.ViewModel
         // ======================
         private async Task RefreshMenuItemIngredientsText(int menuItemId)
         {
-            var menuItem = MenuItems.FirstOrDefault(m => m.Id == menuItemId);
-            if (menuItem == null) return;
-
-            var ingredients = await menuItemIngredientService.GetByMenuItemIdAsync(menuItemId);
-
-            if (ingredients.Any())
+            try
             {
-                menuItem.IngredientsText = string.Join(",\n ",
-                    ingredients.Select(i => $"{i.InventoryItemName} ({i.QuantityPerMenu:F2} {i.UnitOfMeasurement})"));
-            }
-            else
-            {
-                menuItem.IngredientsText = "No ingredients";
-            }
+                var menuItem = MenuItems.FirstOrDefault(m => m.Id == menuItemId);
+                if (menuItem == null) return;
 
-            OnPropertyChanged(nameof(FilteredMenuItems));
+                var ingredients = await menuItemIngredientService.GetByMenuItemIdAsync(menuItemId);
+
+                if (ingredients.Any())
+                {
+                    menuItem.IngredientsText = string.Join(",\n ",
+                        ingredients.Select(i => $"{i.InventoryItemName} ({i.QuantityPerMenu:F2} {i.UnitOfMeasurement})"));
+                }
+                else
+                {
+                    menuItem.IngredientsText = "No ingredients";
+                }
+
+                OnPropertyChanged(nameof(FilteredMenuItems));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error refreshing ingredients text: {ex.Message}");
+            }
         }
 
         // ======================
@@ -151,34 +169,48 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         private void SelectCategory(Category category)
         {
-            if (category == null) return;
-
-            SelectedCategoryName = category.Name;
-            SelectedCategoryVM = null;
-            SearchText = string.Empty;
-
-            if (string.Equals(category.Name, "All", StringComparison.OrdinalIgnoreCase))
+            try
             {
-                FilteredMenuItems = new ObservableCollection<MenuItem>(MenuItems);
-                Debug.WriteLine("Category: All");
+                if (category == null) return;
+
+                SelectedCategoryName = category.Name;
+                SelectedCategoryVM = null;
+                SearchText = string.Empty;
+
+                if (string.Equals(category.Name, "All", StringComparison.OrdinalIgnoreCase))
+                {
+                    FilteredMenuItems = new ObservableCollection<MenuItem>(MenuItems);
+                    Debug.WriteLine("Category: All");
+                    Debug.WriteLine($"Items found: {FilteredMenuItems.Count}");
+                    return;
+                }
+
+                var filtered = MenuItems
+                    .Where(m => string.Equals(m.Category?.Trim(), category.Name?.Trim(), StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                FilteredMenuItems = new ObservableCollection<MenuItem>(filtered);
+                Debug.WriteLine($"Category: {category.Name}");
                 Debug.WriteLine($"Items found: {FilteredMenuItems.Count}");
-                return;
             }
-
-            var filtered = MenuItems
-                .Where(m => string.Equals(m.Category?.Trim(), category.Name?.Trim(), StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            FilteredMenuItems = new ObservableCollection<MenuItem>(filtered);
-            Debug.WriteLine($"Category: {category.Name}");
-            Debug.WriteLine($"Items found: {FilteredMenuItems.Count}");
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error selecting category: {ex.Message}");
+            }
         }
 
         [RelayCommand]
         private void ShowAllCategories()
         {
-            SelectedCategoryVM = null;
-            FilteredMenuItems = new ObservableCollection<MenuItem>(MenuItems);
+            try
+            {
+                SelectedCategoryVM = null;
+                FilteredMenuItems = new ObservableCollection<MenuItem>(MenuItems);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error showing all categories: {ex.Message}");
+            }
         }
 
         // ======================
@@ -186,35 +218,50 @@ namespace KusinaPOS.ViewModel
         // ======================
         partial void OnSelectedMenuItemChanged(MenuItem value)
         {
-            Debug.WriteLine($"Selected MenuItem Changed: {value?.Name ?? "NULL"}");
-            SelectedMenuItemName = value?.Name;
-            SelectedInventoryItem = null;
-            _ = LoadIngredientsForSelectedMenuItem();
+            try
+            {
+                Debug.WriteLine($"Selected MenuItem Changed: {value?.Name ?? "NULL"}");
+                SelectedMenuItemName = value?.Name;
+                SelectedInventoryItem = null;
+                _ = LoadIngredientsForSelectedMenuItem();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in OnSelectedMenuItemChanged: {ex.Message}");
+            }
         }
 
         private async Task LoadIngredientsForSelectedMenuItem()
         {
-            if (SelectedMenuItem == null)
+            try
             {
-                await MainThread.InvokeOnMainThreadAsync(() => MenuItemIngredients.Clear());
-                return;
-            }
-
-            var ingredients = await menuItemIngredientService.GetByMenuItemIdAsync(SelectedMenuItem.Id);
-
-            Debug.WriteLine($"Loading ingredients for: {SelectedMenuItem.Name}, Found: {ingredients.Count}");
-
-            await MainThread.InvokeOnMainThreadAsync(() =>
-            {
-                MenuItemIngredients.Clear();
-                foreach (var ing in ingredients)
+                if (SelectedMenuItem == null)
                 {
-                    MenuItemIngredients.Add(ing);
-                    Debug.WriteLine($"Loaded Ingredient: {ing.InventoryItemName} - QtyPerMenu: {ing.QuantityPerMenu}");
+                    await MainThread.InvokeOnMainThreadAsync(() => MenuItemIngredients.Clear());
+                    return;
                 }
 
-                OnPropertyChanged(nameof(MenuItemIngredients));
-            });
+                var ingredients = await menuItemIngredientService.GetByMenuItemIdAsync(SelectedMenuItem.Id);
+
+                Debug.WriteLine($"Loading ingredients for: {SelectedMenuItem.Name}, Found: {ingredients.Count}");
+
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    MenuItemIngredients.Clear();
+                    foreach (var ing in ingredients)
+                    {
+                        MenuItemIngredients.Add(ing);
+                        Debug.WriteLine($"Loaded Ingredient: {ing.InventoryItemName} - QtyPerMenu: {ing.QuantityPerMenu}");
+                    }
+
+                    OnPropertyChanged(nameof(MenuItemIngredients));
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error loading ingredients: {ex.Message}");
+                await PageHelper.DisplayAlertAsync("Error", "Failed to load ingredients for the selected menu item.", "OK");
+            }
         }
 
         // ======================
@@ -233,47 +280,72 @@ namespace KusinaPOS.ViewModel
 
         private void ApplySearchText()
         {
-            var filtered = MenuItems
-                .Where(m =>
-                    (string.Equals(SelectedCategoryName, "All", StringComparison.OrdinalIgnoreCase) ||
-                     string.Equals(m.Category?.Trim(), SelectedCategoryName?.Trim(), StringComparison.OrdinalIgnoreCase))
-                    && (string.IsNullOrWhiteSpace(SearchText) || m.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
-                )
-                .ToList();
+            try
+            {
+                var filtered = MenuItems
+                    .Where(m =>
+                        (string.Equals(SelectedCategoryName, "All", StringComparison.OrdinalIgnoreCase) ||
+                         string.Equals(m.Category?.Trim(), SelectedCategoryName?.Trim(), StringComparison.OrdinalIgnoreCase))
+                        && (string.IsNullOrWhiteSpace(SearchText) || m.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                    )
+                    .ToList();
 
-            FilteredMenuItems = new ObservableCollection<MenuItem>(filtered);
+                FilteredMenuItems = new ObservableCollection<MenuItem>(filtered);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error applying search text: {ex.Message}");
+            }
         }
 
         private void DebounceSearch()
         {
-            _searchDebounceCts?.Cancel();
-            _searchDebounceCts = new CancellationTokenSource();
-            var token = _searchDebounceCts.Token;
-
-            Task.Run(async () =>
+            try
             {
-                try
+                _searchDebounceCts?.Cancel();
+                _searchDebounceCts = new CancellationTokenSource();
+                var token = _searchDebounceCts.Token;
+
+                Task.Run(async () =>
                 {
-                    await Task.Delay(SearchDebounceDelayMs, token);
-                    if (!token.IsCancellationRequested)
+                    try
                     {
-                        await MainThread.InvokeOnMainThreadAsync(() => ApplySearchText());
+                        await Task.Delay(SearchDebounceDelayMs, token);
+                        if (!token.IsCancellationRequested)
+                        {
+                            await MainThread.InvokeOnMainThreadAsync(() => ApplySearchText());
+                        }
                     }
-                }
-                catch (TaskCanceledException) { }
-            });
+                    catch (TaskCanceledException) { }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error in debounced search: {ex.Message}");
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error setting up debounced search: {ex.Message}");
+            }
         }
 
         private void ApplyCategoryFilterOnly()
         {
-            if (string.Equals(SelectedCategoryName, "All", StringComparison.OrdinalIgnoreCase))
+            try
             {
-                FilteredMenuItems = new ObservableCollection<MenuItem>(MenuItems);
-                return;
-            }
+                if (string.Equals(SelectedCategoryName, "All", StringComparison.OrdinalIgnoreCase))
+                {
+                    FilteredMenuItems = new ObservableCollection<MenuItem>(MenuItems);
+                    return;
+                }
 
-            FilteredMenuItems = new ObservableCollection<MenuItem>(
-                MenuItems.Where(m => string.Equals(m.Category?.Trim(), SelectedCategoryName?.Trim(), StringComparison.OrdinalIgnoreCase)));
+                FilteredMenuItems = new ObservableCollection<MenuItem>(
+                    MenuItems.Where(m => string.Equals(m.Category?.Trim(), SelectedCategoryName?.Trim(), StringComparison.OrdinalIgnoreCase)));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error applying category filter: {ex.Message}");
+            }
         }
 
         // ======================
@@ -282,36 +354,48 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         private async Task AddInventoryItemServingAsync()
         {
-            if (SelectedMenuItem == null || SelectedInventoryItem == null)
+            try
             {
-                await PageHelper.DisplayAlertAsync("Selection Required", "Please select both a menu item and an inventory item before adding an ingredient.", "OK");
-                return;
+                if (SelectedMenuItem == null || SelectedInventoryItem == null)
+                {
+                    await PageHelper.DisplayAlertAsync("Selection Required", "Please select both a menu item and an inventory item before adding an ingredient.", "OK");
+                    return;
+                }
+
+                if (MenuItemIngredients.Any(i => i.InventoryItemId == SelectedInventoryItem.Id))
+                {
+                    await PageHelper.DisplayAlertAsync("Duplicate Ingredient", "This inventory item is already added as an ingredient for the selected menu item.", "OK");
+                    return;
+                }
+
+                var newIngredient = new MenuItemIngredient
+                {
+                    MenuItemId = SelectedMenuItem.Id,
+                    InventoryItemId = SelectedInventoryItem.Id,
+                    InventoryItemName = SelectedInventoryItem.Name,
+                    UnitOfMeasurement = SelectedInventoryItem.Unit,
+                    QuantityPerMenu = 0
+                };
+
+                int result = await menuItemIngredientService.AddAsync(newIngredient);
+                if (result > 0)
+                {
+                    await PageHelper.DisplayAlertAsync("Success", "Ingredient added successfully.", "OK");
+                    await LoadIngredientsForSelectedMenuItem();
+                    await RefreshMenuItemIngredientsText(SelectedMenuItem.Id);
+                }
+                else
+                {
+                    await PageHelper.DisplayAlertAsync("Error", "Failed to add ingredient.", "OK");
+                }
+
+                SelectedInventoryItem = null;
             }
-
-            if (MenuItemIngredients.Any(i => i.InventoryItemId == SelectedInventoryItem.Id))
+            catch (Exception ex)
             {
-                await PageHelper.DisplayAlertAsync("Duplicate Ingredient", "This inventory item is already added as an ingredient for the selected menu item.", "OK");
-                return;
+                Debug.WriteLine($"Error adding ingredient: {ex.Message}");
+                await PageHelper.DisplayAlertAsync("Error", "An error occurred while adding the ingredient.", "OK");
             }
-
-            var newIngredient = new MenuItemIngredient
-            {
-                MenuItemId = SelectedMenuItem.Id,
-                InventoryItemId = SelectedInventoryItem.Id,
-                InventoryItemName = SelectedInventoryItem.Name,
-                UnitOfMeasurement = SelectedInventoryItem.Unit,
-                QuantityPerMenu = 0
-            };
-
-            int result = await menuItemIngredientService.AddAsync(newIngredient);
-            if (result > 0)
-            {
-                await PageHelper.DisplayAlertAsync("Success", "Ingredient added successfully.", "OK");
-                await LoadIngredientsForSelectedMenuItem();
-                await RefreshMenuItemIngredientsText(SelectedMenuItem.Id);
-            }
-
-            SelectedInventoryItem = null;
         }
 
         // ======================
@@ -342,6 +426,11 @@ namespace KusinaPOS.ViewModel
                 }
             }
             catch (TaskCanceledException) { }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error updating quantity: {ex.Message}");
+                await PageHelper.DisplayAlertAsync("Error", "Failed to update ingredient quantity.", "OK");
+            }
         }
 
         // ======================
@@ -350,22 +439,34 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         private async Task RemoveIngredientAsync(MenuItemIngredient ingredient)
         {
-            if (ingredient == null) return;
-
-            bool confirm = await PageHelper.DisplayConfirmAsync(
-                "Remove Ingredient",
-                $"Are you sure you want to remove {ingredient.InventoryItemName}?",
-                "Yes",
-                "No");
-
-            if (!confirm) return;
-
-            int result = await menuItemIngredientService.DeleteAsync(ingredient);
-            if (result > 0)
+            try
             {
-                MenuItemIngredients.Remove(ingredient);
-                await PageHelper.DisplayAlertAsync("Success", "Ingredient removed successfully.", "OK");
-                await RefreshMenuItemIngredientsText(ingredient.MenuItemId);
+                if (ingredient == null) return;
+
+                bool confirm = await PageHelper.DisplayConfirmAsync(
+                    "Remove Ingredient",
+                    $"Are you sure you want to remove {ingredient.InventoryItemName}?",
+                    "Yes",
+                    "No");
+
+                if (!confirm) return;
+
+                int result = await menuItemIngredientService.DeleteAsync(ingredient);
+                if (result > 0)
+                {
+                    MenuItemIngredients.Remove(ingredient);
+                    await PageHelper.DisplayAlertAsync("Success", "Ingredient removed successfully.", "OK");
+                    await RefreshMenuItemIngredientsText(ingredient.MenuItemId);
+                }
+                else
+                {
+                    await PageHelper.DisplayAlertAsync("Error", "Failed to remove ingredient.", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error removing ingredient: {ex.Message}");
+                await PageHelper.DisplayAlertAsync("Error", "An error occurred while removing the ingredient.", "OK");
             }
         }
 
@@ -375,7 +476,14 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         private async Task GoBackAsync()
         {
-            await Shell.Current.GoToAsync("..");
+            try
+            {
+                await Shell.Current.GoToAsync("..");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error navigating back: {ex.Message}");
+            }
         }
     }
 }

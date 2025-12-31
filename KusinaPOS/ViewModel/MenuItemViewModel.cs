@@ -5,6 +5,7 @@ using KusinaPOS.Services;
 using KusinaPOS.Models;
 using System.Collections.ObjectModel;
 using MenuItem = KusinaPOS.Models.MenuItem;
+using System.Diagnostics;
 
 namespace KusinaPOS.ViewModel
 {
@@ -30,7 +31,7 @@ namespace KusinaPOS.ViewModel
             _dateTimeService.DateTimeChanged += OnDateTimeChanged;
             CurrentDateTime = _dateTimeService.CurrentDateTime;
 
-            _ = InitializeAsync();
+            _ = SafeInitializeAsync();
              //_=SeedMenuItemsAsync();
         }
         #endregion
@@ -89,8 +90,27 @@ namespace KusinaPOS.ViewModel
         [NotifyPropertyChangedFor(nameof(ImageLabel))]
         private string imagePath;
 
-        public ImageSource MenuImageSource =>
-            string.IsNullOrWhiteSpace(ImagePath) ? "placeholder_food.png" : ImageSource.FromFile(ImagePath);
+        public ImageSource MenuImageSource
+        {
+            get
+            {
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(ImagePath))
+                        return "placeholder_food.png";
+
+                    if (!File.Exists(ImagePath))
+                        return "placeholder_food.png";
+
+                    return ImageSource.FromFile(ImagePath);
+                }
+                catch
+                {
+                    return "placeholder_food.png";
+                }
+            }
+        }
+
 
         public string ImageLabel => string.IsNullOrWhiteSpace(ImagePath) ? "Click to upload" : Path.GetFileName(ImagePath);
 
@@ -102,7 +122,10 @@ namespace KusinaPOS.ViewModel
         #region Event Handlers
         private void OnDateTimeChanged(object? sender, string dateTime)
         {
-            CurrentDateTime = dateTime;
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                CurrentDateTime = dateTime;
+            });
         }
         #endregion
 
@@ -113,6 +136,20 @@ namespace KusinaPOS.ViewModel
             IsBorderVisible = false;
             MenuTypes = new ObservableCollection<string> { "Unit-Based", "Recipe-Based" };
         }
+        private async Task SafeInitializeAsync()
+        {
+            try
+            {
+                await InitializeAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"MenuItemViewModel Init Error: {ex}");
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                    PageHelper.DisplayAlertAsync("Init Error", ex.Message, "OK"));
+            }
+        }
+
         #endregion
 
         #region CRUD: Categories
