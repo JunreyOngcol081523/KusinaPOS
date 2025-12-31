@@ -285,9 +285,7 @@
                                                Text="{Binding QuantityPerMenu, Mode=TwoWay, StringFormat='{0:N2}'}"
                                                    TextColor="{StaticResource TextPrimary}"
                                                    FontSize="12"
-                                                   Keyboard="Numeric"
-                                                   Unfocused="OnQuantityEntryUnfocused"
-                                                   
+                                                   Keyboard="Numeric"                                                   
                                                    HorizontalTextAlignment="Center">
 
                                         </Entry>
@@ -295,15 +293,18 @@
 
                                     <HorizontalStackLayout Grid.Column="3" Spacing="5" HorizontalOptions="Center">
                                         <ImageButton 
-                                                HeightRequest="30"
+                                                HeightRequest="20"
+                                                WidthRequest="20"
                                                 Source="check.png"
                                                 CornerRadius="5"
                                                 Padding="8,6"
                                                 HorizontalOptions="Center"
                                                 VerticalOptions="Center"
-                                                Clicked="ImageButton_Clicked"/>
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MenuItemIngredientsViewModel}}, Path=SaveQuantityCommand}"
+                                                CommandParameter="{Binding .}"/>
                                         <ImageButton 
-                                                HeightRequest="30"
+                                                HeightRequest="20"
+                                                WidthRequest="20"
                                                 Source="delete.png"
                                                 CornerRadius="5"
                                                 Padding="8,6"

@@ -4,7 +4,7 @@ using NotNullAttribute = SQLite.NotNullAttribute;
 
 namespace KusinaPOS.Models
 {
-    public class MenuItem
+    public class MenuItem : ObservableObject
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }

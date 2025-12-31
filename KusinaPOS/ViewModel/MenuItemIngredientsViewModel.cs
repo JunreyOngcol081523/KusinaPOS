@@ -140,22 +140,24 @@ namespace KusinaPOS.ViewModel
         {
             try
             {
-                var menuItem = MenuItems.FirstOrDefault(m => m.Id == menuItemId);
+                var menuItem = MenuItems?.FirstOrDefault(m => m?.Id == menuItemId);
                 if (menuItem == null) return;
 
                 var ingredients = await menuItemIngredientService.GetByMenuItemIdAsync(menuItemId);
 
-                if (ingredients.Any())
+                // Update the property - UI updates automatically!
+                if (ingredients?.Any() == true)
                 {
                     menuItem.IngredientsText = string.Join(",\n ",
-                        ingredients.Select(i => $"{i.InventoryItemName} ({i.QuantityPerMenu:F2} {i.UnitOfMeasurement})"));
+                        ingredients.Select(i =>
+                            $"{i.InventoryItemName ?? "Unknown"} ({i.QuantityPerMenu:F2} {i.UnitOfMeasurement ?? ""})"));
                 }
                 else
                 {
                     menuItem.IngredientsText = "No ingredients";
                 }
 
-                OnPropertyChanged(nameof(FilteredMenuItems));
+                // No OnPropertyChanged needed! ✨
             }
             catch (Exception ex)
             {
@@ -243,18 +245,51 @@ namespace KusinaPOS.ViewModel
 
                 var ingredients = await menuItemIngredientService.GetByMenuItemIdAsync(SelectedMenuItem.Id);
 
-                Debug.WriteLine($"Loading ingredients for: {SelectedMenuItem.Name}, Found: {ingredients.Count}");
+                Debug.WriteLine($"Loading ingredients for: {SelectedMenuItem.Name}, Found: {ingredients?.Count ?? 0}");
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    MenuItemIngredients.Clear();
-                    foreach (var ing in ingredients)
+                    // Smart update: Update existing items, add new ones, remove deleted ones
+                    // This prevents CollectionView reload and maintains scroll position
+
+                    if (ingredients == null || !ingredients.Any())
                     {
-                        MenuItemIngredients.Add(ing);
-                        Debug.WriteLine($"Loaded Ingredient: {ing.InventoryItemName} - QtyPerMenu: {ing.QuantityPerMenu}");
+                        MenuItemIngredients.Clear();
+                        return;
                     }
 
-                    OnPropertyChanged(nameof(MenuItemIngredients));
+                    // Remove items that no longer exist
+                    for (int i = MenuItemIngredients.Count - 1; i >= 0; i--)
+                    {
+                        if (!ingredients.Any(x => x.Id == MenuItemIngredients[i].Id))
+                        {
+                            MenuItemIngredients.RemoveAt(i);
+                        }
+                    }
+
+                    // Update existing items or add new ones
+                    foreach (var ing in ingredients)
+                    {
+                        var existing = MenuItemIngredients.FirstOrDefault(x => x.Id == ing.Id);
+
+                        if (existing != null)
+                        {
+                            // Update properties if MenuItemIngredient is ObservableObject
+                            existing.InventoryItemName = ing.InventoryItemName;
+                            existing.QuantityPerMenu = ing.QuantityPerMenu;
+                            existing.UnitOfMeasurement = ing.UnitOfMeasurement;
+                            existing.MenuItemId = ing.MenuItemId;
+                            existing.InventoryItemId = ing.InventoryItemId;
+
+                            Debug.WriteLine($"Updated Ingredient: {ing.InventoryItemName} - QtyPerMenu: {ing.QuantityPerMenu}");
+                        }
+                        else
+                        {
+                            // Add new item
+                            MenuItemIngredients.Add(ing);
+                            Debug.WriteLine($"Added Ingredient: {ing.InventoryItemName} - QtyPerMenu: {ing.QuantityPerMenu}");
+                        }
+                    }
                 });
             }
             catch (Exception ex)
@@ -380,8 +415,12 @@ namespace KusinaPOS.ViewModel
                 int result = await menuItemIngredientService.AddAsync(newIngredient);
                 if (result > 0)
                 {
+                    // Add to collection directly instead of reloading
+                    MenuItemIngredients.Add(newIngredient);
+
                     await PageHelper.DisplayAlertAsync("Success", "Ingredient added successfully.", "OK");
-                    await LoadIngredientsForSelectedMenuItem();
+
+                    // Refresh the ingredients text in the menu items list
                     await RefreshMenuItemIngredientsText(SelectedMenuItem.Id);
                 }
                 else
@@ -402,31 +441,21 @@ namespace KusinaPOS.ViewModel
         // UPDATE QTY PER MENU (DEBOUNCED)
         // ======================
         [RelayCommand]
-        private async Task DebouncedQuantityChangedAsync(MenuItemIngredient ingredient)
+        private async Task SaveQuantityAsync(MenuItemIngredient ingredient)
         {
             if (ingredient == null) return;
 
-            _debounceCts?.Cancel();
-            _debounceCts = new CancellationTokenSource();
-            var token = _debounceCts.Token;
-
             try
             {
-                await Task.Delay(500, token);
-                if (!token.IsCancellationRequested)
-                {
-                    await menuItemIngredientService.UpdateQuantityAsync(
-                        ingredient.MenuItemId,
-                        ingredient.InventoryItemId,
-                        ingredient.QuantityPerMenu
-                    );
+                await menuItemIngredientService.UpdateQuantityAsync(
+                    ingredient.MenuItemId,
+                    ingredient.InventoryItemId,
+                    ingredient.QuantityPerMenu
+                );
 
-                    // Refresh the ingredients text in the list
-                    await RefreshMenuItemIngredientsText(ingredient.MenuItemId);
-                    await PageHelper.DisplayAlertAsync("Success", "Ingredient quantity updated.", "OK");
-                }
+                await RefreshMenuItemIngredientsText(ingredient.MenuItemId);
+                await PageHelper.DisplayAlertAsync("Success", "Ingredient quantity updated.", "OK");
             }
-            catch (TaskCanceledException) { }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error updating quantity: {ex.Message}");
@@ -455,8 +484,12 @@ namespace KusinaPOS.ViewModel
                 int result = await menuItemIngredientService.DeleteAsync(ingredient);
                 if (result > 0)
                 {
+                    // Remove from collection - no need to reload
                     MenuItemIngredients.Remove(ingredient);
+
                     await PageHelper.DisplayAlertAsync("Success", "Ingredient removed successfully.", "OK");
+
+                    // Refresh the ingredients text in the menu items list
                     await RefreshMenuItemIngredientsText(ingredient.MenuItemId);
                 }
                 else
