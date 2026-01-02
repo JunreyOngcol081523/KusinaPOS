@@ -1,10 +1,11 @@
-﻿using SQLite;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using SQLite;
 
 using NotNullAttribute = SQLite.NotNullAttribute;
 
 namespace KusinaPOS.Models
 {
-    public class Category
+    public partial class Category : ObservableObject
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -12,5 +13,8 @@ namespace KusinaPOS.Models
         [NotNull, Unique]
         public string Name { get; set; } = string.Empty;
         public bool IsActive { get; set; } = true;
+
+        [ObservableProperty]
+        private bool isSelected;
     }
 }

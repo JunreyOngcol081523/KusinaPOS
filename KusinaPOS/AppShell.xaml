@@ -4,13 +4,19 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:KusinaPOS"
+    xmlns:views="clr-namespace:KusinaPOS.Views"
     NavBarIsVisible="False"
+    FlyoutBehavior="Disabled"
     Title="KusinaPOS">
 
     <ShellContent
         Title="User Login"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
-
+    <!-- POS Terminal --><!--
+    <ShellContent
+        Title="POS Terminal"
+        ContentTemplate="{DataTemplate views:POSTerminalPage}"
+        Route="POSTerminalPage" />-->
 
 </Shell>

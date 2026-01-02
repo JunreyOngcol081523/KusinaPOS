@@ -51,6 +51,8 @@ namespace KusinaPOS
             builder.Services.AddTransient<MenuItemIngredientsViewModel>();
             builder.Services.AddTransient<UserViewModel>();
             builder.Services.AddTransient<UserPage>();
+            builder.Services.AddTransient<POSTerminalViewModel>();
+            builder.Services.AddTransient<POSTerminalPage>();
 
 
             return builder.Build();

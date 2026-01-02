@@ -68,4 +68,11 @@
     <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimary}"/>
     <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondary}"/>
 
+
+    <!-- ADD THESE MISSING COLORS -->
+    <Color x:Key="BackgroundDarker">#0d0d0d</Color>
+    <Color x:Key="BorderColor">#333333</Color>
+    <Color x:Key="CardBackground">#2b2b2b</Color>
+    <Color x:Key="Accent">#FF6B35</Color>
+    <Color x:Key="TextOnAccent">#FFFFFF</Color>
 </ResourceDictionary>

@@ -177,9 +177,31 @@ namespace KusinaPOS.ViewModel
             );
             Preferences.Set(DatabaseConstants.LoggedInUserIdKey, user.Id);
             Preferences.Set(DatabaseConstants.LoggedInUserNameKey, user.Name);
-            await Shell.Current.GoToAsync(nameof(DashboardPage));
+            if(SelectedUserType == "Administrator")
+            {
+                await Shell.Current.GoToAsync(nameof(DashboardPage));
+            }
+            else
+            {
+                try
+                {
+                    System.Diagnostics.Debug.WriteLine("=== Starting Navigation ===");
+                    await Shell.Current.GoToAsync(nameof(POSTerminalPage), false);
+                    System.Diagnostics.Debug.WriteLine("=== Navigation Completed ===");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"=== Navigation Failed ===");
+                    System.Diagnostics.Debug.WriteLine($"Message: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"Type: {ex.GetType().Name}");
+                    System.Diagnostics.Debug.WriteLine($"Stack: {ex.StackTrace}");
+                    if (ex.InnerException != null)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Inner: {ex.InnerException.Message}");
+                    }
+                }
+            }
 
-            // Cashier → POS Screen
 
             OnClearClicked();
         }
