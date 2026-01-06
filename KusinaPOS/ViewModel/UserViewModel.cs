@@ -91,6 +91,7 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         public async Task ResetUsersAsync()
         {
+            await _userService.ResetUserTableAsync();
             await LoadActiveUsersAsync();
             await LoadUserByRoleAsync("Administrator"); // reload admin
         }

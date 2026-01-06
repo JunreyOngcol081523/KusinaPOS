@@ -33,5 +33,14 @@ namespace KusinaPOS.Models
         public string IngredientsText { get; set; }
         [Ignore]
         public List<MenuItemIngredient> Ingredients { get; set; }
+        
+        private int quantity = 1;
+
+        [Ignore]
+        public int Quantity
+        {
+            get => quantity;
+            set => SetProperty(ref quantity, value);
+        }
     }
 }

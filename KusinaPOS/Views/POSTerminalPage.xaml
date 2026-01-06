@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              xmlns:sfButtons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
              x:Class="KusinaPOS.Views.POSTerminalPage"
              xmlns:viewmodel="clr-namespace:KusinaPOS.ViewModel"
              xmlns:converters="clr-namespace:KusinaPOS.Converters"
@@ -83,46 +84,85 @@
 
             </CollectionView>
 
-            <!-- MENU GRID -->
+            <!-- MENU & PRODUCTS -->
             <Grid Grid.Column="1"
-                  Padding="15">
+                 Padding="12">
 
-                <sfList:SfListView SelectionMode="None"
-                                    ItemSpacing="12">
-
-                    <sfList:SfListView.ItemsLayout>
-                        <sfList:GridLayout SpanCount="4" />
-                    </sfList:SfListView.ItemsLayout>
-
-                    <sfList:SfListView.ItemTemplate>
+                <CollectionView ItemsSource="{Binding FilteredMenuItems}"
+                SelectionMode="None"
+                SelectedItem="{Binding SelectedMenuItem}">
+                    <!-- Adaptive grid -->
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical" Span="{OnIdiom Phone=2, Tablet=4, Desktop=5}" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Border Padding="10"
-                                    Stroke="{StaticResource Gray300}"
-                                    StrokeThickness="1"
-                                    BackgroundColor="{StaticResource CardDark}"
-                                    StrokeShape="RoundRectangle 10">
+                            <Border Style="{StaticResource CardBorder}"
+                                    Padding="0"
+                                    Margin="6">
+                                <VerticalStackLayout Spacing="0">
+                                    <!-- PRODUCT IMAGE -->
+                                    <Image Source="{Binding ImagePath}"
+                                           HeightRequest="110"
+                                           Aspect="AspectFill"
+                                           HorizontalOptions="Fill"
+                                           VerticalOptions="Start" />
 
-                                <VerticalStackLayout Spacing="6">
-                                    <Image HeightRequest="90"
-                                           Aspect="AspectFill" />
+                                    <!-- TEXT AREA -->
+                                    <VerticalStackLayout Padding="10"
+                                        Spacing="6">
+                                        <!-- PRODUCT NAME -->
+                                        <Label Text="{Binding Name}"
+                                               FontSize="14"
+                                               FontAttributes="Bold"
+                                               TextColor="{StaticResource TextPrimary}"
+                                               LineBreakMode="TailTruncation"
+                                               MaxLines="2" />
 
-                                    <Label Text="Product Name"
-                                           FontAttributes="Bold"
-                                           TextColor="{StaticResource TextPrimary}"
-                                           LineBreakMode="TailTruncation" />
+                                        <!-- PRICE -->
+                                        <Label Text="{Binding Price, StringFormat='₱{0:F2}'}"
+                                               FontSize="16"
+                                               FontAttributes="Bold"
+                                               TextColor="{StaticResource TextSecondary}" />
 
-                                    <Label Text="₱0.00"
-                                           FontAttributes="Bold"
-                                           TextColor="{StaticResource Primary}" />
+                                        <!-- QTY AND ADD BUTTON ROW -->
+                                        <Grid ColumnDefinitions="*,Auto"
+                                              ColumnSpacing="6"
+                                              Margin="0,4,0,0">
+
+                                            <!-- NUMERIC ENTRY -->
+                                            <editors:SfNumericEntry Grid.Column="0"
+                                                   Value="{Binding Quantity}"
+                                                   HeightRequest="36"
+                                                   Minimum="1"
+                                                   Maximum="999"
+                                                   UpDownPlacementMode="Inline"
+                                                   HorizontalOptions="Fill"
+                                                   CustomFormat="0"
+                                                   VerticalOptions="Center" />
+
+                                            <!-- ADD BUTTON -->
+                                            <Button Grid.Column="1"
+                                                    ImageSource="addicon.png"
+                                                    FontSize="12"
+                                                    Padding="16,0"
+                                                    HeightRequest="36"
+                                                    CornerRadius="6"
+                                                    BackgroundColor="Transparent"
+                                                    TextColor="White"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:POSTerminalViewModel}}, Path=AddToOrderCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    VerticalOptions="Center" />
+                                        </Grid>
+                                    </VerticalStackLayout>
                                 </VerticalStackLayout>
-
                             </Border>
                         </DataTemplate>
-                    </sfList:SfListView.ItemTemplate>
-
-                </sfList:SfListView>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
             </Grid>
+
 
             <!-- CURRENT ORDER PANEL -->
             <Border Grid.Column="2"
@@ -131,7 +171,7 @@
                     Stroke="{StaticResource Gray300}"
                     StrokeThickness="1">
 
-                <Grid RowDefinitions="Auto,*,Auto,Auto,Auto"
+                <Grid RowDefinitions="Auto,*,Auto,Auto,Auto,Auto"
                       RowSpacing="12">
 
                     <Label Text="Current Order"
@@ -140,39 +180,60 @@
                            TextColor="{StaticResource TextPrimary}" />
 
                     <!-- ORDER ITEMS -->
+                    <!-- ORDER ITEMS -->
                     <sfList:SfListView Grid.Row="1"
+                                       ItemsSource="{Binding OrderItems}"
                                        SelectionMode="None">
 
                         <sfList:SfListView.ItemTemplate>
                             <DataTemplate>
-
-                                <Grid ColumnDefinitions="*,Auto,Auto"
+                                <Grid ColumnDefinitions="*,60,Auto,Auto"
+                                      ColumnSpacing="8"
                                       Padding="0,8">
 
-                                    <VerticalStackLayout>
-                                        <Label Text="1x Item Name"
+                                    <!-- ITEM INFO -->
+                                    <VerticalStackLayout Grid.Column="0">
+                                        <Label Text="{Binding Name}"
+                                               FontSize="14"
+                                               FontAttributes="Bold"
                                                TextColor="{StaticResource TextPrimary}" />
-                                        <Label Text="₱0.00"
+                                        <Label Text="{Binding Price, StringFormat='₱{0:F2}'}"
                                                FontSize="12"
                                                TextColor="{StaticResource TextSecondary}" />
                                     </VerticalStackLayout>
 
-                                    <sfButtons:SfButton Grid.Column="1"
+                                    <!-- QUANTITY -->
+                                    <Label Grid.Column="1"
+                                           Text="{Binding Quantity, StringFormat='x{0}'}"
+                                           FontSize="14"
+                                           FontAttributes="Bold"
+                                           HorizontalTextAlignment="Center"
+                                           VerticalTextAlignment="Center"
+                                           TextColor="{StaticResource TextPrimary}" />
+
+                                    <!-- DECREASE BUTTON -->
+                                    <sfButtons:SfButton Grid.Column="2"
                                                         Text="-"
                                                         WidthRequest="36"
                                                         HeightRequest="36"
+                                                        CornerRadius="6"
                                                         BackgroundColor="{StaticResource Gray200}"
-                                                        TextColor="{StaticResource TextPrimary}" />
+                                                        TextColor="{StaticResource TextPrimary}"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:POSTerminalViewModel}}, Path=DecreaseOrderItemQuantityCommand}"
+                                                        CommandParameter="{Binding .}" />
 
-                                    <sfButtons:SfButton Grid.Column="2"
+                                    <!-- INCREASE BUTTON -->
+                                    <sfButtons:SfButton Grid.Column="3"
                                                         Text="+"
                                                         WidthRequest="36"
                                                         HeightRequest="36"
-                                                        BackgroundColor="{StaticResource Gray200}"
-                                                        TextColor="{StaticResource TextPrimary}" />
+                                                        CornerRadius="6"
+                                                        BackgroundColor="{StaticResource Primary}"
+                                                        TextColor="{StaticResource White}"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:POSTerminalViewModel}}, Path=IncreaseOrderItemQuantityCommand}"
+                                                        CommandParameter="{Binding .}" />
 
                                 </Grid>
-
                             </DataTemplate>
                         </sfList:SfListView.ItemTemplate>
 
@@ -184,28 +245,44 @@
                         <Label Text="Subtotal"
                                TextColor="{StaticResource TextSecondary}" />
                         <Label Grid.Column="1"
-                               Text="₱0.00"
+                               Text="{Binding SubtotalAmount}"
                                TextColor="{StaticResource TextPrimary}" />
                     </Grid>
 
                     <!-- CASH -->
                     <Grid Grid.Row="3"
                           ColumnDefinitions="*,Auto">
-                        <Label Text="Cash Tendered"
-                               TextColor="{StaticResource TextSecondary}" />
-                        <Label Grid.Column="1"
-                               Text="₱0.00"
+                        <Label Text="Cash Tendered ₱"
+                               TextColor="{StaticResource TextSecondary}" 
+                               VerticalTextAlignment="Center"/>
+                        <Entry Grid.Column="1"
+                               Text="{Binding CashTenderedAmount}"
                                FontAttributes="Bold"
+                               VerticalTextAlignment="Center"   
+                               TextColor="{StaticResource TextPrimary}" />
+                    </Grid>
+                    <!-- CHANGE -->
+                    <Grid Grid.Row="4"
+                          ColumnDefinitions="*,Auto">
+                        <Label Text="Change"
+                               TextColor="{StaticResource TextSecondary}" 
+                               VerticalTextAlignment="Center"/>
+                        <Label Grid.Column="1"
+                               Text="{Binding ChangeAmount}"
+                               FontAttributes="Bold"
+                               VerticalTextAlignment="Center"   
                                TextColor="{StaticResource TextPrimary}" />
                     </Grid>
 
                     <!-- COMPLETE -->
-                    <sfButtons:SfButton Grid.Row="4"
-                                        Text="COMPLETE ORDER"
-                                        HeightRequest="55"
-                                        CornerRadius="12"
-                                        BackgroundColor="{StaticResource Primary}"
-                                        TextColor="{StaticResource White}" />
+                    <!-- COMPLETE -->
+                    <Button Grid.Row="5"
+                            Text="COMPLETE ORDER"
+                            HeightRequest="55"
+                            CornerRadius="12"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="{StaticResource White}"
+                            Command="{Binding CompleteOrderCommand}" />
 
                 </Grid>
             </Border>

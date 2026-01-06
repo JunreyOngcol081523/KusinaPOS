@@ -6,8 +6,10 @@ using KusinaPOS.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using MenuItem = KusinaPOS.Models.MenuItem;
 
 namespace KusinaPOS.ViewModel
 {
@@ -20,10 +22,36 @@ namespace KusinaPOS.ViewModel
         private bool isLoading = true;
 
         private readonly CategoryService categoryService;
+        private readonly MenuItemService menuItemService;
 
-        public POSTerminalViewModel(CategoryService categoryService)
+        [ObservableProperty]
+        private string selectedCategoryName = "All";
+
+        [ObservableProperty]
+        private ObservableCollection<MenuItem> allMenuItems = new();
+
+        [ObservableProperty]
+        private ObservableCollection<MenuItem> filteredMenuItems = new();
+
+        // ORDER MANAGEMENT
+        [ObservableProperty]
+        private ObservableCollection<OrderItem> orderItems = new();
+
+        [ObservableProperty]
+        private string subtotalAmount = "₱0.00";
+
+        [ObservableProperty]
+        private string cashTenderedAmount = string.Empty;
+
+        [ObservableProperty]
+        private string changeAmount = "₱0.00";
+
+        private decimal subtotal = 0;
+
+        public POSTerminalViewModel(CategoryService categoryService, MenuItemService menuItemService)
         {
             this.categoryService = categoryService;
+            this.menuItemService = menuItemService;
 
             // Initialize with empty collection first
             MenuCategories = new ObservableCollection<Category>
@@ -76,6 +104,7 @@ namespace KusinaPOS.ViewModel
 
                 Debug.WriteLine($"=== Total MenuCategories: {MenuCategories.Count} ===");
                 IsLoading = false;
+                await LoadMenuItemsAsync();
             }
             catch (Exception ex)
             {
@@ -88,10 +117,22 @@ namespace KusinaPOS.ViewModel
             }
         }
 
+        private async Task LoadMenuItemsAsync()
+        {
+            var items = await menuItemService.GetAllMenuItemsAsync();
+
+            AllMenuItems.Clear();
+            foreach (var item in items)
+                AllMenuItems.Add(item);
+
+            FilterMenuItems(); // Apply initial filter
+        }
+
         [RelayCommand]
         private void SelectCategory(Category category)
         {
             Debug.WriteLine($"=== Category selected: {category?.Name} ===");
+            SelectedCategoryName = category?.Name ?? "All";
 
             // Deselect all categories
             foreach (var cat in MenuCategories)
@@ -104,6 +145,171 @@ namespace KusinaPOS.ViewModel
             {
                 category.IsSelected = true;
             }
+        }
+
+        partial void OnSelectedCategoryNameChanged(string value)
+        {
+            Debug.WriteLine($"=== Filtering menu items for category: {value} ===");
+            FilterMenuItems();
+        }
+
+        private void FilterMenuItems()
+        {
+            if (AllMenuItems == null || AllMenuItems.Count == 0)
+                return;
+
+            FilteredMenuItems.Clear();
+
+            if (SelectedCategoryName == "All")
+            {
+                foreach (var item in AllMenuItems)
+                    FilteredMenuItems.Add(item);
+
+                Debug.WriteLine($"=== Showing ALL items: {FilteredMenuItems.Count} ===");
+                return;
+            }
+
+            var filtered = AllMenuItems
+                .Where(m => m.Category == SelectedCategoryName);
+
+            foreach (var item in filtered)
+                FilteredMenuItems.Add(item);
+
+            Debug.WriteLine($"=== Filtered items count: {FilteredMenuItems.Count} ===");
+        }
+
+        // ======================
+        // ORDER MANAGEMENT
+        // ======================
+        [RelayCommand]
+        private void AddToOrder(MenuItem menuItem)
+        {
+            if (menuItem == null) return;
+
+            Debug.WriteLine($"=== Adding to order: {menuItem.Name} x {menuItem.Quantity} ===");
+
+            // Check if item already exists in order
+            var existingItem = OrderItems.FirstOrDefault(o => o.MenuItemId == menuItem.Id);
+
+            if (existingItem != null)
+            {
+                // Update quantity if already in order
+                existingItem.Quantity += menuItem.Quantity;
+                Debug.WriteLine($"=== Updated existing item. New quantity: {existingItem.Quantity} ===");
+            }
+            else
+            {
+                // Add new item to order
+                var orderItem = new OrderItem
+                {
+                    MenuItemId = menuItem.Id,
+                    Name = menuItem.Name,
+                    Price = menuItem.Price,
+                    Quantity = menuItem.Quantity,
+                    ImagePath = menuItem.ImagePath
+                };
+
+                OrderItems.Add(orderItem);
+                Debug.WriteLine($"=== Added new item to order ===");
+            }
+
+            // Reset quantity back to 1
+            menuItem.Quantity = 1;
+
+            // Recalculate totals
+            CalculateTotals();
+        }
+
+        [RelayCommand]
+        private void IncreaseOrderItemQuantity(OrderItem orderItem)
+        {
+            if (orderItem != null)
+            {
+                orderItem.Quantity++;
+                CalculateTotals();
+            }
+        }
+
+        [RelayCommand]
+        private void DecreaseOrderItemQuantity(OrderItem orderItem)
+        {
+            if (orderItem != null)
+            {
+                if (orderItem.Quantity > 1)
+                {
+                    orderItem.Quantity--;
+                    CalculateTotals();
+                }
+                else
+                {
+                    // Remove item if quantity would go to 0
+                    OrderItems.Remove(orderItem);
+                    CalculateTotals();
+                }
+            }
+        }
+
+        [RelayCommand]
+        private void RemoveOrderItem(OrderItem orderItem)
+        {
+            if (orderItem != null)
+            {
+                OrderItems.Remove(orderItem);
+                CalculateTotals();
+            }
+        }
+
+        private void CalculateTotals()
+        {
+            subtotal = OrderItems.Sum(o => o.Subtotal);
+            SubtotalAmount = $"₱{subtotal:F2}";
+
+            // Calculate change if cash tendered
+            CalculateChange();
+        }
+
+        partial void OnCashTenderedAmountChanged(string value)
+        {
+            CalculateChange();
+        }
+
+        private void CalculateChange()
+        {
+            if (decimal.TryParse(CashTenderedAmount, out decimal cashTendered))
+            {
+                var change = cashTendered - subtotal;
+                ChangeAmount = change >= 0 ? $"₱{change:F2}" : "₱0.00";
+            }
+            else
+            {
+                ChangeAmount = "₱0.00";
+            }
+        }
+
+        [RelayCommand]
+        private async Task CompleteOrder()
+        {
+            if (OrderItems.Count == 0)
+            {
+                await PageHelper.DisplayAlertAsync("Empty Order", "Please add items to the order.", "OK");
+                return;
+            }
+
+            if (!decimal.TryParse(CashTenderedAmount, out decimal cashTendered) || cashTendered < subtotal)
+            {
+                await PageHelper.DisplayAlertAsync("Insufficient Payment", "Please enter valid cash amount.", "OK");
+                return;
+            }
+
+            // TODO: Save order to database
+            Debug.WriteLine($"=== Completing order. Total: {SubtotalAmount} ===");
+
+            // Clear order
+            OrderItems.Clear();
+            CashTenderedAmount = string.Empty;
+            CalculateTotals();
+
+            await PageHelper.DisplayAlertAsync("Success", "Order completed successfully!", "OK");
         }
     }
 }

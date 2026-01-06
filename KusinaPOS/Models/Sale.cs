@@ -24,7 +24,6 @@ namespace KusinaPOS.Models
 
         public decimal TotalAmount { get; set; }
 
-        public string PaymentMethod { get; set; } = string.Empty;
 
         public decimal AmountPaid { get; set; }
 
