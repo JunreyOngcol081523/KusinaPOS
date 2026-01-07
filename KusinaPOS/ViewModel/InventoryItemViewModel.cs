@@ -119,7 +119,7 @@ namespace KusinaPOS.ViewModel
                 // Load all unit measurements initially
                 UnitMeasurements = UnitMeasurementService.AllUnits;
 
-                //_ = SeedInventoryDataAsync();
+               // _ = SeedInventoryDataAsync();
             }
             catch (Exception ex)
             {

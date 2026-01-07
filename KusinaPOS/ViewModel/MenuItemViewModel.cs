@@ -1,11 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using KusinaPOS.Helpers;
-using KusinaPOS.Services;
 using KusinaPOS.Models;
+using KusinaPOS.Services;
+using SQLite;
 using System.Collections.ObjectModel;
-using MenuItem = KusinaPOS.Models.MenuItem;
 using System.Diagnostics;
+using MenuItem = KusinaPOS.Models.MenuItem;
 
 namespace KusinaPOS.ViewModel
 {
@@ -15,15 +16,26 @@ namespace KusinaPOS.ViewModel
         private readonly CategoryService _categoryService;
         private readonly MenuItemService _menuItemService;
         private readonly IDateTimeService _dateTimeService;
+        private readonly InventoryItemService _inventoryItemService;
+        private readonly MenuItemIngredientService _menuItemIngredientService;
+        private readonly InventoryTransactionService _inventoryTransactionService;
+        private readonly SQLiteAsyncConnection _db;
         #endregion
 
         #region Constructor
-        public MenuItemViewModel(CategoryService categoryService, MenuItemService menuItemService, IDateTimeService dateTimeService)
+        public MenuItemViewModel(CategoryService categoryService, 
+            MenuItemService menuItemService, IDateTimeService dateTimeService, 
+            InventoryItemService inventoryItemService, 
+            MenuItemIngredientService menuItemIngredientService, 
+            InventoryTransactionService inventoryTransactionService, IDatabaseService databaseService)
         {
             _categoryService = categoryService;
             _menuItemService = menuItemService;
             _dateTimeService = dateTimeService;
-
+            _inventoryItemService = inventoryItemService;
+            _menuItemIngredientService = menuItemIngredientService;
+            _inventoryTransactionService = inventoryTransactionService;
+            _db = databaseService.GetConnection();
             try
             {
                 LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
@@ -39,6 +51,8 @@ namespace KusinaPOS.ViewModel
             {
                 Debug.WriteLine($"Error in MenuItemViewModel constructor: {ex.Message}");
             }
+
+
         }
         #endregion
 
@@ -86,7 +100,16 @@ namespace KusinaPOS.ViewModel
         private decimal menuItemPrice;
         [ObservableProperty]
         private bool isActive = true;
-
+        [ObservableProperty]
+        private List<string> unitMeasurements = new();
+        [ObservableProperty]
+        private string selectedUnit = string.Empty;
+        [ObservableProperty]
+        private decimal initialStock;
+        [ObservableProperty]
+        private decimal costPerUnit;
+        [ObservableProperty]
+        private decimal reOrderLevel;
         // UI & Image
         [ObservableProperty]
         private bool isBorderVisible = false;
@@ -148,6 +171,7 @@ namespace KusinaPOS.ViewModel
             await LoadCategoriesWithMenuItems();
             IsBorderVisible = false;
             MenuTypes = new ObservableCollection<string> { "Unit-Based", "Recipe-Based" };
+            UnitMeasurements = UnitMeasurementService.AllUnits;
         }
 
         private async Task SafeInitializeAsync()
@@ -398,26 +422,34 @@ namespace KusinaPOS.ViewModel
         {
             try
             {
+                // ---------- BASIC VALIDATION ----------
                 if (string.IsNullOrWhiteSpace(MenuItemName) ||
                     string.IsNullOrWhiteSpace(SelectedCategory) ||
                     string.IsNullOrWhiteSpace(SelectedMenuType) ||
                     MenuItemPrice <= 0)
                 {
-                    await PageHelper.DisplayAlertAsync("Validation", "Please fill in all required fields with valid data.", "OK");
+                    await PageHelper.DisplayAlertAsync(
+                        "Validation",
+                        "Please fill in all required fields with valid data.",
+                        "OK");
                     return;
                 }
 
-                var menuItem = new MenuItem
+                // ---------- UNIT-BASED VALIDATION ----------
+                if (SelectedMenuType == "Unit-Based")
                 {
-                    Id = SelectedMenuItemId,
-                    Name = MenuItemName.Trim(),
-                    Description = MenuDescription.Trim(),
-                    Category = SelectedCategory,
-                    Price = MenuItemPrice,
-                    Type = SelectedMenuType,
-                    ImagePath = ImagePath,
-                    IsActive = IsActive
-                };
+                    if (string.IsNullOrWhiteSpace(SelectedUnit) ||
+                        InitialStock < 0 ||
+                        CostPerUnit <= 0 ||
+                        ReOrderLevel < 0)
+                    {
+                        await PageHelper.DisplayAlertAsync(
+                            "Validation",
+                            "Please complete all inventory-related fields for unit-based items.",
+                            "OK");
+                        return;
+                    }
+                }
 
                 bool confirm = await PageHelper.DisplayConfirmAsync(
                     "Confirm Save",
@@ -426,20 +458,98 @@ namespace KusinaPOS.ViewModel
 
                 if (!confirm) return;
 
-                if (SelectedMenuItemId == 0)
-                    await _menuItemService.AddMenuItemAsync(menuItem);
-                else
-                    await _menuItemService.UpdateMenuItemAsync(menuItem);
+                // ---------- TRANSACTION (REAL) ----------
+                await _db.RunInTransactionAsync(tran =>
+                {
+                    var menuItem = new MenuItem
+                    {
+                        Id = SelectedMenuItemId,
+                        Name = MenuItemName.Trim(),
+                        Description = MenuDescription?.Trim(),
+                        Category = SelectedCategory,
+                        Price = MenuItemPrice,
+                        Type = SelectedMenuType,
+                        ImagePath = ImagePath,
+                        IsActive = IsActive
+                    };
 
+                    if (SelectedMenuItemId == 0)
+                    {
+                        // 1️⃣ Insert Menu Item
+                        tran.Insert(menuItem);
+
+                        if (menuItem.Id <= 0)
+                            throw new Exception("Menu item ID was not generated.");
+
+                        // ---------- UNIT-BASED ----------
+                        if (menuItem.Type == "Unit-Based")
+                        {
+                            // 2️⃣ Inventory Item
+                            var inventoryItem = new InventoryItem
+                            {
+                                Name = menuItem.Name,
+                                Unit = SelectedUnit,
+                                QuantityOnHand = InitialStock,
+                                CostPerUnit = CostPerUnit,
+                                ReOrderLevel = ReOrderLevel,
+                                IsActive = IsActive
+                            };
+
+                            tran.Insert(inventoryItem);
+
+                            if (inventoryItem.Id <= 0)
+                                throw new Exception("Inventory item ID was not generated.");
+
+                            // 3️⃣ MenuItemIngredient
+                            var ingredient = new MenuItemIngredient
+                            {
+                                MenuItemId = menuItem.Id,
+                                InventoryItemId = inventoryItem.Id,
+                                InventoryItemName = inventoryItem.Name,
+                                UnitOfMeasurement = SelectedUnit,
+                                QuantityPerMenu = 1
+                            };
+
+                            tran.Insert(ingredient);
+
+                            // 4️⃣ Inventory Transaction (Initial Stock)
+                            if (InitialStock > 0)
+                            {
+                                var inventoryTransaction = new InventoryTransaction
+                                {
+                                    InventoryItemId = inventoryItem.Id,
+                                    QuantityChange = InitialStock,
+                                    Reason = "Initial Stock",
+                                    Remarks = "Initial stock upon menu creation",
+                                    TransactionDate = DateTime.Now
+                                };
+
+                                tran.Insert(inventoryTransaction);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // ---------- UPDATE ----------
+                        tran.Update(menuItem);
+                    }
+                });
+
+                // ✅ SUCCESS
                 await LoadCategoriesWithMenuItems();
                 HideBorder();
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error saving menu item: {ex.Message}");
-                await PageHelper.DisplayAlertAsync("Error", $"Failed to save menu item: {ex.Message}", "OK");
+                Debug.WriteLine($"Error saving menu item: {ex}");
+                await PageHelper.DisplayAlertAsync(
+                    "Error",
+                    $"Failed to save menu item.\n\n{ex.Message}",
+                    "OK");
             }
         }
+
+
         #endregion
 
         #region UI Helpers

@@ -23,6 +23,7 @@ namespace KusinaPOS.ViewModel
 
         private readonly CategoryService categoryService;
         private readonly MenuItemService menuItemService;
+        private readonly MenuItemIngredientService menuItemIngredientService; // Moved to top
 
         [ObservableProperty]
         private string selectedCategoryName = "All";
@@ -48,10 +49,15 @@ namespace KusinaPOS.ViewModel
 
         private decimal subtotal = 0;
 
-        public POSTerminalViewModel(CategoryService categoryService, MenuItemService menuItemService)
+        // SINGLE CONSTRUCTOR - removed duplicate
+        public POSTerminalViewModel(
+            CategoryService categoryService,
+            MenuItemService menuItemService,
+            MenuItemIngredientService menuItemIngredientService)
         {
             this.categoryService = categoryService;
             this.menuItemService = menuItemService;
+            this.menuItemIngredientService = menuItemIngredientService;
 
             // Initialize with empty collection first
             MenuCategories = new ObservableCollection<Category>
@@ -182,42 +188,67 @@ namespace KusinaPOS.ViewModel
         // ORDER MANAGEMENT
         // ======================
         [RelayCommand]
-        private void AddToOrder(MenuItem menuItem)
+        private async Task AddToOrder(MenuItem menuItem)
         {
             if (menuItem == null) return;
 
-            Debug.WriteLine($"=== Adding to order: {menuItem.Name} x {menuItem.Quantity} ===");
+            Debug.WriteLine($"=== Checking ingredients for: {menuItem.Name} ===");
 
-            // Check if item already exists in order
-            var existingItem = OrderItems.FirstOrDefault(o => o.MenuItemId == menuItem.Id);
+            try
+            {
+                // Check if menu item has ingredients
+                var ingredients = await menuItemIngredientService.GetByMenuItemIdAsync(menuItem.Id);
 
-            if (existingItem != null)
-            {
-                // Update quantity if already in order
-                existingItem.Quantity += menuItem.Quantity;
-                Debug.WriteLine($"=== Updated existing item. New quantity: {existingItem.Quantity} ===");
-            }
-            else
-            {
-                // Add new item to order
-                var orderItem = new OrderItem
+                if (ingredients == null || ingredients.Count == 0)
                 {
-                    MenuItemId = menuItem.Id,
-                    Name = menuItem.Name,
-                    Price = menuItem.Price,
-                    Quantity = menuItem.Quantity,
-                    ImagePath = menuItem.ImagePath
-                };
+                    await PageHelper.DisplayAlertAsync(
+                        "No Ingredients",
+                        $"'{menuItem.Name}' has no ingredients configured. Please set up ingredients before adding to order.",
+                        "OK");
+                    return;
+                }
 
-                OrderItems.Add(orderItem);
-                Debug.WriteLine($"=== Added new item to order ===");
+                Debug.WriteLine($"=== Found {ingredients.Count} ingredients for {menuItem.Name} ===");
+                Debug.WriteLine($"=== Adding to order: {menuItem.Name} x {menuItem.Quantity} ===");
+
+                // Check if item already exists in order
+                var existingItem = OrderItems.FirstOrDefault(o => o.MenuItemId == menuItem.Id);
+
+                if (existingItem != null)
+                {
+                    // Update quantity if already in order
+                    existingItem.Quantity += menuItem.Quantity;
+                    Debug.WriteLine($"=== Updated existing item. New quantity: {existingItem.Quantity} ===");
+                }
+                else
+                {
+                    // Add new item to order
+                    var orderItem = new OrderItem
+                    {
+                        MenuItemId = menuItem.Id,
+                        Name = menuItem.Name,
+                        Price = menuItem.Price,
+                        Quantity = menuItem.Quantity,
+                        ImagePath = menuItem.ImagePath
+                    };
+                    OrderItems.Add(orderItem);
+                    Debug.WriteLine($"=== Added new item to order ===");
+                }
+
+                // Reset quantity back to 1
+                menuItem.Quantity = 1;
+
+                // Recalculate totals
+                CalculateTotals();
             }
-
-            // Reset quantity back to 1
-            menuItem.Quantity = 1;
-
-            // Recalculate totals
-            CalculateTotals();
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"=== Error checking ingredients: {ex.Message} ===");
+                await PageHelper.DisplayAlertAsync(
+                    "Error",
+                    $"Failed to verify ingredients: {ex.Message}",
+                    "OK");
+            }
         }
 
         [RelayCommand]

@@ -13,6 +13,7 @@
 
             <converters:BoolToStatusConverter x:Key="BoolToStatusConverter" />
             <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <converters:UnitToBoolConverter x:Key="UnitToBoolConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

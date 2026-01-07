@@ -90,23 +90,26 @@
 
                 <CollectionView ItemsSource="{Binding FilteredMenuItems}"
                 SelectionMode="None"
-                SelectedItem="{Binding SelectedMenuItem}">
+                SelectedItem="{Binding SelectedMenuItem}"
+                                >
                     <!-- Adaptive grid -->
                     <CollectionView.ItemsLayout>
-                        <GridItemsLayout Orientation="Vertical" Span="{OnIdiom Phone=2, Tablet=4, Desktop=5}" />
+                        <GridItemsLayout Orientation="Vertical" Span="{OnIdiom Phone=2, Tablet=4, Desktop=5}" HorizontalItemSpacing="5" VerticalItemSpacing="5"/>
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Border Style="{StaticResource CardBorder}"
                                     Padding="0"
-                                    Margin="6">
+                                    Margin="6"
+                                    >
                                 <VerticalStackLayout Spacing="0">
                                     <!-- PRODUCT IMAGE -->
+
                                     <Image Source="{Binding ImagePath}"
-                                           HeightRequest="110"
-                                           Aspect="AspectFill"
-                                           HorizontalOptions="Fill"
-                                           VerticalOptions="Start" />
+                                        HeightRequest="110"
+                                        Aspect="AspectFill"
+                                        HorizontalOptions="Fill"
+                                        VerticalOptions="Start" />
 
                                     <!-- TEXT AREA -->
                                     <VerticalStackLayout Padding="10"
@@ -139,7 +142,10 @@
                                                    UpDownPlacementMode="Inline"
                                                    HorizontalOptions="Fill"
                                                    CustomFormat="0"
-                                                   VerticalOptions="Center" />
+                                                   VerticalOptions="Center" 
+                                                   BackgroundColor="{StaticResource Gray100}"
+                                                   TextColor="{StaticResource TextPrimary}"
+                                                   Stroke="Transparent"/>
 
                                             <!-- ADD BUTTON -->
                                             <Button Grid.Column="1"
