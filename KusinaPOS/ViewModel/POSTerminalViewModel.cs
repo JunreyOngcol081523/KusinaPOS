@@ -6,9 +6,9 @@ using KusinaPOS.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Diagnostics;
 using MenuItem = KusinaPOS.Models.MenuItem;
 
 namespace KusinaPOS.ViewModel
@@ -23,7 +23,8 @@ namespace KusinaPOS.ViewModel
 
         private readonly CategoryService categoryService;
         private readonly MenuItemService menuItemService;
-        private readonly MenuItemIngredientService menuItemIngredientService; // Moved to top
+        private readonly MenuItemIngredientService menuItemIngredientService; 
+        private readonly SalesService salesService;
 
         [ObservableProperty]
         private string selectedCategoryName = "All";
@@ -53,12 +54,13 @@ namespace KusinaPOS.ViewModel
         public POSTerminalViewModel(
             CategoryService categoryService,
             MenuItemService menuItemService,
-            MenuItemIngredientService menuItemIngredientService)
+            MenuItemIngredientService menuItemIngredientService,
+            SalesService salesService)
         {
             this.categoryService = categoryService;
             this.menuItemService = menuItemService;
             this.menuItemIngredientService = menuItemIngredientService;
-
+            this.salesService = salesService;
             // Initialize with empty collection first
             MenuCategories = new ObservableCollection<Category>
             {
@@ -70,6 +72,7 @@ namespace KusinaPOS.ViewModel
 
             Debug.WriteLine("=== POSTerminalViewModel Constructor ===");
             _ = InitializeCollectionsAsync();
+            
         }
 
         // ======================
@@ -322,25 +325,68 @@ namespace KusinaPOS.ViewModel
         {
             if (OrderItems.Count == 0)
             {
-                await PageHelper.DisplayAlertAsync("Empty Order", "Please add items to the order.", "OK");
+                await PageHelper.DisplayAlertAsync(
+                    "Empty Order",
+                    "Please add items to the order.",
+                    "OK");
                 return;
             }
 
-            if (!decimal.TryParse(CashTenderedAmount, out decimal cashTendered) || cashTendered < subtotal)
+            if (!decimal.TryParse(CashTenderedAmount, out decimal cashTendered) ||
+                cashTendered < subtotal)
             {
-                await PageHelper.DisplayAlertAsync("Insufficient Payment", "Please enter valid cash amount.", "OK");
+                await PageHelper.DisplayAlertAsync(
+                    "Insufficient Payment",
+                    "Please enter a valid cash amount.",
+                    "OK");
                 return;
             }
 
-            // TODO: Save order to database
-            Debug.WriteLine($"=== Completing order. Total: {SubtotalAmount} ===");
+            try
+            {
+                // Use DECIMAL values, not formatted strings
+                decimal subTotal = subtotal;
+                decimal change = cashTendered - subTotal;
 
-            // Clear order
-            OrderItems.Clear();
-            CashTenderedAmount = string.Empty;
-            CalculateTotals();
+                var sale = new Sale
+                {
+                    SaleDate = DateTime.Now,
+                    ReceiptNo = GenerateReceiptNo(),
+                    SubTotal = subTotal,
+                    Discount = 0,
+                    Tax = 0,
+                    TotalAmount = subTotal,
+                    AmountPaid = cashTendered,
+                    ChangeAmount = change
+                };
 
-            await PageHelper.DisplayAlertAsync("Success", "Order completed successfully!", "OK");
+                var saleItems = OrderItemMapper.ToSaleItems(OrderItems);
+
+                int result = await salesService.CompleteSaleAsync(sale, saleItems);
+
+                // ✅ ONLY clear & notify AFTER successful save
+                OrderItems.Clear();
+                CashTenderedAmount = string.Empty;
+                CalculateTotals();
+
+                await PageHelper.DisplayAlertAsync(
+                    "Success",
+                    $"Order completed successfully!\nReceipt No: {sale.ReceiptNo}",
+                    "OK");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"=== Error completing order: {ex} ===");
+
+                await PageHelper.DisplayAlertAsync(
+                    "Error",
+                    "Failed to complete order. Please try again.",
+                    "OK");
+            }
+        }
+        private string GenerateReceiptNo()
+        {
+            return $"RCPT-{DateTime.Now:yyyyMMddHHmmssfff}";
         }
     }
 }

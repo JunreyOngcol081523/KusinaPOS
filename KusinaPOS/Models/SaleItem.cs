@@ -22,8 +22,9 @@ namespace KusinaPOS.Models
         [NotNull]
         public decimal UnitPrice { get; set; }
 
-        [NotNull]
-        public decimal LineTotal { get; set; }
+        [Ignore]
+        public decimal LineTotal => Quantity * UnitPrice;
+
     }
 
 

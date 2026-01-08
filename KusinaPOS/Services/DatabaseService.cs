@@ -34,6 +34,7 @@ namespace KusinaPOS.Services
         public async Task InitializeAsync()
         {
             // Order matters slightly for clarity, not technically required
+            //await _database.DropTableAsync<Sale>();
             await _database.CreateTableAsync<MenuItem>();
             await _database.CreateTableAsync<InventoryItem>();
             await _database.CreateTableAsync<MenuItemIngredient>();

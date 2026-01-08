@@ -15,6 +15,7 @@ namespace KusinaPOS.ViewModel
     public partial class DashboardViewModel : ObservableObject
     {
         private readonly IDateTimeService? _dateTimeService;
+        private readonly SalesService? _salesService;
         [ObservableProperty]
         private string _currentDateTime;
         [ObservableProperty]
@@ -23,10 +24,10 @@ namespace KusinaPOS.ViewModel
         private string _loggedInUserId;
         [ObservableProperty]
         private string storeName;
-        public DashboardViewModel(IDateTimeService dateTimeService)
+        public DashboardViewModel(IDateTimeService dateTimeService, SalesService salesService)
         {
             _dateTimeService = dateTimeService;
-
+            _salesService = salesService;
             // Subscribe to updates
             _dateTimeService.DateTimeChanged += OnDateTimeChanged;
             CurrentDateTime = _dateTimeService.CurrentDateTime;
@@ -68,6 +69,12 @@ namespace KusinaPOS.ViewModel
         private async Task OpenUserManagementAsync()
         {
             await Shell.Current.GoToAsync(nameof(UserPage));
+        }
+        [RelayCommand]
+        private async Task OpenReportsAsync()
+        {
+            await PageHelper.DisplayAlertAsync("Info", "Reports module is under development.", "OK");
+            await _salesService.PrintSalesWithItems();
         }
     }
 }

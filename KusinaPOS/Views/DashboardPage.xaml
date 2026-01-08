@@ -284,6 +284,9 @@
                                 <Image Source="sales.png" HeightRequest="40"/>
                                 <Label Text="REPORTS" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenReportsCommand}" />
+                            </Border.GestureRecognizers>
                         </Border>
                     </Grid>
 
