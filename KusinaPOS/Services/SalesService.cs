@@ -98,7 +98,7 @@ namespace KusinaPOS.Services
                                 SaleId = saleId,
                                 QuantityChange = -totalDeduction,
                                 Reason = "SALE",
-                                Remarks = $"Sold MenuItemId={saleItem.MenuItemId}",
+                                Remarks = $"Sold ReceiptNo={sale.ReceiptNo}",
                                 TransactionDate = DateTime.Now
                             });
                         }
