@@ -46,7 +46,7 @@
                                                 Grid.Column="0"
                                                 WidthRequest="120"
                                                 HeightRequest="120"
-                                                BackgroundColor="Green">
+                                                BackgroundColor="{StaticResource BackgroundDarker}">
                                         <Image Source="{Binding StoreImageSource}"
                                                    WidthRequest="120"
                                                    HeightRequest="120"

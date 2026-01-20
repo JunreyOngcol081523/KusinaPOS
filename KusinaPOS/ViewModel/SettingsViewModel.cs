@@ -35,6 +35,7 @@ namespace KusinaPOS.ViewModel
             _settingsService = settingsService;
             BackupLocation = Preferences.Get(DatabaseConstants.BackupLocationKey, DatabaseConstants.BackupFolder);
             ImagePath = _settingsService.GetStoreLogo;
+            LoadStoreSettings();
         }
         public string ImageLabel => string.IsNullOrWhiteSpace(ImagePath) ? "Click to upload" : Path.GetFileName(ImagePath);
         public ImageSource StoreImageSource
@@ -59,11 +60,12 @@ namespace KusinaPOS.ViewModel
             }
         }
         [RelayCommand]
-        private void SaveStoreSettingsAsync()
+        private async Task SaveStoreSettingsAsync()
         {
             if (_settingsService != null)
             {
-                _settingsService.SaveStoreSettings(StoreName, StoreAddress, StoreLogo,LogoFile);
+                _settingsService.SaveStoreSettings(StoreName, StoreAddress);
+                await PageHelper.DisplayAlertAsync("Success", "Store settings saved successfully.", "OK");
             }
         }
         [RelayCommand]
@@ -97,6 +99,13 @@ namespace KusinaPOS.ViewModel
                 Debug.WriteLine($"Error uploading image: {ex.Message}");
                 await PageHelper.DisplayAlertAsync("Error", $"Image upload failed: {ex.Message}", "OK");
             }
+        }
+        //load store settings
+        public void LoadStoreSettings()
+        {
+            var (storeName, storeAddress) = SettingsService.LoadStoreSettings();
+            StoreName = storeName;
+            StoreAddress = storeAddress;
         }
     }
 

@@ -14,7 +14,7 @@
         <!-- Top Header -->
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,20">
             <Image Grid.Column="0" 
-                   Source="kusinaposlogo.png" 
+                   Source="{Binding AppLogo}" 
                    HeightRequest="40"
                    VerticalOptions="Start"
                    HorizontalOptions="Start"/>

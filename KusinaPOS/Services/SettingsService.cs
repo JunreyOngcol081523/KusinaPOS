@@ -32,26 +32,28 @@ namespace KusinaPOS.Services
             }
         }
 
-        public void SaveStoreSettings(string storeName, string storeAddress, string storeLogo, Image logoFile)
+        public ImageSource StoreLogoImage
+        {
+            get
+            {
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(GetStoreLogo) || !File.Exists(GetStoreLogo))
+                        return ImageSource.FromFile("kusinaposlogo.png");
+
+                    return ImageSource.FromFile(GetStoreLogo);
+                }
+                catch
+                {
+                    return ImageSource.FromFile("kusinaposlogo.png");
+                }
+            }
+        }
+        public void SaveStoreSettings(string storeName, string storeAddress)
         {
             // Save settings using Preferences
             Preferences.Set(Helpers.DatabaseConstants.StoreNameKey, storeName);
             Preferences.Set(Helpers.DatabaseConstants.StoreAddressKey, storeAddress);
-            //save logo file
-            if (logoFile != null && logoFile.Source is FileImageSource fileImageSource)
-            {
-                var logoFolder = Helpers.DatabaseConstants.StoreLogoFolder;
-                if (!Directory.Exists(logoFolder))
-                {
-                    Directory.CreateDirectory(logoFolder);
-                }
-                var logoPath = Path.Combine(logoFolder, storeLogo);
-                var sourcePath = fileImageSource.File;
-                if (File.Exists(sourcePath))
-                {
-                    File.Copy(sourcePath, logoPath, true);
-                }
-            }
         }
         //load settings
         public static (string storeName, string storeAddress) LoadStoreSettings()
@@ -59,17 +61,6 @@ namespace KusinaPOS.Services
             string storeName = Preferences.Get(Helpers.DatabaseConstants.StoreNameKey, "Kusina POS");
             string storeAddress = Preferences.Get(Helpers.DatabaseConstants.StoreAddressKey, "123 Main St, City, Country");
             return (storeName, storeAddress);
-        }
-        //load logo file path
-        public static string GetStoreLogoPath(string storeLogo)
-        {
-            if (string.IsNullOrEmpty(storeLogo))
-            {
-                return string.Empty;
-            }
-            var logoFolder = Helpers.DatabaseConstants.StoreLogoFolder;
-            var logoPath = Path.Combine(logoFolder, storeLogo);
-            return logoPath;
         }
     }
 }

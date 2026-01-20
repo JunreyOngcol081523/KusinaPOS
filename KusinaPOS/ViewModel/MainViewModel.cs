@@ -30,12 +30,14 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty]
         private Color _cashierBorderColor;
         private readonly UserService _userService;
+        private readonly SettingsService _settingsService;
 
         [ObservableProperty]
         private string appLogoPath;
-        public MainViewModel(UserService userService)
+        public MainViewModel(UserService userService, SettingsService settingsService)
         {
             _userService = userService;
+            _settingsService = settingsService;
             // Initialize colors from resources
             var primaryColor = GetColorFromResource("Primary");
             var gray300Color = GetColorFromResource("Gray300");
@@ -217,7 +219,7 @@ namespace KusinaPOS.ViewModel
         private void LoadAppLogo()
         {
             // Get logo path from Preferences, use default if not set
-            AppLogoPath = Preferences.Get("AppLogoPath", "kusinaposlogo.png");
+            AppLogoPath = _settingsService.GetStoreLogo ?? "kusinaposlogo.png";
         }
     }
 }

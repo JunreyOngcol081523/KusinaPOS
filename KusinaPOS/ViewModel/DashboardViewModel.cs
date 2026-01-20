@@ -16,6 +16,7 @@ namespace KusinaPOS.ViewModel
     {
         private readonly IDateTimeService? _dateTimeService;
         private readonly SalesService? _salesService;
+        private readonly SettingsService? _settingsService;
         [ObservableProperty]
         private string _currentDateTime;
         [ObservableProperty]
@@ -24,10 +25,13 @@ namespace KusinaPOS.ViewModel
         private string _loggedInUserId;
         [ObservableProperty]
         private string storeName;
-        public DashboardViewModel(IDateTimeService dateTimeService, SalesService salesService)
+        [ObservableProperty]
+        private string appLogo;
+        public DashboardViewModel(IDateTimeService dateTimeService, SalesService salesService, SettingsService settingsService)
         {
             _dateTimeService = dateTimeService;
             _salesService = salesService;
+            _settingsService = settingsService;
             // Subscribe to updates
             _dateTimeService.DateTimeChanged += OnDateTimeChanged;
             CurrentDateTime = _dateTimeService.CurrentDateTime;
@@ -35,6 +39,7 @@ namespace KusinaPOS.ViewModel
             // Load user info
             LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
             LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
+            AppLogo = _settingsService.GetStoreLogo ?? "kusinaposlogo.png";
         }
 
         private void OnDateTimeChanged(object? sender, string dateTime)
