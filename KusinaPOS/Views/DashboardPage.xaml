@@ -317,6 +317,9 @@
                                 <Image Source="settings.png" HeightRequest="40"/>
                                 <Label Text="SETTINGS" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
                             </VerticalStackLayout>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenSettingsCommand}" />
+                            </Border.GestureRecognizers>
                         </Border>
                     </Grid>
 

@@ -371,7 +371,7 @@ namespace KusinaPOS.ViewModel
 
                 await PageHelper.DisplayAlertAsync(
                     "Success",
-                    $"Order completed successfully!\nReceipt No: {sale.ReceiptNo}",
+                    $"Order completed successfully!\nSales No: {sale.ReceiptNo}",
                     "OK");
             }
             catch (Exception ex)
@@ -386,7 +386,7 @@ namespace KusinaPOS.ViewModel
         }
         private string GenerateReceiptNo()
         {
-            return $"RCPT-{DateTime.Now:yyyyMMddHHmmssfff}";
+            return $"SALESID-{DateTime.Now:yyyyMMddHHmmssfff}";
         }
     }
 }
