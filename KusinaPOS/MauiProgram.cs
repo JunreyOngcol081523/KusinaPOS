@@ -41,6 +41,7 @@ namespace KusinaPOS
             builder.Services.AddSingleton<MenuItemIngredientService>();
             builder.Services.AddSingleton<SalesService>();
             builder.Services.AddSingleton<SettingsService>();
+            builder.Services.AddSingleton<ReportService>();
 
             //viewmodels and pages
             builder.Services.AddTransient<MainPage>();
@@ -59,6 +60,8 @@ namespace KusinaPOS
             builder.Services.AddTransient<POSTerminalPage>();
             builder.Services.AddTransient<SettingsPage>();
             builder.Services.AddTransient<SettingsViewModel>();
+            builder.Services.AddTransient<ReportPage>();
+            builder.Services.AddTransient<ReportViewModel>();
 
 
             return builder.Build();

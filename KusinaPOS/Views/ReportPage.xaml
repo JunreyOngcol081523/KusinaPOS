@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="KusinaPOS.Views.ReportPage"
+             xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
+             Title="ReportPage">
+    <Grid Padding="16">
+        <tabView:SfTabView x:Name="reportTabView"
+                           ContentTransitionDuration ="1000"
+                           TabBarPlacement="Bottom"
+                           TabBarCornerRadius="24">
+            <tabView:SfTabView.Items>
+                <tabView:SfTabItem Header="Sales" ImageSource="sales.png" 
+                                   BackgroundColor="{StaticResource CardBackground}" 
+                                   TextColor="{StaticResource TextPrimary}"
+                                   FontSize="18"
+                                   ImageSize="40"
+                                   ImagePosition="Left" >
+                    
+                </tabView:SfTabItem>
+                <tabView:SfTabItem Header="Menu Items" ImageSource="fast_moving.png" 
+                                   BackgroundColor="{StaticResource CardBackground}" 
+                                   TextColor="{StaticResource TextPrimary}"
+                                   FontSize="18"
+                                   ImageSize="40"
+                                   ImagePosition="Left" >
+                    
+                </tabView:SfTabItem>
+                <tabView:SfTabItem Header="Inventory" ImageSource="inventory_check.png" 
+                                   BackgroundColor="{StaticResource CardBackground}"   
+                                   TextColor="{StaticResource TextPrimary}"
+                                   FontSize="18"
+                                   ImageSize="40"
+                                   ImagePosition="Left" >
+                    
+                </tabView:SfTabItem>
+            </tabView:SfTabView.Items>
+        </tabView:SfTabView>
+    </Grid>
+</ContentPage>

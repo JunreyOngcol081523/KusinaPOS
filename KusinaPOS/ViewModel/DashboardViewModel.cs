@@ -81,8 +81,7 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         private async Task OpenReportsAsync()
         {
-            await PageHelper.DisplayAlertAsync("Info", "Reports module is under development.", "OK");
-            await _salesService.PrintSalesWithItems();
+            await Shell.Current.GoToAsync(nameof(ReportPage));
         }
         [RelayCommand]
         private async Task OpenSettingsAsync()

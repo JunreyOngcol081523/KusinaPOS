@@ -8,12 +8,23 @@
 
     <Grid Padding="16">
 
-        <tabView:SfTabView x:Name="settingTabView">
+        <tabView:SfTabView x:Name="settingTabView"
+                           TabBarPlacement="Bottom"
+                           TabBarCornerRadius="24"
+                           ContentTransitionDuration ="1000"
+                           >
 
             <tabView:SfTabView.Items>
 
                 <!-- ================= STORE SETTINGS ================= -->
-                <tabView:SfTabItem Header="Store Settings">
+                <tabView:SfTabItem Header="Store Settings"
+                                   ImageSource="settings.png"
+                                   BackgroundColor="{StaticResource CardBackground}" 
+                                    TextColor="{StaticResource TextPrimary}"
+                                    FontSize="18"
+                                    ImageSize="40"
+                                    ImagePosition="Left"
+                                   >
                     <ScrollView>
                         <VerticalStackLayout Padding="16" Spacing="12">
 
@@ -86,7 +97,13 @@
                 </tabView:SfTabItem>
 
                 <!-- ================= DATABASE SETTINGS ================= -->
-                <tabView:SfTabItem Header="Database Settings">
+                <tabView:SfTabItem Header="Database Settings"
+                                   ImageSource="database.png"
+                                   BackgroundColor="{StaticResource CardBackground}" 
+                                    TextColor="{StaticResource TextPrimary}"
+                                    FontSize="18"
+                                    ImageSize="40"
+                                    ImagePosition="Left">
                     <Grid RowDefinitions="*">
 
                         <!-- Loading Overlay -->
@@ -309,7 +326,22 @@
 
                     </Grid>
                 </tabView:SfTabItem>
+                <!--================= ABOUT SETTINGS ================= -->
+                <tabView:SfTabItem Header="About"
+                   ImageSource="info.png"
+                   BackgroundColor="{StaticResource CardBackground}" 
+                   TextColor="{StaticResource TextPrimary}"
+                   FontSize="18"
+                   ImageSize="40"
+                   ImagePosition="Left">
 
+                    <Grid BackgroundColor="{StaticResource BackgroundDark}">
+                        <WebView Source="{Binding HtmlSource}"
+                                VerticalOptions="Fill"
+                                 HorizontalOptions="Fill" />
+                    </Grid>
+
+                </tabView:SfTabItem>
             </tabView:SfTabView.Items>
 
         </tabView:SfTabView>

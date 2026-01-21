@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Text;
 
 namespace KusinaPOS.ViewModel
@@ -34,6 +35,8 @@ namespace KusinaPOS.ViewModel
         [NotifyPropertyChangedFor(nameof(StoreImageSource))]
         [NotifyPropertyChangedFor(nameof(ImageLabel))]
         private string imagePath;
+        [ObservableProperty]
+        private string _htmlSource = string.Empty;
         //===================================database properties===================================
 
         [ObservableProperty]
@@ -50,7 +53,10 @@ namespace KusinaPOS.ViewModel
             ImagePath = _settingsService.GetStoreLogo;
             LoadStoreSettings();
             Backups = new ObservableCollection<DBBackupInfo>();
+
+            HtmlSource = $"Resources/html/about.html";
         }
+
         public string ImageLabel => string.IsNullOrWhiteSpace(ImagePath) ? "Click to upload" : Path.GetFileName(ImagePath);
         public ImageSource StoreImageSource
         {

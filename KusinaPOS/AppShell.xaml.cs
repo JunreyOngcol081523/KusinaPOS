@@ -16,8 +16,7 @@ namespace KusinaPOS
             Routing.RegisterRoute(nameof(UserPage), typeof(UserPage));
             Routing.RegisterRoute(nameof(POSTerminalPage), typeof(POSTerminalPage));
             Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));
-
-            
+            Routing.RegisterRoute(nameof(ReportPage), typeof(ReportPage));
         }
     }
 }

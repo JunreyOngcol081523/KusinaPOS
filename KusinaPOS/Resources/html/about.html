@@ -1,0 +1,281 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About KusinaPOS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Mapped from your MAUI ResourceDictionary */
+            --primary: #FF6B35;
+            --primary-dark: #FF8C61;
+            --tertiary: #D94E1F;
+            --bg-dark: #121212;
+            --surface-dark: #1E1E1E;
+            --card-dark: #252525;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B0B0B0;
+            --border-color: #333333;
+            --gray-100: #2A2A2A;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--bg-dark);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: var(--surface-dark);
+            padding: 50px;
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .brand-logo {
+            max-width: 160px;
+            height: auto;
+            margin-bottom: 24px;
+            /* Added a subtle drop shadow to logo */
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        .tagline {
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.85rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            color: var(--text-primary);
+            font-size: 2.8rem;
+            font-weight: 800;
+        }
+
+        .intro {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 30px;
+        }
+
+            .intro strong {
+                color: var(--primary-dark);
+            }
+
+        h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin: 40px 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .feature-item {
+            background: var(--gray-100);
+            padding: 18px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+            .feature-item:hover {
+                border-color: var(--primary);
+                transform: translateY(-2px);
+                background: var(--card-dark);
+            }
+
+            .feature-item i {
+                color: var(--primary);
+                margin-right: 15px;
+                font-size: 1.1rem;
+            }
+
+        /* Developer Section */
+        .developer-card {
+            background: var(--card-dark);
+            border: 1px solid var(--primary);
+            padding: 40px;
+            border-radius: 20px;
+            margin-top: 60px;
+            position: relative;
+        }
+
+        .dev-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+        }
+
+        .dev-title {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .email-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-primary);
+            margin-top: 10px;
+            font-size: 0.95rem;
+        }
+
+        .social-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+            background: var(--gray-100);
+            border: 1px solid var(--border-color);
+        }
+
+            .social-btn:hover {
+                background: var(--primary);
+                color: var(--bg-dark);
+                border-color: var(--primary);
+                transform: translateY(-2px);
+            }
+
+        .dev-bio {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+                margin: 0;
+                border-radius: 0;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <!--<img src="kusinaposlogo2.png" alt="KusinaPOS Logo" class="brand-logo">-->
+            <img src="dotnet://KusinaPOS/Resources/html/kusinaPOSlogo2.png" alt="KusinaPOS Logo" class="brand-logo">
+
+            <span class="tagline">Streamline Your Kitchen</span>
+            <h1>About KusinaPOS</h1>
+        </header>
+
+        <section>
+            <p class="intro">
+                <strong>KusinaPOS</strong> is a modern, easy-to-use Point of Sale (POS) system designed specifically for restaurants, food stalls, cafés, and small to medium food businesses. It helps streamline daily operations by simplifying order management, sales tracking, and inventory control — all in one reliable system.
+            </p>
+            <p style="color: var(--text-secondary);">
+                Built with efficiency and usability in mind, KusinaPOS empowers business owners to focus more on serving great food and customers, while the system handles the numbers behind the scenes.
+            </p>
+        </section>
+
+        <section>
+            <h2><i class="fa-solid fa-fire-bolt"></i> Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-item"><i class="fa-solid fa-circle-check"></i> Fast and intuitive transactions</div>
+                <div class="feature-item"><i class="fa-solid fa-circle-check"></i> Menu and category management</div>
+                <div class="feature-item"><i class="fa-solid fa-circle-check"></i> Inventory and stock tracking</div>
+                <div class="feature-item"><i class="fa-solid fa-circle-check"></i> Sales summaries and reports</div>
+                <div class="feature-item"><i class="fa-solid fa-circle-check"></i> Offline local database support</div>
+                <div class="feature-item"><i class="fa-solid fa-circle-check"></i> Optimized for Android devices</div>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); font-style: italic;">
+                KusinaPOS is continuously improved based on real-world restaurant workflows to ensure accuracy, speed, and ease of use.
+            </p>
+        </section>
+
+        <section class="developer-card">
+            <div class="dev-header">
+                <span class="dev-name">JUNREY B. ONGCOL</span>
+                <span class="dev-title">Software Developer</span>
+                <div class="email-info">
+                    <i class="fa-regular fa-envelope" style="color: var(--primary);"></i>
+                    <span>junreyongcol@gmail.com</span>
+                </div>
+            </div>
+
+            <p class="dev-bio">
+                KusinaPOS is independently developed with a strong focus on practical business needs, system reliability, and future scalability.
+            </p>
+
+            <div class="social-links">
+                <a href="https://codewithjunrey.web.app/" target="_blank" class="social-btn">
+                    <i class="fa-solid fa-globe"></i> Website
+                </a>
+                <a href="https://github.com/JunreyOngcol081523" target="_blank" class="social-btn">
+                    <i class="fa-brands fa-github"></i> GitHub
+                </a>
+                <a href="https://www.linkedin.com/in/junreyongcol/" target="_blank" class="social-btn">
+                    <i class="fa-brands fa-linkedin"></i> LinkedIn
+                </a>
+                <a href="https://www.facebook.com/junreymutant" target="_blank" class="social-btn">
+                    <i class="fa-brands fa-facebook"></i> Facebook
+                </a>
+            </div>
+        </section>
+    </div>
+
+</body>
+</html>
