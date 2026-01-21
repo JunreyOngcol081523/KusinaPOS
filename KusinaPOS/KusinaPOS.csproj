@@ -104,7 +104,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiImage Include="Resources\html\kusinaposlogo2.png" />
+	  <MauiAsset Include="Resources\html\kusinaposlogo2.png" />
 	</ItemGroup>
 
 	<ItemGroup>
