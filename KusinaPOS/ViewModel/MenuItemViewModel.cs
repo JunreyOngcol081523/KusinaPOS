@@ -23,10 +23,10 @@ namespace KusinaPOS.ViewModel
         #endregion
 
         #region Constructor
-        public MenuItemViewModel(CategoryService categoryService, 
-            MenuItemService menuItemService, IDateTimeService dateTimeService, 
-            InventoryItemService inventoryItemService, 
-            MenuItemIngredientService menuItemIngredientService, 
+        public MenuItemViewModel(CategoryService categoryService,
+            MenuItemService menuItemService, IDateTimeService dateTimeService,
+            InventoryItemService inventoryItemService,
+            MenuItemIngredientService menuItemIngredientService,
             InventoryTransactionService inventoryTransactionService, IDatabaseService databaseService)
         {
             _categoryService = categoryService;
@@ -113,6 +113,8 @@ namespace KusinaPOS.ViewModel
         // UI & Image
         [ObservableProperty]
         private bool isBorderVisible = false;
+        [ObservableProperty]
+        private bool isUnitBasedVisible = false;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(MenuImageSource))]
@@ -355,7 +357,17 @@ namespace KusinaPOS.ViewModel
                 Debug.WriteLine($"Error in AddMenuItem: {ex.Message}");
             }
         }
-
+        partial void OnSelectedMenuTypeChanged(string value)
+        {
+            try
+            {
+                IsUnitBasedVisible = value == "Unit-Based";
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in OnSelectedMenuTypeChanged: {ex.Message}");
+            }
+        }
         [RelayCommand]
         public async Task EditMenuItem(MenuItem menuItem)
         {
@@ -708,7 +720,7 @@ namespace KusinaPOS.ViewModel
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error seeding menu items: {ex.Message}");
-                
+
             }
         }
         #endregion

@@ -7,22 +7,22 @@
 
     <ScrollView>
         <!-- Two columns: Logo | User Type + PIN Entry -->
-        <Grid ColumnDefinitions="*,*" RowDefinitions="*" Padding="20">
+        <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="*" Padding="20" HorizontalOptions="Center">
 
             <!-- Left Column - App Logo Only -->
             <VerticalStackLayout Grid.Column="0" 
                                  VerticalOptions="Center"
                                  HorizontalOptions="Center">
                 <Image Source="{Binding AppLogoPath}"
-                       WidthRequest="400"
-                       HeightRequest="400"
+                       WidthRequest="250"
+                       HeightRequest="250"
                        Aspect="AspectFit"
                        SemanticProperties.Description="Kusina POS Logo" />
             </VerticalStackLayout>
 
             <!-- Right Column - User Type Selection + PIN Entry Side by Side -->
             <Grid Grid.Column="1" 
-                  ColumnDefinitions="Auto,*"
+                  ColumnDefinitions="Auto,Auto"
                   VerticalOptions="Center"
                   Padding="40,0">
 
@@ -93,7 +93,7 @@
                            FontAttributes="Bold"
                            TextColor="{Binding SelectedUserTypeLabelColor}"
                            HorizontalOptions="Center"
-                           Margin="0,0,0,10" />
+                           Margin="0,0,0,0" />
 
                     <!-- PIN Display -->
                     <Border Stroke="{StaticResource Gray300}"
@@ -118,7 +118,7 @@
                           ColumnSpacing="12"
                           HorizontalOptions="Center"
                           WidthRequest="300"
-                          Margin="0,15,0,0">
+                          Margin="0,5,0,0">
 
                         <!-- Row 1: 1, 2, 3 -->
                         <Button Grid.Row="0" Grid.Column="0" Text="1" 
@@ -231,7 +231,6 @@
                             CornerRadius="10"
                             HeightRequest="55"
                             HorizontalOptions="Fill"
-                            Margin="0,15,0,0"
                             SemanticProperties.Hint="Login with PIN" />
 
                 </VerticalStackLayout>

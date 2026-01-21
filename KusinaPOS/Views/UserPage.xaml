@@ -8,24 +8,23 @@
 
     <Grid RowDefinitions="Auto,*" 
           Padding="20"
-          RowSpacing="15">
+          RowSpacing="8">
         <!-- Header with Back Button -->
         <Grid Grid.Row="0" 
-              ColumnDefinitions="Auto,Auto,*"
+              ColumnDefinitions="Auto,Auto"
               ColumnSpacing="5">
             <ImageButton Grid.Column="0"
                         Source="arrowback.png"
                         BackgroundColor="Transparent"
-                        WidthRequest="30"
-                        HeightRequest="30"
+                        WidthRequest="12"
+                        HeightRequest="12"
                         Command="{Binding GoBackCommand}"/>
             <Label Grid.Column="1"
                    Text="{Binding StoreName, StringFormat='Manage Users - {0}'}"
                    TextColor="{StaticResource TextPrimary}"
-                   FontSize="24"
+                   FontSize="15"
                    FontAttributes="Bold"
                    VerticalOptions="Center"/>
-            <Image Grid.Column="2" Source="usersettings.png" HeightRequest="40" HorizontalOptions="Start"/>
 
 
         </Grid>
@@ -33,7 +32,7 @@
         <!-- Main Content -->
         <Grid Grid.Row="1" 
               ColumnDefinitions="*,1.5*"
-              ColumnSpacing="20">
+              ColumnSpacing="15">
 
             <!-- Left Side - User Management -->
             <ScrollView Grid.Column="0">
@@ -42,12 +41,12 @@
                     Stroke="{StaticResource Gray200}"
                     StrokeThickness="1"
                     StrokeShape="RoundRectangle 10"
-                    Padding="20">
+                    Padding="15">
 
-                    <VerticalStackLayout Spacing="20">
+                    <VerticalStackLayout Spacing="10">
                         <Label Text="User Management"
                            TextColor="{StaticResource TextPrimary}"
-                           FontSize="20"
+                           FontSize="15"
                            FontAttributes="Bold"
                            HorizontalOptions="Center"/>
 
@@ -56,7 +55,7 @@
                             Stroke="{StaticResource Gray300}"
                             StrokeThickness="1"
                             StrokeShape="RoundRectangle 10"
-                            Padding="20">
+                            Padding="8">
                             <Grid RowDefinitions="Auto,Auto,Auto"
                               RowSpacing="10">
 
@@ -108,7 +107,7 @@
                             Stroke="{StaticResource Gray300}"
                             StrokeThickness="1"
                             StrokeShape="RoundRectangle 10"
-                            Padding="20">
+                            Padding="8">
                             <Grid RowDefinitions="Auto,Auto,Auto"
                               RowSpacing="10">
 
@@ -166,12 +165,12 @@
                     Stroke="{StaticResource Gray200}"
                     StrokeThickness="1"
                     StrokeShape="RoundRectangle 10"
-                    Padding="30">
+                    Padding="15">
 
-                    <VerticalStackLayout Spacing="25" VerticalOptions="Center">
+                    <VerticalStackLayout Spacing="15" VerticalOptions="Center">
                         <Label Text="Add/Edit User Form"
                            TextColor="{StaticResource TextPrimary}"
-                           FontSize="22"
+                           FontSize="15"
                            FontAttributes="Bold"
                            HorizontalOptions="Center"/>
 

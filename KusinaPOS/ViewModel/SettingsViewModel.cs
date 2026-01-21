@@ -53,10 +53,39 @@ namespace KusinaPOS.ViewModel
             ImagePath = _settingsService.GetStoreLogo;
             LoadStoreSettings();
             Backups = new ObservableCollection<DBBackupInfo>();
+            LoadAboutHtml();
 
-            HtmlSource = $"Resources/html/about.html";
         }
+        public async void LoadAboutHtml()
+        {
+            try
+            {
+                // Load from Resources/Raw/about.html
+                using var stream = await FileSystem.OpenAppPackageFileAsync("about.html");
+                using var reader = new StreamReader(stream);
+                var htmlContent = await reader.ReadToEndAsync();
 
+                HtmlSource = htmlContent;
+
+                Debug.WriteLine("HTML loaded from file successfully");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error loading HTML from file: {ex.Message}");
+
+                // Fallback to inline HTML
+                HtmlSource = @"<html><body style='font-family: Arial; padding: 20px;'>
+                                <h1>Kusina POS</h1>
+                                <p>Version 1.0.0</p>
+                                <h2>Features:</h2>
+                                <ul>
+                                    <li>Menu Management</li>
+                                    <li>Inventory Tracking</li>
+                                    <li>Sales Reports</li>
+                                </ul>
+                            </body></html>";
+            }
+        }
         public string ImageLabel => string.IsNullOrWhiteSpace(ImagePath) ? "Click to upload" : Path.GetFileName(ImagePath);
         public ImageSource StoreImageSource
         {
@@ -174,21 +203,20 @@ namespace KusinaPOS.ViewModel
             {
                 IsBusy = false;
 
-                // Reload AFTER IsBusy is set to false
-                await LoadBackupsAsync();
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    await LoadBackupsAsync();
+                });
             }
+
         }
 
         [RelayCommand]
         public async Task LoadBackupsAsync()
         {
-            // Remove the IsBusy check here OR use a different flag
-            // if (IsBusy) return;  // <-- REMOVE THIS LINE
-
             try
             {
                 IsBusy = true;
-                Backups.Clear();
 
                 var backupDir = BackupLocation;
                 Debug.WriteLine($"Loading backups from: {backupDir}");
@@ -202,31 +230,37 @@ namespace KusinaPOS.ViewModel
                 var files = Directory.GetFiles(backupDir, "*.db");
                 Debug.WriteLine($"Found {files.Length} backup files");
 
-                await Task.Delay(300);
-
                 var backupFiles = files
                     .Select(f => new FileInfo(f))
                     .OrderByDescending(f => f.CreationTime)
-                    .Select(f => new DBBackupInfo(f));
+                    .Select(f => new DBBackupInfo(f))
+                    .ToList();
 
-                foreach (var backup in backupFiles)
+                await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    Backups.Add(backup);
-                }
+                    Backups.Clear();
+                    foreach (var backup in backupFiles)
+                    {
+                        Backups.Add(backup);
+                    }
+                });
 
                 Debug.WriteLine($"Loaded {Backups.Count} backups into collection");
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error loading backups: {ex.Message}");
-                await PageHelper.DisplayAlertAsync("Error",
-                    $"Failed to load backups: {ex.Message}", "OK");
+                await PageHelper.DisplayAlertAsync(
+                    "Error",
+                    $"Failed to load backups: {ex.Message}",
+                    "OK");
             }
             finally
             {
                 IsBusy = false;
             }
         }
+
         [RelayCommand]
         public async Task ShareBackupAsync(DBBackupInfo backup)
         {

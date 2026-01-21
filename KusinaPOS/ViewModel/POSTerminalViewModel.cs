@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using MenuItem = KusinaPOS.Models.MenuItem;
 
@@ -25,7 +26,7 @@ namespace KusinaPOS.ViewModel
         private readonly MenuItemService menuItemService;
         private readonly MenuItemIngredientService menuItemIngredientService; 
         private readonly SalesService salesService;
-
+        private readonly IDateTimeService _dateTimeService;
         [ObservableProperty]
         private string selectedCategoryName = "All";
 
@@ -49,18 +50,32 @@ namespace KusinaPOS.ViewModel
         private string changeAmount = "₱0.00";
 
         private decimal subtotal = 0;
+        // Date & Time
+        [ObservableProperty]
+        private string _currentDateTime;
 
+        // User info
+        [ObservableProperty]
+        private string loggedInUserName = string.Empty;
+        [ObservableProperty]
+        private string loggedInUserId = string.Empty;
+
+        // Store info
+        [ObservableProperty]
+        private string storeName;
         // SINGLE CONSTRUCTOR - removed duplicate
         public POSTerminalViewModel(
             CategoryService categoryService,
             MenuItemService menuItemService,
             MenuItemIngredientService menuItemIngredientService,
-            SalesService salesService)
+            SalesService salesService,
+            IDateTimeService dateTimeService)
         {
             this.categoryService = categoryService;
             this.menuItemService = menuItemService;
             this.menuItemIngredientService = menuItemIngredientService;
             this.salesService = salesService;
+            _dateTimeService = dateTimeService;
             // Initialize with empty collection first
             MenuCategories = new ObservableCollection<Category>
             {
@@ -71,7 +86,23 @@ namespace KusinaPOS.ViewModel
             };
 
             Debug.WriteLine("=== POSTerminalViewModel Constructor ===");
-            _ = InitializeCollectionsAsync();
+
+            try
+            {
+                LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
+                LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
+                StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
+
+                _dateTimeService.DateTimeChanged += OnDateTimeChanged;
+                CurrentDateTime = _dateTimeService.CurrentDateTime;
+
+                _ = InitializeCollectionsAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in MenuItemViewModel constructor: {ex.Message}");
+            }
+
             
         }
 
@@ -125,7 +156,20 @@ namespace KusinaPOS.ViewModel
                     $"Failed to load data: {ex.Message}", "OK");
             }
         }
-
+        private void OnDateTimeChanged(object? sender, string dateTime)
+        {
+            try
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    CurrentDateTime = dateTime;
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in OnDateTimeChanged: {ex.Message}");
+            }
+        }
         private async Task LoadMenuItemsAsync()
         {
             var items = await menuItemService.GetAllMenuItemsAsync();
@@ -387,6 +431,18 @@ namespace KusinaPOS.ViewModel
         private string GenerateReceiptNo()
         {
             return $"SALESID-{DateTime.Now:yyyyMMddHHmmssfff}";
+        }
+        [RelayCommand]
+        public async Task GoBackAsync()
+        {
+            try
+            {
+                await Shell.Current.GoToAsync("..");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error navigating back: {ex.Message}");
+            }
         }
     }
 }

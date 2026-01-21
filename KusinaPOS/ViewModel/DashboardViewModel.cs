@@ -1,14 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input; // For MainThread
+using CommunityToolkit.Mvvm.Input;
 using KusinaPOS.Helpers;
 using KusinaPOS.Services;
 using KusinaPOS.Views;
-using Microsoft.Maui.ApplicationModel;
-using System;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading;
+using System.Diagnostics;
 
 namespace KusinaPOS.ViewModel
 {
@@ -17,76 +12,238 @@ namespace KusinaPOS.ViewModel
         private readonly IDateTimeService? _dateTimeService;
         private readonly SalesService? _salesService;
         private readonly SettingsService? _settingsService;
+        private bool _isInitialized = false;
+
         [ObservableProperty]
-        private string _currentDateTime;
+        private string _currentDateTime = string.Empty;
+
         [ObservableProperty]
-        private string _loggedInUserName;
+        private string _loggedInUserName = string.Empty;
+
         [ObservableProperty]
-        private string _loggedInUserId;
+        private string _loggedInUserId = string.Empty;
+
         [ObservableProperty]
-        private string storeName;
+        private string storeName = string.Empty;
+
         [ObservableProperty]
-        private string appLogo;
+        private string appLogo = "kusinaposlogo.png"; // Default immediately
+
         [ObservableProperty]
-        private string appTitle;
-        public DashboardViewModel(IDateTimeService dateTimeService, SalesService salesService, SettingsService settingsService)
+        private string appTitle = "Kusina POS"; // Default immediately
+
+        [ObservableProperty]
+        private bool isLoading = true;
+
+        public DashboardViewModel(
+            IDateTimeService dateTimeService,
+            SalesService salesService,
+            SettingsService settingsService)
         {
-            _dateTimeService = dateTimeService;
-            _salesService = salesService;
-            _settingsService = settingsService;
-            // Subscribe to updates
-            _dateTimeService.DateTimeChanged += OnDateTimeChanged;
-            CurrentDateTime = _dateTimeService.CurrentDateTime;
-            this.StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
-            // Load user info
-            LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
-            LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
-            AppLogo = _settingsService.GetStoreLogo ?? "kusinaposlogo.png";
-            AppTitle = _settingsService.GetAppTitle ?? "Kusina POS";
+            try
+            {
+                Debug.WriteLine("DashboardViewModel constructor started");
+
+                _dateTimeService = dateTimeService;
+                _salesService = salesService;
+                _settingsService = settingsService;
+
+                // Set defaults immediately - no waiting
+                CurrentDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                StoreName = "Kusina POS";
+                AppLogo = "kusinaposlogo.png";
+                AppTitle = "Kusina POS";
+
+                Debug.WriteLine("DashboardViewModel constructor completed");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in DashboardViewModel constructor: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Call this from OnAppearing in the page
+        /// </summary>
+        public async Task InitializeAsync()
+        {
+            if (_isInitialized) return;
+
+            try
+            {
+                Debug.WriteLine("DashboardViewModel initialization started");
+                IsLoading = true;
+
+                // Load data in background
+                await Task.Run(() =>
+                {
+                    try
+                    {
+                        // Load preferences safely
+                        var storeNamePref = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
+                        var userIdPref = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
+                        var userNamePref = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
+
+                        // Get logo path safely
+                        var logoPath = _settingsService?.GetStoreLogo ?? "kusinaposlogo.png";
+                        var title = _settingsService?.GetAppTitle ?? "Kusina POS";
+
+                        // Update on main thread
+                        MainThread.BeginInvokeOnMainThread(() =>
+                        {
+                            StoreName = storeNamePref;
+                            LoggedInUserId = userIdPref;
+                            LoggedInUserName = userNamePref;
+
+                            // Validate logo path exists before setting
+                            if (!string.IsNullOrEmpty(logoPath) && File.Exists(logoPath))
+                            {
+                                AppLogo = logoPath;
+                            }
+
+                            AppTitle = title;
+
+                            Debug.WriteLine($"Loaded: Store={StoreName}, User={LoggedInUserName}, Logo={AppLogo}");
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error loading preferences: {ex.Message}");
+                    }
+                });
+
+                // Subscribe to datetime updates AFTER everything is loaded
+                if (_dateTimeService != null)
+                {
+                    _dateTimeService.DateTimeChanged += OnDateTimeChanged;
+                    CurrentDateTime = _dateTimeService.CurrentDateTime;
+                    Debug.WriteLine("DateTime service subscribed");
+                }
+
+                _isInitialized = true;
+                Debug.WriteLine("DashboardViewModel initialization completed");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in InitializeAsync: {ex.Message}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
         private void OnDateTimeChanged(object? sender, string dateTime)
         {
-            CurrentDateTime = dateTime;
+            try
+            {
+                CurrentDateTime = dateTime;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error updating datetime: {ex.Message}");
+            }
         }
 
-        ~DashboardViewModel()
+        /// <summary>
+        /// Call this from OnDisappearing in the page
+        /// </summary>
+        public void Cleanup()
         {
-            _dateTimeService.DateTimeChanged -= OnDateTimeChanged;
+            try
+            {
+                if (_dateTimeService != null)
+                {
+                    _dateTimeService.DateTimeChanged -= OnDateTimeChanged;
+                    Debug.WriteLine("DateTime service unsubscribed");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in cleanup: {ex.Message}");
+            }
         }
 
+        //===================================
+        // Navigation Commands
+        //===================================
 
-        //actions
-        //OpenMenuManagementCommand
         [RelayCommand]
         private async Task OpenMenuManagementAsync()
         {
-            await Shell.Current.GoToAsync(nameof(MenuItemPage));
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(MenuItemPage));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Navigation error: {ex.Message}");
+            }
         }
+
         [RelayCommand]
         private async Task OpenInventoryManagementAsync()
         {
-            await Shell.Current.GoToAsync(nameof(InventoryItemPage));
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(InventoryItemPage));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Navigation error: {ex.Message}");
+            }
         }
+
         [RelayCommand]
         private async Task OpenRecipeManagementAsync()
         {
-            await Shell.Current.GoToAsync(nameof(MenuItemIngredientsPage));
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(MenuItemIngredientsPage));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Navigation error: {ex.Message}");
+            }
         }
+
         [RelayCommand]
         private async Task OpenUserManagementAsync()
         {
-            await Shell.Current.GoToAsync(nameof(UserPage));
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(UserPage));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Navigation error: {ex.Message}");
+            }
         }
+
         [RelayCommand]
         private async Task OpenReportsAsync()
         {
-            await Shell.Current.GoToAsync(nameof(ReportPage));
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(ReportPage));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Navigation error: {ex.Message}");
+            }
         }
+
         [RelayCommand]
         private async Task OpenSettingsAsync()
         {
-            await Shell.Current.GoToAsync(nameof(SettingsPage));
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(SettingsPage));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Navigation error: {ex.Message}");
+            }
         }
     }
 }

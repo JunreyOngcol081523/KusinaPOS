@@ -28,7 +28,7 @@ public partial class MenuItemPage : ContentPage
             {
                 // IsActive is ALREADY updated because of TwoWay binding
                 await _menuItemService.UpdateMenuItemAsync(menuItem);
-               await _menuItemViewModel.LoadCategoriesWithMenuItems();
+               //await _menuItemViewModel.LoadCategoriesWithMenuItems();
             }
             catch (Exception ex)
             {
@@ -44,21 +44,21 @@ public partial class MenuItemPage : ContentPage
         }
     }
     //onapppearing
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-        _ = SeedOnceAsync();
-    }
+    //protected override void OnAppearing()
+    //{
+    //    base.OnAppearing();
+    //    _ = SeedOnceAsync();
+    //}
 
-    private async Task SeedOnceAsync()
-    {
-        try
-        {
-            await _menuItemViewModel.SeedMenuItemsAsync();
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Seed failed: {ex}");
-        }
-    }
+    //private async Task SeedOnceAsync()
+    //{
+    //    try
+    //    {
+    //        await _menuItemViewModel.SeedMenuItemsAsync();
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Debug.WriteLine($"Seed failed: {ex}");
+    //    }
+    //}
 }
