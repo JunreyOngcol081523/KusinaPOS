@@ -22,11 +22,15 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty]
         private bool isLoading = true;
 
+        [ObservableProperty]
+        private bool isProcessing = false;
+
         private readonly CategoryService categoryService;
         private readonly MenuItemService menuItemService;
-        private readonly MenuItemIngredientService menuItemIngredientService; 
+        private readonly MenuItemIngredientService menuItemIngredientService;
         private readonly SalesService salesService;
         private readonly IDateTimeService _dateTimeService;
+
         [ObservableProperty]
         private string selectedCategoryName = "All";
 
@@ -50,6 +54,7 @@ namespace KusinaPOS.ViewModel
         private string changeAmount = "₱0.00";
 
         private decimal subtotal = 0;
+
         // Date & Time
         [ObservableProperty]
         private string _currentDateTime;
@@ -57,13 +62,17 @@ namespace KusinaPOS.ViewModel
         // User info
         [ObservableProperty]
         private string loggedInUserName = string.Empty;
+
         [ObservableProperty]
         private string loggedInUserId = string.Empty;
 
         // Store info
         [ObservableProperty]
         private string storeName;
-        // SINGLE CONSTRUCTOR - removed duplicate
+
+        private bool _isInitialized = false;
+        private readonly SemaphoreSlim _initLock = new SemaphoreSlim(1, 1);
+
         public POSTerminalViewModel(
             CategoryService categoryService,
             MenuItemService menuItemService,
@@ -71,39 +80,64 @@ namespace KusinaPOS.ViewModel
             SalesService salesService,
             IDateTimeService dateTimeService)
         {
-            this.categoryService = categoryService;
-            this.menuItemService = menuItemService;
-            this.menuItemIngredientService = menuItemIngredientService;
-            this.salesService = salesService;
-            _dateTimeService = dateTimeService;
-            // Initialize with empty collection first
-            MenuCategories = new ObservableCollection<Category>
-            {
-                new Category { Id = 0, Name = "All", IsSelected = true },
-                new Category { Id = 1, Name = "Meals", IsSelected = false },
-                new Category { Id = 2, Name = "Drinks", IsSelected = false },
-                new Category { Id = 3, Name = "Desserts", IsSelected = false }
-            };
-
-            Debug.WriteLine("=== POSTerminalViewModel Constructor ===");
-
             try
             {
+                Debug.WriteLine("=== POSTerminalViewModel Constructor Started ===");
+
+                this.categoryService = categoryService;
+                this.menuItemService = menuItemService;
+                this.menuItemIngredientService = menuItemIngredientService;
+                this.salesService = salesService;
+                _dateTimeService = dateTimeService;
+
+                // Initialize with default values immediately
+                MenuCategories = new ObservableCollection<Category>
+                {
+                    new Category { Id = 0, Name = "All", IsSelected = true }
+                };
+
+                AllMenuItems = new ObservableCollection<MenuItem>();
+                FilteredMenuItems = new ObservableCollection<MenuItem>();
+                OrderItems = new ObservableCollection<OrderItem>();
+
+                // Load user preferences immediately (fast operation)
                 LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
                 LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
                 StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
 
+                // Subscribe to datetime updates
                 _dateTimeService.DateTimeChanged += OnDateTimeChanged;
-                CurrentDateTime = _dateTimeService.CurrentDateTime;
+                CurrentDateTime = _dateTimeService.CurrentDateTime ?? DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
-                _ = InitializeCollectionsAsync();
+                Debug.WriteLine("=== POSTerminalViewModel Constructor Completed ===");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error in MenuItemViewModel constructor: {ex.Message}");
+                Debug.WriteLine($"Error in POSTerminalViewModel constructor: {ex.Message}");
+                IsLoading = false;
             }
+        }
 
-            
+        /// <summary>
+        /// Call this from the page's OnAppearing to initialize data
+        /// </summary>
+        public async Task InitializeAsync()
+        {
+            if (_isInitialized) return;
+
+            await _initLock.WaitAsync();
+            try
+            {
+                if (_isInitialized) return;
+
+                Debug.WriteLine("=== Starting POSTerminalViewModel InitializeAsync ===");
+                await InitializeCollectionsAsync();
+                _isInitialized = true;
+            }
+            finally
+            {
+                _initLock.Release();
+            }
         }
 
         // ======================
@@ -116,46 +150,86 @@ namespace KusinaPOS.ViewModel
                 Debug.WriteLine("=== Starting InitializeCollectionsAsync ===");
                 IsLoading = true;
 
-                // Load categories
-                var categoryList = await categoryService.GetAllCategoriesAsync();
-                Debug.WriteLine($"=== Loaded {categoryList?.Count() ?? 0} categories ===");
-
-                // Clear and add to existing collection
-                MenuCategories.Clear();
-
-                // Add "All" category first
-                MenuCategories.Add(new Category
+                // Load data in background thread
+                await Task.Run(async () =>
                 {
-                    Id = 0,
-                    Name = "All",
-                    IsSelected = true
+                    try
+                    {
+                        // Load categories
+                        var categoryList = await categoryService.GetAllCategoriesAsync();
+                        Debug.WriteLine($"=== Loaded {categoryList?.Count() ?? 0} categories ===");
+
+                        // Load menu items
+                        var menuItems = await menuItemService.GetAllMenuItemsAsync();
+                        Debug.WriteLine($"=== Loaded {menuItems?.Count() ?? 0} menu items ===");
+
+                        // Update UI on main thread
+                        await MainThread.InvokeOnMainThreadAsync(() =>
+                        {
+                            // Clear and rebuild categories
+                            MenuCategories.Clear();
+
+                            // Add "All" category first
+                            MenuCategories.Add(new Category
+                            {
+                                Id = 0,
+                                Name = "All",
+                                IsSelected = true
+                            });
+
+                            // Add rest of categories
+                            if (categoryList != null)
+                            {
+                                foreach (var category in categoryList)
+                                {
+                                    category.IsSelected = false;
+                                    MenuCategories.Add(category);
+                                    Debug.WriteLine($"=== Added category: {category.Name} ===");
+                                }
+                            }
+
+                            Debug.WriteLine($"=== Total MenuCategories: {MenuCategories.Count} ===");
+
+                            // Load menu items
+                            AllMenuItems.Clear();
+                            if (menuItems != null)
+                            {
+                                foreach (var item in menuItems)
+                                {
+                                    AllMenuItems.Add(item);
+                                }
+                            }
+
+                            // Apply initial filter
+                            FilterMenuItems();
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"=== Error in background loading: {ex.Message} ===");
+                        throw;
+                    }
                 });
 
-                // Add rest of categories
-                if (categoryList != null)
-                {
-                    foreach (var category in categoryList)
-                    {
-                        category.IsSelected = false;
-                        MenuCategories.Add(category);
-                        Debug.WriteLine($"=== Added category: {category.Name} ===");
-                    }
-                }
-
-                Debug.WriteLine($"=== Total MenuCategories: {MenuCategories.Count} ===");
-                IsLoading = false;
-                await LoadMenuItemsAsync();
+                Debug.WriteLine("=== InitializeCollectionsAsync completed successfully ===");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"=== Error loading categories: {ex.Message} ===");
+                Debug.WriteLine($"=== Error loading collections: {ex.Message} ===");
                 Debug.WriteLine($"=== Stack trace: {ex.StackTrace} ===");
 
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    await PageHelper.DisplayAlertAsync("Error",
+                        $"Failed to load data: {ex.Message}", "OK");
+                });
+            }
+            finally
+            {
                 IsLoading = false;
-                await PageHelper.DisplayAlertAsync("Error",
-                    $"Failed to load data: {ex.Message}", "OK");
             }
         }
+
         private void OnDateTimeChanged(object? sender, string dateTime)
         {
             try
@@ -170,65 +244,108 @@ namespace KusinaPOS.ViewModel
                 Debug.WriteLine($"Error in OnDateTimeChanged: {ex.Message}");
             }
         }
+
         private async Task LoadMenuItemsAsync()
         {
-            var items = await menuItemService.GetAllMenuItemsAsync();
+            try
+            {
+                var items = await Task.Run(async () =>
+                    await menuItemService.GetAllMenuItemsAsync());
 
-            AllMenuItems.Clear();
-            foreach (var item in items)
-                AllMenuItems.Add(item);
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    AllMenuItems.Clear();
+                    foreach (var item in items)
+                    {
+                        AllMenuItems.Add(item);
+                    }
 
-            FilterMenuItems(); // Apply initial filter
+                    FilterMenuItems(); // Apply initial filter
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error loading menu items: {ex.Message}");
+            }
         }
 
         [RelayCommand]
         private void SelectCategory(Category category)
         {
-            Debug.WriteLine($"=== Category selected: {category?.Name} ===");
-            SelectedCategoryName = category?.Name ?? "All";
-
-            // Deselect all categories
-            foreach (var cat in MenuCategories)
+            try
             {
-                cat.IsSelected = false;
+                Debug.WriteLine($"=== Category selected: {category?.Name} ===");
+
+                // Setting this property triggers OnSelectedCategoryNameChanged
+                SelectedCategoryName = category?.Name ?? "All";
+
+                // Update selection state for the UI
+                foreach (var cat in MenuCategories)
+                {
+                    cat.IsSelected = (category != null && cat.Id == category.Id);
+                }
             }
-
-            // Select the clicked category
-            if (category != null)
+            catch (Exception ex)
             {
-                category.IsSelected = true;
+                Debug.WriteLine($"Error selecting category: {ex.Message}");
             }
         }
 
         partial void OnSelectedCategoryNameChanged(string value)
         {
-            Debug.WriteLine($"=== Filtering menu items for category: {value} ===");
-            FilterMenuItems();
+            // We launch a background task here to ensure the UI remains fluid
+            // while FilterMenuItems does its work.
+            Task.Run(() =>
+            {
+                FilterMenuItems();
+            });
         }
 
         private void FilterMenuItems()
         {
-            if (AllMenuItems == null || AllMenuItems.Count == 0)
-                return;
-
-            FilteredMenuItems.Clear();
-
-            if (SelectedCategoryName == "All")
+            try
             {
-                foreach (var item in AllMenuItems)
-                    FilteredMenuItems.Add(item);
+                // 1. Start Loading (Ensure this happens on MainThread for UI binding)
+                MainThread.BeginInvokeOnMainThread(() => IsLoading = true);
 
-                Debug.WriteLine($"=== Showing ALL items: {FilteredMenuItems.Count} ===");
-                return;
+                if (AllMenuItems == null || AllMenuItems.Count == 0)
+                {
+                    MainThread.BeginInvokeOnMainThread(() => FilteredMenuItems.Clear());
+                    return;
+                }
+
+                // 2. Perform the actual data filtering on the CURRENT thread (Background)
+                List<MenuItem> results;
+                if (SelectedCategoryName == "All")
+                {
+                    results = AllMenuItems.ToList();
+                }
+                else
+                {
+                    results = AllMenuItems.Where(m => m.Category == SelectedCategoryName).ToList();
+                }
+
+                // 3. Update the UI Collection on the Main Thread
+                // This is the only part that MUST be on the Main Thread.
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    FilteredMenuItems.Clear();
+                    foreach (var item in results)
+                    {
+                        FilteredMenuItems.Add(item);
+                    }
+                    Debug.WriteLine($"=== Filtered items count: {FilteredMenuItems.Count} ===");
+                });
             }
-
-            var filtered = AllMenuItems
-                .Where(m => m.Category == SelectedCategoryName);
-
-            foreach (var item in filtered)
-                FilteredMenuItems.Add(item);
-
-            Debug.WriteLine($"=== Filtered items count: {FilteredMenuItems.Count} ===");
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error filtering menu items: {ex.Message}");
+            }
+            finally
+            {
+                // 4. Stop Loading
+                MainThread.BeginInvokeOnMainThread(() => IsLoading = false);
+            }
         }
 
         // ======================
@@ -237,14 +354,16 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         private async Task AddToOrder(MenuItem menuItem)
         {
-            if (menuItem == null) return;
+            if (menuItem == null || IsProcessing) return;
 
-            Debug.WriteLine($"=== Checking ingredients for: {menuItem.Name} ===");
-
+            IsProcessing = true;
             try
             {
-                // Check if menu item has ingredients
-                var ingredients = await menuItemIngredientService.GetByMenuItemIdAsync(menuItem.Id);
+                Debug.WriteLine($"=== Checking ingredients for: {menuItem.Name} ===");
+
+                // Check ingredients in background
+                var ingredients = await Task.Run(async () =>
+                    await menuItemIngredientService.GetByMenuItemIdAsync(menuItem.Id));
 
                 if (ingredients == null || ingredients.Count == 0)
                 {
@@ -256,110 +375,160 @@ namespace KusinaPOS.ViewModel
                 }
 
                 Debug.WriteLine($"=== Found {ingredients.Count} ingredients for {menuItem.Name} ===");
-                Debug.WriteLine($"=== Adding to order: {menuItem.Name} x {menuItem.Quantity} ===");
 
-                // Check if item already exists in order
-                var existingItem = OrderItems.FirstOrDefault(o => o.MenuItemId == menuItem.Id);
+                // Update order on main thread
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    // Check if item already exists in order
+                    var existingItem = OrderItems.FirstOrDefault(o => o.MenuItemId == menuItem.Id);
 
-                if (existingItem != null)
-                {
-                    // Update quantity if already in order
-                    existingItem.Quantity += menuItem.Quantity;
-                    Debug.WriteLine($"=== Updated existing item. New quantity: {existingItem.Quantity} ===");
-                }
-                else
-                {
-                    // Add new item to order
-                    var orderItem = new OrderItem
+                    if (existingItem != null)
                     {
-                        MenuItemId = menuItem.Id,
-                        Name = menuItem.Name,
-                        Price = menuItem.Price,
-                        Quantity = menuItem.Quantity,
-                        ImagePath = menuItem.ImagePath
-                    };
-                    OrderItems.Add(orderItem);
-                    Debug.WriteLine($"=== Added new item to order ===");
-                }
+                        // Update quantity if already in order
+                        existingItem.Quantity += menuItem.Quantity;
+                        Debug.WriteLine($"=== Updated existing item. New quantity: {existingItem.Quantity} ===");
+                    }
+                    else
+                    {
+                        // Add new item to order
+                        var orderItem = new OrderItem
+                        {
+                            MenuItemId = menuItem.Id,
+                            Name = menuItem.Name,
+                            Price = menuItem.Price,
+                            Quantity = menuItem.Quantity,
+                            ImagePath = menuItem.ImagePath
+                        };
+                        OrderItems.Add(orderItem);
+                        Debug.WriteLine($"=== Added new item to order ===");
+                    }
 
-                // Reset quantity back to 1
-                menuItem.Quantity = 1;
+                    // Reset quantity back to 1
+                    menuItem.Quantity = 1;
 
-                // Recalculate totals
-                CalculateTotals();
+                    // Recalculate totals
+                    CalculateTotals();
+                });
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"=== Error checking ingredients: {ex.Message} ===");
+                Debug.WriteLine($"=== Error adding to order: {ex.Message} ===");
                 await PageHelper.DisplayAlertAsync(
                     "Error",
-                    $"Failed to verify ingredients: {ex.Message}",
+                    $"Failed to add item to order: {ex.Message}",
                     "OK");
+            }
+            finally
+            {
+                IsProcessing = false;
             }
         }
 
         [RelayCommand]
         private void IncreaseOrderItemQuantity(OrderItem orderItem)
         {
-            if (orderItem != null)
+            try
             {
-                orderItem.Quantity++;
-                CalculateTotals();
+                if (orderItem != null)
+                {
+                    orderItem.Quantity++;
+                    CalculateTotals();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error increasing quantity: {ex.Message}");
             }
         }
 
         [RelayCommand]
         private void DecreaseOrderItemQuantity(OrderItem orderItem)
         {
-            if (orderItem != null)
+            try
             {
-                if (orderItem.Quantity > 1)
+                if (orderItem != null)
                 {
-                    orderItem.Quantity--;
-                    CalculateTotals();
+                    if (orderItem.Quantity > 1)
+                    {
+                        orderItem.Quantity--;
+                        CalculateTotals();
+                    }
+                    else
+                    {
+                        // Remove item if quantity would go to 0
+                        OrderItems.Remove(orderItem);
+                        CalculateTotals();
+                    }
                 }
-                else
-                {
-                    // Remove item if quantity would go to 0
-                    OrderItems.Remove(orderItem);
-                    CalculateTotals();
-                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error decreasing quantity: {ex.Message}");
             }
         }
 
         [RelayCommand]
         private void RemoveOrderItem(OrderItem orderItem)
         {
-            if (orderItem != null)
+            try
             {
-                OrderItems.Remove(orderItem);
-                CalculateTotals();
+                if (orderItem != null)
+                {
+                    OrderItems.Remove(orderItem);
+                    CalculateTotals();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error removing order item: {ex.Message}");
             }
         }
 
         private void CalculateTotals()
         {
-            subtotal = OrderItems.Sum(o => o.Subtotal);
-            SubtotalAmount = $"₱{subtotal:F2}";
+            try
+            {
+                subtotal = OrderItems.Sum(o => o.Subtotal);
+                SubtotalAmount = $"₱{subtotal:F2}";
 
-            // Calculate change if cash tendered
-            CalculateChange();
+                // Calculate change if cash tendered
+                CalculateChange();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error calculating totals: {ex.Message}");
+            }
         }
 
         partial void OnCashTenderedAmountChanged(string value)
         {
-            CalculateChange();
+            try
+            {
+                CalculateChange();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error on cash tendered change: {ex.Message}");
+            }
         }
 
         private void CalculateChange()
         {
-            if (decimal.TryParse(CashTenderedAmount, out decimal cashTendered))
+            try
             {
-                var change = cashTendered - subtotal;
-                ChangeAmount = change >= 0 ? $"₱{change:F2}" : "₱0.00";
+                if (decimal.TryParse(CashTenderedAmount, out decimal cashTendered))
+                {
+                    var change = cashTendered - subtotal;
+                    ChangeAmount = change >= 0 ? $"₱{change:F2}" : "₱0.00";
+                }
+                else
+                {
+                    ChangeAmount = "₱0.00";
+                }
             }
-            else
+            catch (Exception ex)
             {
+                Debug.WriteLine($"Error calculating change: {ex.Message}");
                 ChangeAmount = "₱0.00";
             }
         }
@@ -367,71 +536,107 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         private async Task CompleteOrder()
         {
-            if (OrderItems.Count == 0)
-            {
-                await PageHelper.DisplayAlertAsync(
-                    "Empty Order",
-                    "Please add items to the order.",
-                    "OK");
-                return;
-            }
+            if (IsProcessing) return;
 
-            if (!decimal.TryParse(CashTenderedAmount, out decimal cashTendered) ||
-                cashTendered < subtotal)
-            {
-                await PageHelper.DisplayAlertAsync(
-                    "Insufficient Payment",
-                    "Please enter a valid cash amount.",
-                    "OK");
-                return;
-            }
-
+            IsProcessing = true;
             try
             {
-                // Use DECIMAL values, not formatted strings
-                decimal subTotal = subtotal;
-                decimal change = cashTendered - subTotal;
-
-                var sale = new Sale
+                if (OrderItems.Count == 0)
                 {
-                    SaleDate = DateTime.Now,
-                    ReceiptNo = GenerateReceiptNo(),
-                    SubTotal = subTotal,
-                    Discount = 0,
-                    Tax = 0,
-                    TotalAmount = subTotal,
-                    AmountPaid = cashTendered,
-                    ChangeAmount = change
-                };
+                    await PageHelper.DisplayAlertAsync(
+                        "Empty Order",
+                        "Please add items to the order.",
+                        "OK");
+                    return;
+                }
 
-                var saleItems = OrderItemMapper.ToSaleItems(OrderItems);
+                if (!decimal.TryParse(CashTenderedAmount, out decimal cashTendered) ||
+                    cashTendered < subtotal)
+                {
+                    await PageHelper.DisplayAlertAsync(
+                        "Insufficient Payment",
+                        "Please enter a valid cash amount.",
+                        "OK");
+                    return;
+                }
 
-                int result = await salesService.CompleteSaleAsync(sale, saleItems);
+                Debug.WriteLine("=== Processing order completion ===");
 
-                // ✅ ONLY clear & notify AFTER successful save
-                OrderItems.Clear();
-                CashTenderedAmount = string.Empty;
-                CalculateTotals();
+                // Process sale in background
+                var success = await Task.Run(async () =>
+                {
+                    try
+                    {
+                        decimal subTotal = subtotal;
+                        decimal change = cashTendered - subTotal;
 
-                await PageHelper.DisplayAlertAsync(
-                    "Success",
-                    $"Order completed successfully!\nSales No: {sale.ReceiptNo}",
-                    "OK");
+                        var sale = new Sale
+                        {
+                            SaleDate = DateTime.Now,
+                            ReceiptNo = GenerateReceiptNo(),
+                            SubTotal = subTotal,
+                            Discount = 0,
+                            Tax = 0,
+                            TotalAmount = subTotal,
+                            AmountPaid = cashTendered,
+                            ChangeAmount = change
+                        };
+
+                        var saleItems = OrderItemMapper.ToSaleItems(OrderItems);
+
+                        int result = await salesService.CompleteSaleAsync(sale, saleItems);
+
+                        return result > 0 ? sale.ReceiptNo : null;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"=== Error in background sale processing: {ex.Message} ===");
+                        return null;
+                    }
+                });
+
+                if (success != null)
+                {
+                    // Update UI on main thread
+                    await MainThread.InvokeOnMainThreadAsync(() =>
+                    {
+                        OrderItems.Clear();
+                        CashTenderedAmount = string.Empty;
+                        CalculateTotals();
+                    });
+
+                    await PageHelper.DisplayAlertAsync(
+                        "Success",
+                        $"Order completed successfully!\nSales No: {success}",
+                        "OK");
+                }
+                else
+                {
+                    await PageHelper.DisplayAlertAsync(
+                        "Error",
+                        "Failed to complete order. Please try again.",
+                        "OK");
+                }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"=== Error completing order: {ex} ===");
-
+                Debug.WriteLine($"=== Error completing order: {ex.Message} ===");
                 await PageHelper.DisplayAlertAsync(
                     "Error",
                     "Failed to complete order. Please try again.",
                     "OK");
             }
+            finally
+            {
+                IsProcessing = false;
+            }
         }
+
         private string GenerateReceiptNo()
         {
             return $"SALESID-{DateTime.Now:yyyyMMddHHmmssfff}";
         }
+
         [RelayCommand]
         public async Task GoBackAsync()
         {
@@ -442,6 +647,25 @@ namespace KusinaPOS.ViewModel
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error navigating back: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Cleanup method - call from page OnDisappearing
+        /// </summary>
+        public void Cleanup()
+        {
+            try
+            {
+                if (_dateTimeService != null)
+                {
+                    _dateTimeService.DateTimeChanged -= OnDateTimeChanged;
+                }
+                Debug.WriteLine("=== POSTerminalViewModel cleaned up ===");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in cleanup: {ex.Message}");
             }
         }
     }

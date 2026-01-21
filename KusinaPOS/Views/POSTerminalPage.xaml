@@ -106,11 +106,22 @@
 
             <!-- MENU & PRODUCTS -->
             <Grid Grid.Column="1"
+                  RowDefinitions="Auto,*"
                  Padding="12">
-
-                <CollectionView ItemsSource="{Binding FilteredMenuItems}"
-                SelectionMode="None"
-                SelectedItem="{Binding SelectedMenuItem}"
+                <Grid Grid.Row="0" IsVisible="{Binding IsLoading}"
+                      BackgroundColor="#80000000">
+                        <ActivityIndicator
+                            IsRunning="{Binding IsLoading}"
+                            IsVisible="{Binding IsLoading}"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            WidthRequest="60"
+                            HeightRequest="60"/>
+                </Grid>
+                <CollectionView Grid.Row="1" 
+                                ItemsSource="{Binding FilteredMenuItems}"
+                                SelectionMode="None"
+                                SelectedItem="{Binding SelectedMenuItem}"
                                 >
                     <!-- Adaptive grid -->
                     <CollectionView.ItemsLayout>

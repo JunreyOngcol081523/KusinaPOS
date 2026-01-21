@@ -1,40 +1,80 @@
+using KusinaPOS.Helpers;
 using KusinaPOS.ViewModel;
+using System.Diagnostics;
 
-namespace KusinaPOS.Views;
-
-public partial class POSTerminalPage : ContentPage
+namespace KusinaPOS.Views
 {
-	public POSTerminalPage(POSTerminalViewModel vm)
-	{
-        try
+    public partial class POSTerminalPage : ContentPage
+    {
+        private readonly POSTerminalViewModel? _viewModel;
+        private bool _hasAppeared = false;
+
+        public POSTerminalPage(POSTerminalViewModel vm)
         {
-            InitializeComponent();
-            BindingContext = vm;
-
-            // DEBUG: Verify BindingContext
-            System.Diagnostics.Debug.WriteLine($"=== BindingContext set: {BindingContext != null} ===");
-            System.Diagnostics.Debug.WriteLine($"=== ViewModel type: {BindingContext?.GetType().Name} ===");
-
-            if (BindingContext is POSTerminalViewModel viewModel)
+            try
             {
-                System.Diagnostics.Debug.WriteLine($"=== MenuCategories count: {viewModel.MenuCategories?.Count ?? 0} ===");
+                Debug.WriteLine("POSTerminalPage constructor started");
+
+                InitializeComponent();
+
+                _viewModel = vm;
+                BindingContext = _viewModel;
+
+                Debug.WriteLine("POSTerminalPage constructor completed");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in POSTerminalPage constructor: {ex.Message}");
             }
         }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"POSTerminalPage Error: {ex.Message}");
-            System.Diagnostics.Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
-            System.Diagnostics.Debug.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
-            throw; // Re-throw to see in debugger
-        }
-    }
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
 
-        if (BindingContext is POSTerminalViewModel vm)
+        protected override async void OnAppearing()
         {
-            System.Diagnostics.Debug.WriteLine($"=== OnAppearing - Categories: {vm.MenuCategories?.Count ?? 0} ===");
+            base.OnAppearing();
+
+            Debug.WriteLine("POSTerminalPage OnAppearing started");
+
+            if (!_hasAppeared)
+            {
+                _hasAppeared = true;
+                await InitializePageAsync();
+            }
+        }
+
+        private async Task InitializePageAsync()
+        {
+            try
+            {
+                Debug.WriteLine("Initializing POS terminal page...");
+
+                // Small delay to let page render
+                await Task.Delay(100);
+
+                // Initialize ViewModel data
+                await _viewModel.InitializeAsync();
+
+                Debug.WriteLine("POS terminal page initialized successfully");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error initializing POS terminal page: {ex.Message}");
+                await PageHelper.DisplayAlertAsync("Error", $"Failed to load POS terminal: {ex.Message}", "OK");
+            }
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+
+            try
+            {
+                Debug.WriteLine("POSTerminalPage OnDisappearing");
+                _viewModel?.Cleanup();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in OnDisappearing: {ex.Message}");
+            }
         }
     }
 }
