@@ -156,7 +156,7 @@ namespace KusinaPOS.ViewModel
                 await PageHelper.DisplayAlertAsync("Success",
                     $"Database backed up successfully.", "OK");
                 //save to preferences date last backup
-                Preferences.Set(DatabaseConstants.LastBackupDateKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                Preferences.Set(DatabaseConstants.LastBackupDateKey,DateTime.UtcNow.Ticks);
             }
             catch (Exception ex)
             {
