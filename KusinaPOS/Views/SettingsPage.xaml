@@ -87,68 +87,227 @@
 
                 <!-- ================= DATABASE SETTINGS ================= -->
                 <tabView:SfTabItem Header="Database Settings">
-                    <ScrollView>
-                        <VerticalStackLayout Padding="16" Spacing="14">
+                    <Grid RowDefinitions="*">
 
-                            <Label Text="Database Backup"
-                                   FontSize="18"
-                                   FontAttributes="Bold" />
+                        <!-- Loading Overlay -->
+                        <ActivityIndicator Grid.Row="0"
+                          IsRunning="{Binding IsBusy}"
+                          IsVisible="{Binding IsBusy}"
+                          Color="{StaticResource Primary}"
+                          HeightRequest="50"
+                          WidthRequest="50"
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center"
+                          ZIndex="1" />
 
-                            <Button Text="Backup"
-                                    Command="{Binding BackupCommand}"
-                                    />
+                        <ScrollView Grid.Row="0">
+                            <VerticalStackLayout Padding="16" Spacing="14">
 
-                            <!-- Backup List -->
-                            <Label Text="Database Backups"
-                                    FontAttributes="Bold"
-                                    Margin="0,10,0,0"/>
+                                <!-- Backup Section Header -->
+                                <Label Text="Database Backup"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       Margin="0,0,0,10" />
 
-                            <CollectionView ItemsSource="{Binding BackupFiles}">
-                                <CollectionView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border
-                                            Stroke="#DDDDDD"
-                                            StrokeThickness="1"
-                                            Padding="10"
-                                            Margin="0,4"
-                                            StrokeShape="RoundRectangle 8">
+                                <!-- Backup Button -->
+                                <Button Text="Create New Backup"
+                        Command="{Binding BackupDatabaseCommand}"
+                        TextColor="White"
+                        HeightRequest="50"
+                        CornerRadius="8"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
 
-                                            <VerticalStackLayout Spacing="6">
+                                <!-- Backup List Header -->
+                                <HorizontalStackLayout Spacing="10" Margin="0,20,0,10">
+                                    <Label Text="Available Backups"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           VerticalOptions="Center" />
+                                    <Label Text="{Binding Backups.Count, StringFormat='({0})'}"
+                           FontSize="16"
+                           TextColor="Gray"
+                           VerticalOptions="Center" />
+                                    <Image Source="refresh.png"
+                           HeightRequest="24"
+                           WidthRequest="24"
+                           HorizontalOptions="End"
+                           Opacity="{Binding IsBusy, Converter={StaticResource BoolToOpacityConverter}}">
+                                        <Image.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding RefreshBackupsCommand}" />
+                                        </Image.GestureRecognizers>
+                                        <Image.Triggers>
+                                            <DataTrigger TargetType="Image" 
+                                       Binding="{Binding IsBusy}" 
+                                       Value="True">
+                                                <Setter Property="IsEnabled" Value="False" />
+                                            </DataTrigger>
+                                        </Image.Triggers>
+                                    </Image>
+                                </HorizontalStackLayout>
 
-                                                <Label Text="{Binding Name}"
-                                                            FontAttributes="Bold" />
+                                <!-- Backups List with RefreshView -->
+                                <RefreshView IsRefreshing="{Binding IsRefreshing}"
+                            Command="{Binding RefreshBackupsCommand}"
+                            RefreshColor="{StaticResource Primary}">
 
-                                                <Label Text="{Binding Date}"
-                                                       FontSize="12"
-                                                       TextColor="Gray" />
+                                    <CollectionView ItemsSource="{Binding Backups}"
+                                   MinimumHeightRequest="200">
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Style="{StaticResource CardBorder}"
+                                       Padding="16"
+                                       Margin="0,10,0,0"
+                                       BackgroundColor="Transparent">
+                                                    <Grid RowDefinitions="Auto,Auto,Auto"
+                                          ColumnDefinitions="*,Auto"
+                                          RowSpacing="12">
 
-                                                <Button HeightRequest="40"
-                                                        ImageSource="share.png"
-                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
-                                                                          Path=BindingContext.DeleteBackupCommand}"
+                                                        <!-- Backup Name -->
+                                                        <Label Grid.Row="0" Grid.Column="0"
+                                               Text="{Binding FileName}"
+                                               FontAttributes="Bold"
+                                               FontSize="16"
+                                               LineBreakMode="TailTruncation" />
+
+                                                        <!-- Date & Time -->
+                                                        <HorizontalStackLayout Grid.Row="1" Grid.Column="0" 
+                                                              Spacing="15">
+                                                            <HorizontalStackLayout Spacing="6">
+                                                                <Image Source="calendar.png"
+                                                       HeightRequest="14"
+                                                       WidthRequest="14"
+                                                       VerticalOptions="Center" />
+                                                                <Label Text="{Binding FormattedDate}"
+                                                       FontSize="14"
+                                                       VerticalOptions="Center" />
+                                                            </HorizontalStackLayout>
+
+                                                            <HorizontalStackLayout Spacing="6">
+                                                                <Image Source="clock.png"
+                                                       HeightRequest="14"
+                                                       WidthRequest="14"
+                                                       VerticalOptions="Center" />
+                                                                <Label Text="{Binding FormattedTime}"
+                                                       FontSize="14"
+                                                       VerticalOptions="Center" />
+                                                            </HorizontalStackLayout>
+                                                        </HorizontalStackLayout>
+
+                                                        <!-- File Size -->
+                                                        <HorizontalStackLayout Grid.Row="2" Grid.Column="0"
+                                                              Spacing="6">
+                                                            <Image Source="file.png"
+                                                   HeightRequest="14"
+                                                   WidthRequest="14"
+                                                   VerticalOptions="Center" />
+                                                            <Label Text="{Binding FileSizeFormatted}"
+                                                   FontSize="13"
+                                                   VerticalOptions="Center" />
+                                                        </HorizontalStackLayout>
+
+                                                        <!-- Action Buttons -->
+                                                        <HorizontalStackLayout Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
+                                                              Spacing="12"
+                                                              VerticalOptions="Center">
+
+                                                            <!-- Share Button -->
+                                                            <Border StrokeShape="RoundRectangle 8"
+                                                   Stroke="#007AFF"
+                                                   StrokeThickness="1"
+                                                   BackgroundColor="Transparent"
+                                                   Padding="12"
+                                                   HeightRequest="50"
+                                                   WidthRequest="50">
+                                                                <Border.GestureRecognizers>
+                                                                    <TapGestureRecognizer 
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ShareBackupCommand}"
                                                         CommandParameter="{Binding .}" />
-                                                <Button 
-                                                        HeightRequest="40"
-                                                        ImageSource="restore.png"
-                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
-                                                                          Path=BindingContext.DeleteBackupCommand}"
-                                                        CommandParameter="{Binding .}" />
-                                                <Button HeightRequest="40"
-                                                        ImageSource="delete.png"
-                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
-                                                                          Path=BindingContext.DeleteBackupCommand}"
-                                                        CommandParameter="{Binding .}" />
+                                                                </Border.GestureRecognizers>
+                                                                <Image Source="share.png"
+                                                       HeightRequest="24"
+                                                       WidthRequest="24"
+                                                       VerticalOptions="Center"
+                                                       HorizontalOptions="Center" />
+                                                            </Border>
 
+                                                            <!-- Restore Button -->
+                                                            <Border StrokeShape="RoundRectangle 8"
+                                                   Stroke="#34C759"
+                                                   StrokeThickness="1"
+                                                   BackgroundColor="Transparent"
+                                                   Padding="12"
+                                                   HeightRequest="50"
+                                                   WidthRequest="50">
+                                                                <Border.GestureRecognizers>
+                                                                    <TapGestureRecognizer 
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RestoreBackupCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                                                </Border.GestureRecognizers>
+                                                                <Image Source="restore.png"
+                                                       HeightRequest="24"
+                                                       WidthRequest="24"
+                                                       VerticalOptions="Center"
+                                                       HorizontalOptions="Center" />
+                                                            </Border>
+
+                                                            <!-- Delete Button -->
+                                                            <Border StrokeShape="RoundRectangle 8"
+                                                   Stroke="#FF3B30"
+                                                   StrokeThickness="1"
+                                                   BackgroundColor="Transparent"
+                                                   Padding="12"
+                                                   HeightRequest="50"
+                                                   WidthRequest="50">
+                                                                <Border.GestureRecognizers>
+                                                                    <TapGestureRecognizer 
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteBackupCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                                                </Border.GestureRecognizers>
+                                                                <Image Source="delete.png"
+                                                       HeightRequest="24"
+                                                       WidthRequest="24"
+                                                       VerticalOptions="Center"
+                                                       HorizontalOptions="Center" />
+                                                            </Border>
+
+                                                        </HorizontalStackLayout>
+
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+
+                                        <!-- Empty View -->
+                                        <CollectionView.EmptyView>
+                                            <VerticalStackLayout HorizontalOptions="Center"
+                                                VerticalOptions="Center"
+                                                Spacing="12"
+                                                Padding="40"
+                                                IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                                                <Image Source="folder_empty.png"
+                                       HeightRequest="80"
+                                       WidthRequest="80"
+                                       Opacity="0.5" />
+                                                <Label Text="No backups found"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="Center"
+                                       TextColor="#999999" />
+                                                <Label Text="Pull down to refresh or tap 'Create New Backup'"
+                                       FontSize="14"
+                                       HorizontalOptions="Center"
+                                       TextColor="#BBBBBB" />
                                             </VerticalStackLayout>
+                                        </CollectionView.EmptyView>
 
-                                        </Border>
-                                    </DataTemplate>
-                                </CollectionView.ItemTemplate>
-                            </CollectionView>
+                                    </CollectionView>
 
+                                </RefreshView>
 
-                        </VerticalStackLayout>
-                    </ScrollView>
+                            </VerticalStackLayout>
+                        </ScrollView>
+
+                    </Grid>
                 </tabView:SfTabItem>
 
             </tabView:SfTabView.Items>

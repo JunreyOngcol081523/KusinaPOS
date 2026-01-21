@@ -248,7 +248,7 @@
                         <!-- Row 3: Reason -->
                         <VerticalStackLayout Grid.Row="3" Grid.Column="0" Spacing="5">
                             <inputLayout:SfTextInputLayout Hint="Reason" HelperText="Reason for adjusting quantity" ContainerType="None" ContainerBackground="{StaticResource BackgroundDark}">
-                                <sfeditors:SfComboBox HeightRequest="45" ItemsSource="{Binding Reasons}" SelectedItem="{Binding SelectedReason}" TextColor="{StaticResource TextPrimary}" BackgroundColor="{StaticResource BackgroundDark}"/>
+                                <sfeditors:SfComboBox HeightRequest="45" IsEnabled="{Binding IsQuantityChanged}" ItemsSource="{Binding Reasons}" SelectedItem="{Binding SelectedReason}" TextColor="{StaticResource TextPrimary}" BackgroundColor="{StaticResource BackgroundDark}"/>
                             </inputLayout:SfTextInputLayout>
                             </VerticalStackLayout>
 

@@ -4,9 +4,16 @@ namespace KusinaPOS.Views;
 
 public partial class SettingsPage : ContentPage
 {
-	public SettingsPage(SettingsViewModel vm)
+	private readonly SettingsViewModel _viewModel;
+    public SettingsPage(SettingsViewModel vm)
 	{
 		InitializeComponent();
 		BindingContext = vm;
+		_viewModel = vm;
+    }
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await _viewModel.LoadBackupsAsync();
     }
 }

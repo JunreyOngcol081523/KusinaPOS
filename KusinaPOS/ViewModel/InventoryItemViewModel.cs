@@ -84,6 +84,8 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty] private string selectedReason = string.Empty;
         [ObservableProperty] private decimal quantityChanged;
         [ObservableProperty] private string displayQuantityChanged = "0";
+        public bool IsQuantityChanged => QuantityChanged != 0;
+
 
         // ======================================================
         // CONSTRUCTOR
@@ -197,6 +199,14 @@ namespace KusinaPOS.ViewModel
                 Debug.WriteLine($"Error in EditItem: {ex.Message}");
             }
         }
+        partial void OnQuantityChangedChanged(decimal oldValue, decimal newValue)
+        {
+            OnPropertyChanged(nameof(IsQuantityChanged));
+
+            // Optional: reset reason when quantity goes back to zero
+            if (newValue == 0)
+                SelectedReason = string.Empty;
+        }
 
         // ======================================================
         // CANCEL EDITING
@@ -249,11 +259,15 @@ namespace KusinaPOS.ViewModel
                     return;
                 }
 
-                if (string.IsNullOrEmpty(SelectedReason))
+                if (IsQuantityChanged && string.IsNullOrEmpty(SelectedReason))
                 {
-                    await PageHelper.DisplayAlertAsync("Error", "Please select a reason for the adjustment", "OK");
+                    await PageHelper.DisplayAlertAsync(
+                        "Error",
+                        "Please select a reason for the quantity adjustment",
+                        "OK");
                     return;
                 }
+
 
                 // ADD MODE
                 if (EditingId == 0)
@@ -271,19 +285,22 @@ namespace KusinaPOS.ViewModel
                     await _inventoryService.AddInventoryItemAsync(item);
                     InventoryItems.Add(item);
 
-                    // Create transaction log
-                    var inventoryTransaction = new InventoryTransaction
+                    // Create transaction ONLY if initial quantity exists
+                    if (IsQuantityChanged)
                     {
-                        InventoryItemId = item.Id,
-                        QuantityChange = QuantityChanged,
-                        Reason = SelectedReason,
-                        Remarks = Remarks,
-                        TransactionDate = DateTime.Now,
-                    };
+                        var inventoryTransaction = new InventoryTransaction
+                        {
+                            InventoryItemId = item.Id,
+                            QuantityChange = QuantityChanged,
+                            Reason = SelectedReason,
+                            Remarks = Remarks,
+                            TransactionDate = DateTime.Now,
+                        };
 
-                    // Save transaction
-                    await _inventoryTransactionService.AddInventoryTransactionAsync(inventoryTransaction);
+                        await _inventoryTransactionService.AddInventoryTransactionAsync(inventoryTransaction);
+                    }
                 }
+
                 // UPDATE MODE
                 else
                 {
@@ -298,19 +315,24 @@ namespace KusinaPOS.ViewModel
                         IsActive = EditingIsActive
                     };
 
-                    // Create transaction log
-                    var inventoryTransaction = new InventoryTransaction
-                    {
-                        InventoryItemId = item.Id,
-                        QuantityChange = QuantityChanged,
-                        Reason = SelectedReason,
-                        Remarks = Remarks,
-                        TransactionDate = DateTime.Now,
-                    };
-
                     await _inventoryService.UpdateInventoryItemAsync(item);
-                    await _inventoryTransactionService.AddInventoryTransactionAsync(inventoryTransaction);
+
+                    // Create transaction ONLY if quantity changed
+                    if (IsQuantityChanged)
+                    {
+                        var inventoryTransaction = new InventoryTransaction
+                        {
+                            InventoryItemId = item.Id,
+                            QuantityChange = QuantityChanged,
+                            Reason = SelectedReason,
+                            Remarks = Remarks,
+                            TransactionDate = DateTime.Now,
+                        };
+
+                        await _inventoryTransactionService.AddInventoryTransactionAsync(inventoryTransaction);
+                    }
                 }
+
 
                 await LoadInventoryItems();
                 Cancel();

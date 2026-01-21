@@ -27,6 +27,8 @@ namespace KusinaPOS.ViewModel
         private string storeName;
         [ObservableProperty]
         private string appLogo;
+        [ObservableProperty]
+        private string appTitle;
         public DashboardViewModel(IDateTimeService dateTimeService, SalesService salesService, SettingsService settingsService)
         {
             _dateTimeService = dateTimeService;
@@ -40,6 +42,7 @@ namespace KusinaPOS.ViewModel
             LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
             LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
             AppLogo = _settingsService.GetStoreLogo ?? "kusinaposlogo.png";
+            AppTitle = _settingsService.GetAppTitle ?? "Kusina POS";
         }
 
         private void OnDateTimeChanged(object? sender, string dateTime)

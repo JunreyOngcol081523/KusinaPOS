@@ -1,10 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using KusinaPOS.Enums;
 using KusinaPOS.Helpers;
+using KusinaPOS.Models;
 using KusinaPOS.Services;
 using KusinaPOS.Views;
+using SQLite;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text;
 
@@ -30,12 +34,22 @@ namespace KusinaPOS.ViewModel
         [NotifyPropertyChangedFor(nameof(StoreImageSource))]
         [NotifyPropertyChangedFor(nameof(ImageLabel))]
         private string imagePath;
+        //===================================database properties===================================
+
+        [ObservableProperty]
+        private bool isBusy;
+
+        [ObservableProperty]
+        private bool isRefreshing;
+        [ObservableProperty]
+        private ObservableCollection<DBBackupInfo> backups;
         public SettingsViewModel(SettingsService settingsService)
         {
             _settingsService = settingsService;
             BackupLocation = Preferences.Get(DatabaseConstants.BackupLocationKey, DatabaseConstants.BackupFolder);
             ImagePath = _settingsService.GetStoreLogo;
             LoadStoreSettings();
+            Backups = new ObservableCollection<DBBackupInfo>();
         }
         public string ImageLabel => string.IsNullOrWhiteSpace(ImagePath) ? "Click to upload" : Path.GetFileName(ImagePath);
         public ImageSource StoreImageSource
@@ -106,6 +120,242 @@ namespace KusinaPOS.ViewModel
             var (storeName, storeAddress) = SettingsService.LoadStoreSettings();
             StoreName = storeName;
             StoreAddress = storeAddress;
+        }
+
+        //===================================DATABASE SETTINGS===================================
+        // backup database
+        [RelayCommand]
+        public async Task BackupDatabaseAsync()
+        {
+            await CreateBackupDatabaseAsync(BackupType.Manual);
+        }
+        public async Task CreateBackupDatabaseAsync(BackupType backupType)
+        {
+            if (IsBusy) return;
+
+            try
+            {
+                IsBusy = true;
+
+                var backupDir = BackupLocation;
+                if (!Directory.Exists(backupDir))
+                    Directory.CreateDirectory(backupDir);
+
+                var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                var backupFilePath = Path.Combine(backupDir, $"{backupType}_Backup_{timestamp}.db");
+
+                // Perform backup
+                using (var sourceDb = new SQLiteConnection(DatabaseConstants.DatabasePath))
+                {
+                    sourceDb.Execute($"VACUUM INTO ?", backupFilePath);
+                }
+
+                // Cleanup old backups
+                CleanupOldBackups(backupDir, maxBackupsToKeep: 10);
+
+                await PageHelper.DisplayAlertAsync("Success",
+                    $"Database backed up successfully.", "OK");
+                //save to preferences date last backup
+                Preferences.Set(DatabaseConstants.LastBackupDateKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error backing up database: {ex.Message}");
+                await PageHelper.DisplayAlertAsync("Error",
+                    $"Failed to backup database: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+
+                // Reload AFTER IsBusy is set to false
+                await LoadBackupsAsync();
+            }
+        }
+
+        [RelayCommand]
+        public async Task LoadBackupsAsync()
+        {
+            // Remove the IsBusy check here OR use a different flag
+            // if (IsBusy) return;  // <-- REMOVE THIS LINE
+
+            try
+            {
+                IsBusy = true;
+                Backups.Clear();
+
+                var backupDir = BackupLocation;
+                Debug.WriteLine($"Loading backups from: {backupDir}");
+
+                if (!Directory.Exists(backupDir))
+                {
+                    Debug.WriteLine("Backup directory does not exist!");
+                    return;
+                }
+
+                var files = Directory.GetFiles(backupDir, "*.db");
+                Debug.WriteLine($"Found {files.Length} backup files");
+
+                await Task.Delay(300);
+
+                var backupFiles = files
+                    .Select(f => new FileInfo(f))
+                    .OrderByDescending(f => f.CreationTime)
+                    .Select(f => new DBBackupInfo(f));
+
+                foreach (var backup in backupFiles)
+                {
+                    Backups.Add(backup);
+                }
+
+                Debug.WriteLine($"Loaded {Backups.Count} backups into collection");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error loading backups: {ex.Message}");
+                await PageHelper.DisplayAlertAsync("Error",
+                    $"Failed to load backups: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+        [RelayCommand]
+        public async Task ShareBackupAsync(DBBackupInfo backup)
+        {
+            if (IsBusy) return;
+
+            try
+            {
+                IsBusy = true;
+
+                await Share.RequestAsync(new ShareFileRequest
+                {
+                    Title = "Share Database Backup",
+                    File = new ShareFile(backup.FilePath)
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error sharing backup: {ex.Message}");
+                await PageHelper.DisplayAlertAsync("Error",
+                    $"Failed to share backup: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+        [RelayCommand]
+        public async Task RestoreBackupAsync(DBBackupInfo backup)
+        {
+            if (IsBusy) return;
+
+            bool confirm = await PageHelper.DisplayConfirmAsync("Confirm Restore",
+                $"Restore database from:\n\n{backup.FileName}\n{backup.FormattedDate} at {backup.FormattedTime}\n\n⚠️ This will replace your current database!",
+                "Restore", "Cancel");
+
+            if (!confirm) return;
+
+            try
+            {
+                IsBusy = true;
+
+                var dbPath = DatabaseConstants.DatabasePath;
+
+                // Close database connections
+                // Add your database close logic here
+
+                File.Copy(backup.FilePath, dbPath, overwrite: true);
+
+                await PageHelper.DisplayAlertAsync("Success",
+                    "Database restored successfully!\n\nPlease restart the app for changes to take effect.",
+                    "OK");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error restoring backup: {ex.Message}");
+                await PageHelper.DisplayAlertAsync("Error",
+                    $"Failed to restore backup: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+        [RelayCommand]
+        public async Task DeleteBackupAsync(DBBackupInfo backup)
+        {
+            if (IsBusy) return;
+
+            bool confirm = await PageHelper.DisplayConfirmAsync("Confirm Delete",
+                $"Delete this backup?\n\n{backup.FileName}\n{backup.FormattedDate} at {backup.FormattedTime}",
+                "Delete", "Cancel");
+
+            if (!confirm) return;
+
+            try
+            {
+                IsBusy = true;
+
+                File.Delete(backup.FilePath);
+                Backups.Remove(backup);
+
+                await PageHelper.DisplayAlertAsync("Success",
+                    "Backup deleted successfully.", "OK");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error deleting backup: {ex.Message}");
+                await PageHelper.DisplayAlertAsync("Error",
+                    $"Failed to delete backup: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+        private void CleanupOldBackups(string backupDirectory, int maxBackupsToKeep)
+        {
+            try
+            {
+                var backupFiles = Directory.GetFiles(backupDirectory, "DB_Backup_*.db")
+                    .Select(f => new FileInfo(f))
+                    .OrderByDescending(f => f.CreationTime)
+                    .ToList();
+
+                if (backupFiles.Count > maxBackupsToKeep)
+                {
+                    var filesToDelete = backupFiles.Skip(maxBackupsToKeep);
+
+                    foreach (var file in filesToDelete)
+                    {
+                        file.Delete();
+                        Debug.WriteLine($"Deleted old backup: {file.Name}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error cleaning up old backups: {ex.Message}");
+            }
+        }
+
+        [RelayCommand]
+        public async Task RefreshBackupsAsync()
+        {
+            if (IsBusy) return;
+
+            try
+            {
+                IsRefreshing = true;
+                await LoadBackupsAsync();
+            }
+            finally
+            {
+                IsRefreshing = false;
+            }
         }
     }
 

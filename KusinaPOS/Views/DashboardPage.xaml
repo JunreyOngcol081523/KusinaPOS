@@ -13,11 +13,23 @@
 
         <!-- Top Header -->
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,20">
-            <Image Grid.Column="0" 
+            <Grid Grid.Column="0" 
+                  ColumnDefinitions="Auto,Auto"
+                  ColumnSpacing="10">
+                <Image 
+                   Grid.Column="0" 
                    Source="{Binding AppLogo}" 
                    HeightRequest="40"
                    VerticalOptions="Start"
                    HorizontalOptions="Start"/>
+                <Label Grid.Column="1"
+                       Text="{Binding AppTitle}"
+                       FontSize="20"
+                       VerticalOptions="Start"
+                       VerticalTextAlignment="Start"
+                       HorizontalOptions="Start"
+                       TextColor="{StaticResource TextPrimary}"/>
+            </Grid>
 
             <Label Grid.Column="1" 
                    Text="{Binding CurrentDateTime}" 

@@ -62,5 +62,13 @@ namespace KusinaPOS.Services
             string storeAddress = Preferences.Get(Helpers.DatabaseConstants.StoreAddressKey, "123 Main St, City, Country");
             return (storeName, storeAddress);
         }
+        //App Title
+        public string GetAppTitle
+        {
+            get
+            {
+                return Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
+            }
+        }
     }
 }
