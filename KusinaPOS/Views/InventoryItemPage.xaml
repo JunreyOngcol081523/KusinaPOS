@@ -7,6 +7,7 @@
              xmlns:sfbuttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              xmlns:sfdatagrid="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
              xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:pager="clr-namespace:Syncfusion.Maui.DataGrid.DataPager;assembly=Syncfusion.Maui.DataGrid"
              BackgroundColor="{StaticResource BackgroundDark}">
 
     <Grid Padding="20"
@@ -275,22 +276,41 @@
                 <Label Grid.Row="0" Text="{Binding TransactionLogPanelTitle}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" Margin="0,0,0,20"/>
 
                 <!-- Table -->
+
+                <!-- Add the namespace for DataPager at the top of your page -->
                 
-                    <sfdatagrid:SfDataGrid Grid.Row="1"
-                                       GridLinesVisibility="Horizontal"
-                                       HeaderGridLinesVisibility="None"
-                                       AutoGenerateColumnsMode="None"
-                                       ItemsSource="{Binding TransactionLogs}"
-                                       ColumnWidthMode="Auto"
-                                       SortingMode="Single">
+
+                <!-- Update your Grid to include a row for the pager -->
+                <Grid RowDefinitions="*,Auto">
+
+                    <!-- DataGrid -->
+                    <sfdatagrid:SfDataGrid Grid.Row="0"
+                           x:Name="transactionDataGrid"
+                           GridLinesVisibility="Horizontal"
+                           HeaderGridLinesVisibility="None"
+                           AutoGenerateColumnsMode="None"
+                           ItemsSource="{Binding Source={x:Reference transactionPager}, Path=PagedSource}"
+                           ColumnWidthMode="Auto"
+                           SortingMode="Single">
                         <sfdatagrid:SfDataGrid.Columns>
-                            <sfdatagrid:DataGridTextColumn  MappingName="TransactionDate" Format="MMM dd, yyyy hh:mm tt" HeaderText="Log Date"/>
+                            <sfdatagrid:DataGridTextColumn MappingName="TransactionDate" Format="MMM dd, yyyy hh:mm tt" HeaderText="Log Date"/>
                             <sfdatagrid:DataGridTextColumn MappingName="QuantityChange" HeaderText="Quantity Changed" Format="N2"/>
                             <sfdatagrid:DataGridTextColumn MappingName="Reason" HeaderText="Reason" />
                             <sfdatagrid:DataGridTextColumn MappingName="Remarks" HeaderText="Remarks" />
                         </sfdatagrid:SfDataGrid.Columns>
                     </sfdatagrid:SfDataGrid>
-                
+
+                    <!-- DataPager -->
+                    <pager:SfDataPager Grid.Row="1"
+                       x:Name="transactionPager"
+                       PageSize="5"
+                       NumericButtonCount="10"
+                       Source="{Binding TransactionLogs}"
+                       Margin="0,8,0,0" 
+                       HorizontalOptions="Center"/>
+
+                </Grid>
+
 
                 <!-- Close Button -->
                 <Button Grid.Row="2" Text="CLOSE" BackgroundColor="{StaticResource Gray200}" TextColor="{StaticResource TextPrimary}" Padding="0,12" Command="{Binding CloseTransactionPanelCommand}" />

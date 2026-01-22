@@ -18,6 +18,7 @@ namespace KusinaPOS.ViewModel
     public partial class SettingsViewModel : ObservableObject {
 
         private SettingsService _settingsService=null;
+        private readonly IDateTimeService? _dateTimeService;
         //===================================
         // Observable Properties
         //===================================
@@ -37,6 +38,15 @@ namespace KusinaPOS.ViewModel
         private string imagePath;
         [ObservableProperty]
         private string _htmlSource = string.Empty;
+        // Date & Time
+        [ObservableProperty]
+        private string _currentDateTime;
+
+        // User info
+        [ObservableProperty]
+        private string loggedInUserName = string.Empty;
+        [ObservableProperty]
+        private string loggedInUserId = string.Empty;
         //===================================database properties===================================
 
         [ObservableProperty]
@@ -46,15 +56,45 @@ namespace KusinaPOS.ViewModel
         private bool isRefreshing;
         [ObservableProperty]
         private ObservableCollection<DBBackupInfo> backups;
-        public SettingsViewModel(SettingsService settingsService)
+        public SettingsViewModel(SettingsService settingsService , IDateTimeService dateTimeService)
         {
-            _settingsService = settingsService;
-            BackupLocation = Preferences.Get(DatabaseConstants.BackupLocationKey, DatabaseConstants.BackupFolder);
-            ImagePath = _settingsService.GetStoreLogo;
-            LoadStoreSettings();
-            Backups = new ObservableCollection<DBBackupInfo>();
-            LoadAboutHtml();
 
+            
+            try
+            {
+                _settingsService = settingsService;
+                BackupLocation = Preferences.Get(DatabaseConstants.BackupLocationKey, DatabaseConstants.BackupFolder);
+                ImagePath = _settingsService.GetStoreLogo;
+
+                Backups = new ObservableCollection<DBBackupInfo>();
+                LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
+                LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
+                StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
+                _dateTimeService = dateTimeService;
+                _dateTimeService.DateTimeChanged += OnDateTimeChanged;
+                CurrentDateTime = _dateTimeService.CurrentDateTime;
+
+                LoadStoreSettings();
+                LoadAboutHtml();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in MenuItemViewModel constructor: {ex.Message}");
+            }
+        }
+        private void OnDateTimeChanged(object? sender, string dateTime)
+        {
+            try
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    CurrentDateTime = dateTime;
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in OnDateTimeChanged: {ex.Message}");
+            }
         }
         public async void LoadAboutHtml()
         {
@@ -360,7 +400,7 @@ namespace KusinaPOS.ViewModel
         {
             try
             {
-                var backupFiles = Directory.GetFiles(backupDirectory, "DB_Backup_*.db")
+                var backupFiles = Directory.GetFiles(backupDirectory, "*.db")
                     .Select(f => new FileInfo(f))
                     .OrderByDescending(f => f.CreationTime)
                     .ToList();
@@ -395,6 +435,18 @@ namespace KusinaPOS.ViewModel
             finally
             {
                 IsRefreshing = false;
+            }
+        }
+        [RelayCommand]
+        public async Task GoBackAsync()
+        {
+            try
+            {
+                await Shell.Current.GoToAsync("..");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error navigating back: {ex.Message}");
             }
         }
     }

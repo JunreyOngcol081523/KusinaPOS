@@ -6,16 +6,57 @@
     x:Class="KusinaPOS.Views.SettingsPage"
     xmlns:viewmodel="clr-namespace:KusinaPOS.ViewModel"
     xmlns:views="clr-namespace:KusinaPOS.Views"
+    xmlns:badgeView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
     BackgroundColor="{StaticResource CardBackground}" 
     Title="Settings">
 
-    <Grid Padding="16">
+    <Grid Padding="16" RowDefinitions="Auto,*">
+        <!-- Top Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,0,0,8">
+            <ImageButton Grid.Column="0"
+                    Margin="0,0,15,0"
+                    WidthRequest="10"
+                    HeightRequest="10"
+                    Command="{Binding GoBackCommand}"
+                    Source="arrowback.png"
+                    BackgroundColor="Transparent">
+            </ImageButton>
+            <Label Grid.Column="1" 
+                   Text="{Binding StoreName, StringFormat='App Settings - {0}'}"
+                   FontSize="15" 
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource TextPrimary}"
+                   VerticalOptions="Center" />
 
+            <Label Grid.Column="2" 
+                   Text="{Binding CurrentDateTime}" 
+                   FontSize="12"
+                   TextColor="{StaticResource TextSecondary}"
+                   VerticalOptions="Center"
+                   Margin="0,0,15,0" />
+
+            <HorizontalStackLayout Grid.Column="3" Spacing="8" VerticalOptions="Center">
+                <Label Text="{Binding LoggedInUserName}" 
+                       FontSize="12"
+                       TextColor="{StaticResource TextSecondary}"
+                       VerticalOptions="Center" />
+                <Border StrokeShape="RoundRectangle 15"
+                        WidthRequest="30"
+                        HeightRequest="30"
+                        BackgroundColor="{StaticResource Primary}">
+                    <Label Text="⚙" 
+                           FontSize="16"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           TextColor="White" />
+                </Border>
+            </HorizontalStackLayout>
+        </Grid>
         <tabView:SfTabView x:Name="settingTabView"
                            TabBarPlacement="Bottom"
                            TabBarCornerRadius="24"
                            ContentTransitionDuration ="500"
-                           
+                           Grid.Row="1"
                            
                            >
 
@@ -26,15 +67,15 @@
                                    ImageSource="settings.png"
                                    BackgroundColor="{StaticResource CardBackground}" 
                                     TextColor="{StaticResource TextPrimary}"
-                                    FontSize="18"
-                                    ImageSize="40"
+                                    FontSize="12"
+                                    ImageSize="20"
                                     ImagePosition="Left"
                                    >
                     <ScrollView>
-                        <VerticalStackLayout Padding="16" Spacing="12">
+                        <VerticalStackLayout Padding="8" Spacing="5">
 
                             <Label Text="Store Information"
-                                   FontSize="18"
+                                   FontSize="12"
                                    TextColor="{StaticResource TextPrimary}"
                                    FontAttributes="Bold" />
 
@@ -80,7 +121,7 @@
                                                 Stroke="{StaticResource Primary}"
                                                 StrokeThickness="2"
                                                 StrokeDashArray="5,5"
-                                                Padding="20">
+                                                Padding="15">
                                         <VerticalStackLayout HorizontalOptions="Center">
                                             <Label Text="📁" FontSize="32" />
                                             <Label Text="{Binding ImageLabel}"
@@ -111,11 +152,11 @@
                    ImageSource="database.png"
                    BackgroundColor="{StaticResource CardBackground}"
                    TextColor="{StaticResource TextPrimary}"
-                   FontSize="18"
-                   ImageSize="40"
+                                    FontSize="12"
+                                    ImageSize="20"
                    ImagePosition="Left">
 
-                    <Grid Padding="16" RowDefinitions="Auto,Auto,Auto,*">
+                    <Grid Padding="8" RowDefinitions="Auto,Auto,Auto,*">
 
                         <!-- Loading Overlay -->
                         <ActivityIndicator
@@ -133,7 +174,7 @@
                         <Label Grid.Row="0"
                                Text="Database Backup"
                                TextColor="{StaticResource TextPrimary}"
-                               FontSize="20"
+                               FontSize="12"
                                FontAttributes="Bold"
                                Margin="0,0,0,10" />
 
@@ -142,32 +183,20 @@
                                 Text="Create New Backup"
                                 Command="{Binding BackupDatabaseCommand}"
                                 TextColor="White"
-                                HeightRequest="50"
                                 CornerRadius="8"
                                 IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
 
                         <!-- Backup List Header -->
                         <HorizontalStackLayout Grid.Row="2"
-                               Spacing="10"
-                               Margin="0,20,0,10">
-                            <Label Text="Available Backups"
-                                   TextColor="{StaticResource TextPrimary}"
-                                   FontSize="18"
-                                   FontAttributes="Bold" />
+                                               HorizontalOptions="Fill"
+                                               Spacing="5"
+                                               Margin="0,8,0,5">
+                            <badgeView:SfBadgeView BadgeText="{Binding Backups.Count}">
+                                <badgeView:SfBadgeView.Content>
+                                    <Button Text="Backups" Command="{Binding RefreshBackupsCommand}"/>
+                                </badgeView:SfBadgeView.Content>
+                            </badgeView:SfBadgeView>
 
-                            <Label Text="{Binding Backups.Count, StringFormat='({0})'}"
-                                   FontSize="16"
-                                   TextColor="{StaticResource TextPrimary}" />
-
-                            <Image Source="refresh.png"
-                                   HeightRequest="24"
-                                   WidthRequest="24"
-                                   HorizontalOptions="End"
-                                   Opacity="{Binding IsBusy, Converter={StaticResource BoolToOpacityConverter}}">
-                                <Image.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding RefreshBackupsCommand}" />
-                                </Image.GestureRecognizers>
-                            </Image>
                         </HorizontalStackLayout>
 
                         <!-- Backups List -->
@@ -182,7 +211,7 @@
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate>
                                         <Border Style="{StaticResource CardBorder}"
-                                                Padding="16"
+                                                Padding="12"
                                                 Margin="0,10,0,0">
 
                                             <Grid RowDefinitions="Auto,Auto,Auto"
@@ -297,8 +326,8 @@
                 <tabView:SfTabItem Header="About"
                    ImageSource="info.png"
                    TextColor="{StaticResource TextPrimary}"
-                   FontSize="18"
-                   ImageSize="40"
+                FontSize="12"
+                ImageSize="20"
                    ImagePosition="Left">
 
                     <Grid RowDefinitions="Auto,*">
