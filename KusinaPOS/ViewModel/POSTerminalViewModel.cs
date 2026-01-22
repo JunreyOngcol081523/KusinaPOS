@@ -668,5 +668,25 @@ namespace KusinaPOS.ViewModel
                 Debug.WriteLine($"Error in cleanup: {ex.Message}");
             }
         }
+        [RelayCommand]
+        private void NumberPad(string number)
+        {
+            if (string.IsNullOrEmpty(CashTenderedAmount))
+            {
+                CashTenderedAmount = number;
+            }
+            else
+            {
+                CashTenderedAmount += number;
+            }
+        }
+        [RelayCommand]
+        private void Backspace()
+        {
+            if (!string.IsNullOrEmpty(CashTenderedAmount) && CashTenderedAmount.Length > 0)
+            {
+                CashTenderedAmount = CashTenderedAmount.Substring(0, CashTenderedAmount.Length - 1);
+            }
+        }
     }
 }
