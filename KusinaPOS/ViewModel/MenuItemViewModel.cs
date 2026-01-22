@@ -4,6 +4,7 @@ using KusinaPOS.Helpers;
 using KusinaPOS.Models;
 using KusinaPOS.Services;
 using SQLite;
+using Syncfusion.Maui.Buttons;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using MenuItem = KusinaPOS.Models.MenuItem;
@@ -15,714 +16,435 @@ namespace KusinaPOS.ViewModel
         #region Services
         private readonly CategoryService _categoryService;
         private readonly MenuItemService _menuItemService;
-        private readonly IDateTimeService _dateTimeService;
         private readonly InventoryItemService _inventoryItemService;
         private readonly MenuItemIngredientService _menuItemIngredientService;
         private readonly InventoryTransactionService _inventoryTransactionService;
+        private readonly IDateTimeService _dateTimeService;
         private readonly SQLiteAsyncConnection _db;
         #endregion
 
-        #region Constructor
-        public MenuItemViewModel(CategoryService categoryService,
-            MenuItemService menuItemService, IDateTimeService dateTimeService,
-            InventoryItemService inventoryItemService,
-            MenuItemIngredientService menuItemIngredientService,
-            InventoryTransactionService inventoryTransactionService, IDatabaseService databaseService)
-        {
-            _categoryService = categoryService;
-            _menuItemService = menuItemService;
-            _dateTimeService = dateTimeService;
-            _inventoryItemService = inventoryItemService;
-            _menuItemIngredientService = menuItemIngredientService;
-            _inventoryTransactionService = inventoryTransactionService;
-            _db = databaseService.GetConnection();
-            try
-            {
-                LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
-                LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
-                StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
-
-                _dateTimeService.DateTimeChanged += OnDateTimeChanged;
-                CurrentDateTime = _dateTimeService.CurrentDateTime;
-
-                _ = SafeInitializeAsync();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error in MenuItemViewModel constructor: {ex.Message}");
-            }
-
-
-        }
+        #region Paging
+        private int _currentPage = 0;
+        private const int PageSize = 20;
+        private bool _hasMoreItems = true;
         #endregion
 
-        #region Properties
+        #region UI State
+        [ObservableProperty] private bool isBusy;
+        [ObservableProperty] private bool isBorderVisible;
+        [ObservableProperty] private bool isUnitBasedVisible;
+        #endregion
 
-        // Date & Time
-        [ObservableProperty]
-        private string _currentDateTime;
+        #region Header
+        [ObservableProperty] private string currentDateTime = string.Empty;
+        [ObservableProperty] private string loggedInUserName = string.Empty;
+        [ObservableProperty] private string loggedInUserId = string.Empty;
+        [ObservableProperty] private string storeName = "Kusina POS";
+        #endregion
 
-        // User info
-        [ObservableProperty]
-        private string loggedInUserName = string.Empty;
-        [ObservableProperty]
-        private string loggedInUserId = string.Empty;
+        #region Collections
+        [ObservableProperty] private ObservableCollection<Category> categories = new();
+        [ObservableProperty] private ObservableCollection<MenuItem> filteredMenuItems = new();
+        #endregion
 
-        // Store info
-        [ObservableProperty]
-        private string storeName;
+        #region Selection
+        [ObservableProperty] private Category? selectedCategory;
+        [ObservableProperty] private int selectedCategoryIndex;
+        #endregion
 
-        // Categories
-        [ObservableProperty]
-        private List<string> categories = new();
-        [ObservableProperty]
-        private ObservableCollection<CategoryViewModel> categoriesWithMenuItems = new();
+        #region Form Fields
+        [ObservableProperty] private int selectedMenuItemId;
+        [ObservableProperty] private string menuItemName = string.Empty;
+        [ObservableProperty] private string menuDescription = string.Empty;
+        [ObservableProperty] private decimal menuItemPrice;
+        [ObservableProperty] private bool isActive = true;
+        [ObservableProperty] private string selectedMenuType = string.Empty;
+        [ObservableProperty] private string selectedUnit = string.Empty;
+        [ObservableProperty] private decimal initialStock;
+        [ObservableProperty] private decimal costPerUnit;
+        [ObservableProperty] private decimal reOrderLevel;
+        [ObservableProperty] private string newCategoryName;
+        [ObservableProperty] private string labelText = "Add New Menu Item";
+        [ObservableProperty] private List<SfSegmentItem> segmentItems = new();
 
-        [ObservableProperty]
-        private string selectedCategory = string.Empty;
-        [ObservableProperty]
-        private string newCategoryName = string.Empty;
+        #endregion
 
-        // Menu types
+        #region Dropdown Sources
         [ObservableProperty]
-        private ObservableCollection<string> menuTypes;
-        [ObservableProperty]
-        private string selectedMenuType = string.Empty;
+        private ObservableCollection<string> menuTypes =
+            new() { "Unit-Based", "Recipe-Based" };
 
-        // Menu item fields
-        [ObservableProperty]
-        private int selectedMenuItemId;
-        [ObservableProperty]
-        private string menuItemName = string.Empty;
-        [ObservableProperty]
-        private string menuDescription = string.Empty;
-        [ObservableProperty]
-        private decimal menuItemPrice;
-        [ObservableProperty]
-        private bool isActive = true;
-        [ObservableProperty]
-        private List<string> unitMeasurements = new();
-        [ObservableProperty]
-        private string selectedUnit = string.Empty;
-        [ObservableProperty]
-        private decimal initialStock;
-        [ObservableProperty]
-        private decimal costPerUnit;
-        [ObservableProperty]
-        private decimal reOrderLevel;
-        // UI & Image
-        [ObservableProperty]
-        private bool isBorderVisible = false;
-        [ObservableProperty]
-        private bool isUnitBasedVisible = false;
+        [ObservableProperty] private List<string> unitMeasurements = new();
+        #endregion
 
+        #region Image
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(MenuImageSource))]
         [NotifyPropertyChangedFor(nameof(ImageLabel))]
-        private string imagePath;
+        private string imagePath = string.Empty;
 
-        public ImageSource MenuImageSource
-        {
-            get
-            {
-                try
-                {
-                    if (string.IsNullOrWhiteSpace(ImagePath))
-                        return "placeholder_food.png";
+        public ImageSource MenuImageSource =>
+            string.IsNullOrWhiteSpace(ImagePath) || !File.Exists(ImagePath)
+                ? "placeholder_food.png"
+                : ImageSource.FromFile(ImagePath);
 
-                    if (!File.Exists(ImagePath))
-                        return "placeholder_food.png";
-
-                    return ImageSource.FromFile(ImagePath);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"Error loading menu image: {ex.Message}");
-                    return "placeholder_food.png";
-                }
-            }
-        }
-
-        public string ImageLabel => string.IsNullOrWhiteSpace(ImagePath) ? "Click to upload" : Path.GetFileName(ImagePath);
-
-        [ObservableProperty]
-        private string labelText = string.Empty;
-
+        public string ImageLabel =>
+            string.IsNullOrWhiteSpace(ImagePath) ? "Click to upload" : Path.GetFileName(ImagePath);
         #endregion
 
-        #region Event Handlers
-        private void OnDateTimeChanged(object? sender, string dateTime)
+        public MenuItemViewModel(
+            CategoryService categoryService,
+            MenuItemService menuItemService,
+            InventoryItemService inventoryItemService,
+            MenuItemIngredientService menuItemIngredientService,
+            InventoryTransactionService inventoryTransactionService,
+            IDateTimeService dateTimeService,
+            IDatabaseService databaseService)
         {
-            try
-            {
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    CurrentDateTime = dateTime;
-                });
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error in OnDateTimeChanged: {ex.Message}");
-            }
-        }
-        #endregion
+            _categoryService = categoryService;
+            _menuItemService = menuItemService;
+            _inventoryItemService = inventoryItemService;
+            _menuItemIngredientService = menuItemIngredientService;
+            _inventoryTransactionService = inventoryTransactionService;
+            _dateTimeService = dateTimeService;
+            _db = databaseService.GetConnection();
 
-        #region Initialization
+            LoadPreferences();
+            UnitMeasurements = UnitMeasurementService.AllUnits;
+
+            _dateTimeService.DateTimeChanged += (s, e) => CurrentDateTime = e;
+            _ = InitializeAsync();
+        }
+
+        private void LoadPreferences()
+        {
+            LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
+            LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
+            StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
+            CurrentDateTime = _dateTimeService.CurrentDateTime;
+        }
+
         private async Task InitializeAsync()
         {
-            await LoadCategoriesWithMenuItems();
-            IsBorderVisible = false;
-            MenuTypes = new ObservableCollection<string> { "Unit-Based", "Recipe-Based" };
-            UnitMeasurements = UnitMeasurementService.AllUnits;
+            await LoadCategoriesAsync();
         }
 
-        private async Task SafeInitializeAsync()
+        #region Categories
+        private void UpdateSegmentItems()
         {
-            try
+            SegmentItems.Clear();
+
+            foreach (var cat in Categories)
             {
-                await InitializeAsync();
+                SegmentItems.Add(new SfSegmentItem
+                {
+                    Text = cat.Name
+                    // Optional: add icon with ImageSource if you want
+                });
             }
-            catch (Exception ex)
+
+            OnPropertyChanged(nameof(SegmentItems));
+        }
+
+        [RelayCommand]
+        public async Task LoadCategoriesAsync()
+        {
+            var list = await _categoryService.GetActiveCategoriesAsync();
+
+            // Ensure UI thread
+            MainThread.BeginInvokeOnMainThread(() =>
             {
-                Debug.WriteLine($"MenuItemViewModel Init Error: {ex}");
-                await MainThread.InvokeOnMainThreadAsync(() =>
-                    PageHelper.DisplayAlertAsync("Init Error", ex.Message, "OK"));
-            }
+                Categories = new ObservableCollection<Category>(list);
+
+                if (Categories.Any() && SelectedCategory == null)
+                {
+                    SelectedCategory = Categories[0];
+                }
+            });
+            UpdateSegmentItems();
+        }
+
+
+        partial void OnSelectedCategoryIndexChanged(int value)
+        {
+            if (value >= 0 && value < Categories.Count)
+                SelectedCategory = Categories[value];
+        }
+
+        partial void OnSelectedCategoryChanged(Category? value)
+        {
+            _ = ReloadMenuItemsAsync();
         }
         #endregion
 
-        #region CRUD: Categories
-        [RelayCommand]
-        public async Task LoadCategories()
+        #region Menu Items Paging
+        private async Task ReloadMenuItemsAsync()
         {
-            try
-            {
-                var categoryList = await _categoryService.GetActiveCategoriesAsync();
-                Categories = new List<string>();
-                foreach (var category in categoryList)
-                {
-                    Categories.Add(category.Name);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error loading categories: {ex.Message}");
-                await PageHelper.DisplayAlertAsync("Error", "Failed to load categories.", "OK");
-            }
+            _currentPage = 0;
+            _hasMoreItems = true;
+            FilteredMenuItems.Clear();
+            await LoadMoreMenuItemsAsync();
         }
 
         [RelayCommand]
-        public async Task LoadCategoriesWithMenuItems()
+        public async Task LoadMoreMenuItemsAsync()
         {
-            try
-            {
-                var categories = await _categoryService.GetAllCategoriesAsync();
-                var allMenuItems = await _menuItemService.GetAllMenuItemsAsync();
+            if (IsBusy || !_hasMoreItems || SelectedCategory == null) return;
 
-                var newCollection = new ObservableCollection<CategoryViewModel>();
+            IsBusy = true;
 
-                foreach (var category in categories)
-                {
-                    var categoryVM = new CategoryViewModel(category);
+            var items = await _menuItemService.GetMenuItemsByCategoryPagedAsync(
+                SelectedCategory.Name,
+                _currentPage,
+                PageSize);
 
-                    var categoryMenuItems = allMenuItems
-                        .Where(m => m.Category == category.Name)
-                        .ToList();
+            foreach (var item in items)
+                FilteredMenuItems.Add(item);
 
-                    categoryVM.MenuItems = new ObservableCollection<MenuItem>(categoryMenuItems);
-                    categoryVM.FilteredMenuItems = new ObservableCollection<MenuItem>(categoryMenuItems);
+            if (items.Count < PageSize)
+                _hasMoreItems = false;
 
-                    newCollection.Add(categoryVM);
-                }
-
-                CategoriesWithMenuItems = newCollection;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error loading categories with menu items: {ex.Message}");
-                await PageHelper.DisplayAlertAsync("Error", $"Failed to load categories: {ex.Message}", "OK");
-            }
+            _currentPage++;
+            IsBusy = false;
         }
+        #endregion
 
+        #region CRUD
         [RelayCommand]
         public async Task AddCategoryAsync()
         {
+            if (string.IsNullOrWhiteSpace(NewCategoryName))
+            {
+                await PageHelper.DisplayAlertAsync("Validation", "Enter category name.", "OK");
+                return;
+            }
+
+            // Check for duplicates
+            if (Categories.Any(c => c.Name.Equals(NewCategoryName.Trim(), StringComparison.OrdinalIgnoreCase)))
+            {
+                await PageHelper.DisplayAlertAsync("Validation", "Category already exists.", "OK");
+                return;
+            }
+
             try
             {
-                if (string.IsNullOrWhiteSpace(NewCategoryName))
-                {
-                    await PageHelper.DisplayAlertAsync("Validation", "Please enter a category name", "OK");
-                    return;
-                }
+                IsBusy = true;
 
+                // Add to database
                 await _categoryService.AddCategoryAsync(NewCategoryName.Trim());
-                await LoadCategories();
-                await LoadCategoriesWithMenuItems();
+
+                // Reload categories
+                await LoadCategoriesAsync();
+
+                // Clear input
                 NewCategoryName = string.Empty;
+
+                // Optionally, select the newly added category
+                SelectedCategory = Categories.LastOrDefault();
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error adding category: {ex.Message}");
                 await PageHelper.DisplayAlertAsync("Error", $"Failed to add category: {ex.Message}", "OK");
             }
-        }
-
-        [RelayCommand]
-        public async Task EditCategory(CategoryViewModel category)
-        {
-            try
+            finally
             {
-                string? result = await Application.Current?.MainPage?.DisplayPromptAsync(
-                    "Edit Category",
-                    "Enter new category name:",
-                    initialValue: category.Name,
-                    maxLength: 50,
-                    keyboard: Keyboard.Text);
-
-                if (!string.IsNullOrWhiteSpace(result) && result != category.Name)
-                {
-                    var oldName = category.Name;
-                    var categoryModel = category.ToModel();
-                    categoryModel.Name = result.Trim();
-                    await _categoryService.UpdateCategoryAsync(categoryModel);
-
-                    var menuItemsToUpdate = await _menuItemService.GetMenuItemsByCategoryAsync(oldName);
-                    foreach (var menuItem in menuItemsToUpdate)
-                    {
-                        menuItem.Category = result.Trim();
-                        await _menuItemService.UpdateMenuItemAsync(menuItem);
-                    }
-
-                    await LoadCategories();
-                    await LoadCategoriesWithMenuItems();
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error editing category: {ex.Message}");
-                await PageHelper.DisplayAlertAsync("Error", $"Failed to update category: {ex.Message}", "OK");
+                IsBusy = false;
             }
         }
-
-        [RelayCommand]
-        public async Task DeleteCategory(CategoryViewModel category)
-        {
-            try
-            {
-                if (category.MenuItems.Count > 0)
-                {
-                    await PageHelper.DisplayAlertAsync(
-                        "Cannot Delete",
-                        "Please remove all menu items from this category before deleting it.",
-                        "OK");
-                    return;
-                }
-
-                bool confirm = await PageHelper.DisplayConfirmAsync(
-                    "Confirm Delete",
-                    $"Are you sure you want to delete the category '{category.Name}'?",
-                    "Yes",
-                    "No");
-
-                if (confirm)
-                {
-                    await _categoryService.DeactivateCategoryAsync(category.Id);
-                    await LoadCategories();
-                    await LoadCategoriesWithMenuItems();
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error deleting category: {ex.Message}");
-                await PageHelper.DisplayAlertAsync("Error", $"Failed to delete category: {ex.Message}", "OK");
-            }
-        }
-        #endregion
-
-        #region CRUD: Menu Items
-        [RelayCommand]
-        public async Task AddMenuItem()
-        {
-            try
-            {
-                SelectedMenuItemId = 0;
-                MenuItemName = MenuDescription = SelectedCategory = SelectedMenuType = ImagePath = string.Empty;
-                MenuItemPrice = 0;
-                IsActive = false;
-                LabelText = "Add New Menu Item";
-                ShowBorder();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error in AddMenuItem: {ex.Message}");
-            }
-        }
-        partial void OnSelectedMenuTypeChanged(string value)
-        {
-            try
-            {
-                IsUnitBasedVisible = value == "Unit-Based";
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error in OnSelectedMenuTypeChanged: {ex.Message}");
-            }
-        }
-        [RelayCommand]
-        public async Task EditMenuItem(MenuItem menuItem)
-        {
-            try
-            {
-                SelectedMenuItemId = menuItem.Id;
-                MenuItemName = menuItem.Name;
-                MenuDescription = menuItem.Description;
-                MenuItemPrice = menuItem.Price;
-                IsActive = menuItem.IsActive;
-                SelectedCategory = menuItem.Category;
-                SelectedMenuType = menuItem.Type;
-                ImagePath = string.IsNullOrWhiteSpace(menuItem.ImagePath) ? string.Empty : menuItem.ImagePath;
-                LabelText = $"Edit Menu Item: {MenuItemName}";
-                ShowBorder();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error in EditMenuItem: {ex.Message}");
-            }
-        }
-
-        [RelayCommand]
-        public async Task DeleteMenuItemAsync(MenuItem menuItem)
-        {
-            try
-            {
-                bool confirm = await PageHelper.DisplayConfirmAsync(
-                    "Confirm Delete",
-                    $"Are you sure you want to delete '{menuItem.Name}'?",
-                    "Yes", "No");
-
-                if (!confirm) return;
-
-                await _menuItemService.DeleteMenuItemAsync(menuItem.Id);
-                await LoadCategoriesWithMenuItems();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error deleting menu item: {ex.Message}");
-                await PageHelper.DisplayAlertAsync("Error", $"Failed to delete item: {ex.Message}", "OK");
-            }
-        }
-
-        [RelayCommand]
-        public async Task ToggleMenuItemStatus(MenuItem menuItem)
-        {
-            try
-            {
-                menuItem.IsActive = !menuItem.IsActive;
-                await _menuItemService.UpdateMenuItemAsync(menuItem);
-                await LoadCategoriesWithMenuItems();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error toggling menu item status: {ex.Message}");
-                menuItem.IsActive = !menuItem.IsActive;
-                await PageHelper.DisplayAlertAsync("Error", "Failed to update status", "OK");
-            }
-        }
-
         [RelayCommand]
         public async Task SaveMenuItemAsync()
         {
-            try
+            if (!ValidateMenuItem()) return;
+
+            bool confirm = await PageHelper.DisplayConfirmAsync(
+                "Confirm",
+                SelectedMenuItemId == 0 ? "Add new menu item?" : "Update menu item?",
+                "Yes", "No");
+
+            if (!confirm) return;
+
+            await _db.RunInTransactionAsync(tran =>
             {
-                // ---------- BASIC VALIDATION ----------
-                if (string.IsNullOrWhiteSpace(MenuItemName) ||
-                    string.IsNullOrWhiteSpace(SelectedCategory) ||
-                    string.IsNullOrWhiteSpace(SelectedMenuType) ||
-                    MenuItemPrice <= 0)
+                var item = new MenuItem
                 {
-                    await PageHelper.DisplayAlertAsync(
-                        "Validation",
-                        "Please fill in all required fields with valid data.",
-                        "OK");
-                    return;
+                    Id = SelectedMenuItemId,
+                    Name = MenuItemName.Trim(),
+                    Description = MenuDescription?.Trim(),
+                    Category = SelectedCategory!.Name,
+                    Price = MenuItemPrice,
+                    Type = SelectedMenuType,
+                    ImagePath = ImagePath,
+                    IsActive = IsActive
+                };
+
+                if (SelectedMenuItemId == 0)
+                {
+                    tran.Insert(item);
+
+                    if (SelectedMenuType == "Unit-Based")
+                        HandleUnitBasedInventory(tran, item);
                 }
-
-                // ---------- UNIT-BASED VALIDATION ----------
-                if (SelectedMenuType == "Unit-Based")
+                else
                 {
-                    if (string.IsNullOrWhiteSpace(SelectedUnit) ||
-                        InitialStock < 0 ||
-                        CostPerUnit <= 0 ||
-                        ReOrderLevel < 0)
-                    {
-                        await PageHelper.DisplayAlertAsync(
-                            "Validation",
-                            "Please complete all inventory-related fields for unit-based items.",
-                            "OK");
-                        return;
-                    }
+                    tran.Update(item);
                 }
+            });
 
-                bool confirm = await PageHelper.DisplayConfirmAsync(
-                    "Confirm Save",
-                    SelectedMenuItemId == 0 ? "Add this new menu item?" : "Update this menu item?",
-                    "Yes", "No");
+            HideBorder();
+            await ReloadMenuItemsAsync();
+        }
 
-                if (!confirm) return;
+        private void HandleUnitBasedInventory(SQLiteConnection tran, MenuItem item)
+        {
+            var inv = new InventoryItem
+            {
+                Name = item.Name,
+                Unit = SelectedUnit,
+                QuantityOnHand = InitialStock,
+                CostPerUnit = CostPerUnit,
+                ReOrderLevel = ReOrderLevel,
+                IsActive = true
+            };
 
-                // ---------- TRANSACTION (REAL) ----------
-                await _db.RunInTransactionAsync(tran =>
+            tran.Insert(inv);
+
+            tran.Insert(new MenuItemIngredient
+            {
+                MenuItemId = item.Id,
+                InventoryItemId = inv.Id,
+                InventoryItemName = inv.Name,
+                UnitOfMeasurement = SelectedUnit,
+                QuantityPerMenu = 1
+            });
+
+            if (InitialStock > 0)
+            {
+                tran.Insert(new InventoryTransaction
                 {
-                    var menuItem = new MenuItem
-                    {
-                        Id = SelectedMenuItemId,
-                        Name = MenuItemName.Trim(),
-                        Description = MenuDescription?.Trim(),
-                        Category = SelectedCategory,
-                        Price = MenuItemPrice,
-                        Type = SelectedMenuType,
-                        ImagePath = ImagePath,
-                        IsActive = IsActive
-                    };
-
-                    if (SelectedMenuItemId == 0)
-                    {
-                        // 1️⃣ Insert Menu Item
-                        tran.Insert(menuItem);
-
-                        if (menuItem.Id <= 0)
-                            throw new Exception("Menu item ID was not generated.");
-
-                        // ---------- UNIT-BASED ----------
-                        if (menuItem.Type == "Unit-Based")
-                        {
-                            // 2️⃣ Inventory Item
-                            var inventoryItem = new InventoryItem
-                            {
-                                Name = menuItem.Name,
-                                Unit = SelectedUnit,
-                                QuantityOnHand = InitialStock,
-                                CostPerUnit = CostPerUnit,
-                                ReOrderLevel = ReOrderLevel,
-                                IsActive = IsActive
-                            };
-
-                            tran.Insert(inventoryItem);
-
-                            if (inventoryItem.Id <= 0)
-                                throw new Exception("Inventory item ID was not generated.");
-
-                            // 3️⃣ MenuItemIngredient
-                            var ingredient = new MenuItemIngredient
-                            {
-                                MenuItemId = menuItem.Id,
-                                InventoryItemId = inventoryItem.Id,
-                                InventoryItemName = inventoryItem.Name,
-                                UnitOfMeasurement = SelectedUnit,
-                                QuantityPerMenu = 1
-                            };
-
-                            tran.Insert(ingredient);
-
-                            // 4️⃣ Inventory Transaction (Initial Stock)
-                            if (InitialStock > 0)
-                            {
-                                var inventoryTransaction = new InventoryTransaction
-                                {
-                                    InventoryItemId = inventoryItem.Id,
-                                    QuantityChange = InitialStock,
-                                    Reason = "Initial Stock",
-                                    Remarks = "Initial stock upon menu creation",
-                                    TransactionDate = DateTime.Now
-                                };
-
-                                tran.Insert(inventoryTransaction);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // ---------- UPDATE ----------
-                        tran.Update(menuItem);
-                    }
+                    InventoryItemId = inv.Id,
+                    QuantityChange = InitialStock,
+                    Reason = "Initial Stock",
+                    TransactionDate = DateTime.Now
                 });
-
-                // ✅ SUCCESS
-                await LoadCategoriesWithMenuItems();
-                HideBorder();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error saving menu item: {ex}");
-                await PageHelper.DisplayAlertAsync(
-                    "Error",
-                    $"Failed to save menu item.\n\n{ex.Message}",
-                    "OK");
             }
         }
 
+        [RelayCommand]
+        public void EditMenuItem(MenuItem item)
+        {
+            SelectedMenuItemId = item.Id;
+            MenuItemName = item.Name;
+            MenuDescription = item.Description;
+            MenuItemPrice = item.Price;
+            IsActive = item.IsActive;
+            SelectedMenuType = item.Type;
+            ImagePath = item.ImagePath ?? string.Empty;
+            LabelText = $"Edit: {item.Name}";
+            ShowBorder();
+        }
+        [RelayCommand]
+        public void AddMenuItem()
+        {
+            // Clear all fields
+            SelectedMenuItemId = 0;
+            MenuItemName = string.Empty;
+            MenuDescription = string.Empty;
+            MenuItemPrice = 0;
+            SelectedMenuType = string.Empty;
+            SelectedCategory = Categories.FirstOrDefault();
+            SelectedUnit = string.Empty;
+            InitialStock = 0;
+            CostPerUnit = 0;
+            ReOrderLevel = 0;
+            ImagePath = string.Empty;
+            ShowBorder();
+            LabelText = "Add New Menu Item";
+            //IsBorderVisible = true;
+        }
 
+        [RelayCommand]
+        public async Task DeleteMenuItemAsync(MenuItem item)
+        {
+            bool confirm = await PageHelper.DisplayConfirmAsync(
+                "Delete",
+                $"Delete {item.Name}?",
+                "Yes", "No");
+
+            if (!confirm) return;
+
+            await _menuItemService.DeleteMenuItemAsync(item.Id);
+
+            if (!string.IsNullOrEmpty(item.ImagePath) && File.Exists(item.ImagePath))
+                File.Delete(item.ImagePath);
+
+            await ReloadMenuItemsAsync();
+        }
         #endregion
 
         #region UI Helpers
-        [RelayCommand]
-        private void ShowBorder()
-        {
-            try
-            {
-                IsBorderVisible = true;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error showing border: {ex.Message}");
-            }
-        }
+        [RelayCommand] private void ShowBorder() => IsBorderVisible = true;
 
         [RelayCommand]
-        private void HideBorder()
+        public void HideBorder()
         {
-            try
-            {
-                SelectedMenuItemId = 0;
-                MenuItemName = MenuDescription = SelectedCategory = SelectedMenuType = ImagePath = string.Empty;
-                MenuItemPrice = 0;
-                IsActive = false;
-                IsBorderVisible = false;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error hiding border: {ex.Message}");
-            }
+            SelectedMenuItemId = 0;
+            MenuItemName = MenuDescription = SelectedMenuType = ImagePath = string.Empty;
+            MenuItemPrice = InitialStock = CostPerUnit = ReOrderLevel = 0;
+            IsBorderVisible = false;
+            LabelText = "Add New Menu Item";
         }
 
-        [RelayCommand]
-        public async Task ShowMenuTypeDialogAsync()
-        {
-            try
-            {
-                string message = "Unit-Based Menu Item: An item that is stocked and sold in the same unit. " +
-                                 "Recipe-Based Menu Item: An item made from ingredients in inventory. " +
-                                 "Tracks ingredient usage per serving.";
+        partial void OnSelectedMenuTypeChanged(string value)
+            => IsUnitBasedVisible = value == "Unit-Based";
+        #endregion
 
-                await PageHelper.DisplayAlertAsync("Menu Item Types", message, "OK");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error showing menu type dialog: {ex.Message}");
-            }
-        }
-
+        #region Image Upload
         [RelayCommand]
         public async Task UploadImageAsync()
         {
-            try
+            if (string.IsNullOrWhiteSpace(MenuItemName))
             {
-                if (string.IsNullOrWhiteSpace(MenuItemName))
-                {
-                    await PageHelper.DisplayAlertAsync("Validation", "Please enter the menu item name before uploading an image.", "OK");
-                    return;
-                }
-
-                var results = await MediaPicker.PickPhotosAsync(new MediaPickerOptions { Title = "Select Menu Item Image", SelectionLimit = 1 });
-                var result = results?.FirstOrDefault();
-                if (result == null) return;
-
-                var imagesDir = Path.Combine(FileSystem.AppDataDirectory, "menu_images");
-                if (!Directory.Exists(imagesDir)) Directory.CreateDirectory(imagesDir);
-
-                var fileName = $"{MenuItemName.Replace(" ", "")}{Path.GetExtension(result.FileName)}";
-                var destinationPath = Path.Combine(imagesDir, fileName);
-
-                using var sourceStream = await result.OpenReadAsync();
-                using var destinationStream = File.Create(destinationPath);
-                await sourceStream.CopyToAsync(destinationStream);
-
-                if (!string.IsNullOrWhiteSpace(ImagePath) && File.Exists(ImagePath))
-                    File.Delete(ImagePath);
-
-                ImagePath = destinationPath;
+                await PageHelper.DisplayAlertAsync("Info", "Enter item name first.", "OK");
+                return;
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error uploading image: {ex.Message}");
-                await PageHelper.DisplayAlertAsync("Error", $"Image upload failed: {ex.Message}", "OK");
-            }
+
+            var result = await MediaPicker.PickPhotoAsync();
+            if (result == null) return;
+
+            var dir = Path.Combine(FileSystem.AppDataDirectory, "menu_images");
+            Directory.CreateDirectory(dir);
+
+            var path = Path.Combine(dir, $"{Guid.NewGuid()}{Path.GetExtension(result.FileName)}");
+
+            using var src = await result.OpenReadAsync();
+            using var dest = File.Create(path);
+            await src.CopyToAsync(dest);
+
+            ImagePath = path;
         }
+        #endregion
 
+        private bool ValidateMenuItem()
+        {
+            if (string.IsNullOrWhiteSpace(MenuItemName) ||
+                SelectedCategory == null ||
+                MenuItemPrice <= 0)
+            {
+                _ = PageHelper.DisplayAlertAsync("Validation", "Please complete required fields.", "OK");
+                return false;
+            }
+            return true;
+        }
+        public void ResetPaging()
+        {
+            _currentPage = 0;
+            FilteredMenuItems.Clear();
+        }
+        //go back command
         [RelayCommand]
         public async Task GoBackAsync()
         {
-            try
-            {
-                await Shell.Current.GoToAsync("..");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error navigating back: {ex.Message}");
-            }
+            await Shell.Current.GoToAsync("..");
         }
-        #endregion
-
-        #region Seeding
-        public async Task SeedMenuItemsAsync()
-        {
-            try
-            {
-                var existingItems = await _menuItemService.GetAllMenuItemsAsync();
-                if (existingItems.Any())
-                {
-                    Debug.WriteLine("Menu items already seeded. Skipping.");
-                    return;
-                }
-
-                var categories = new List<Category> {
-                    //new Category { Name = "Main Courses", IsActive = true },
-                    new Category { Name = "Appetizers", IsActive = true },
-                    new Category { Name = "Desserts", IsActive = true },
-                    new Category { Name = "Drinks", IsActive = true }
-                };
-
-                await _categoryService.AddAllCategoriesAsync(categories);
-                var menuItems = new List<MenuItem>
-                {
-                    // Main Courses
-                    new MenuItem { Name = "Pork Sisig", Description = "Sizzling chopped pork with onions and chili", Category = "Main Courses", Price = 180, Type = "Recipe-Based", IsActive = true },
-                    new MenuItem { Name = "Chicken Adobo", Description = "Classic Filipino braised chicken in soy and vinegar", Category = "Main Courses", Price = 150, Type = "Recipe-Based", IsActive = true },
-                    new MenuItem { Name = "Beef Kare-Kare", Description = "Oxtail and vegetables in peanut sauce", Category = "Main Courses", Price = 220, Type = "Recipe-Based", IsActive = true },
-                    new MenuItem { Name = "Grilled Bangus", Description = "Grilled milkfish stuffed with tomatoes and onions", Category = "Main Courses", Price = 170, Type = "Recipe-Based", IsActive = true },
-                    new MenuItem { Name = "Crispy Pata", Description = "Deep-fried pork knuckles until crispy", Category = "Main Courses", Price = 380, Type = "Recipe-Based", IsActive = true },
-        
-                    // Appetizers
-                    new MenuItem { Name = "Lumpia Shanghai", Description = "Crispy spring rolls filled with pork and vegetables", Category = "Appetizers", Price = 120, Type = "Recipe-Based", IsActive = true },
-                    new MenuItem { Name = "Calamares", Description = "Crispy fried squid rings with garlic mayo", Category = "Appetizers", Price = 140, Type = "Recipe-Based", IsActive = true },
-                    new MenuItem { Name = "Chicken Wings", Description = "Buffalo-style or garlic parmesan chicken wings", Category = "Appetizers", Price = 160, Type = "Recipe-Based", IsActive = true },
-                    new MenuItem { Name = "Tokwa't Baboy", Description = "Fried tofu and pork with soy-vinegar dressing", Category = "Appetizers", Price = 110, Type = "Recipe-Based", IsActive = true },
-                    new MenuItem { Name = "Dynamite Lumpia", Description = "Cheese-stuffed chili peppers wrapped in spring roll", Category = "Appetizers", Price = 130, Type = "Recipe-Based", IsActive = true },
-        
-                    // Desserts
-                    new MenuItem { Name = "Leche Flan", Description = "Creamy caramel custard", Category = "Desserts", Price = 80, Type = "Recipe-Based", IsActive = true },
-                    new MenuItem { Name = "Halo-Halo", Description = "Mixed shaved ice with beans, fruits, and ube ice cream", Category = "Desserts", Price = 95, Type = "Recipe-Based", IsActive = true },
-                    new MenuItem { Name = "Ube Cake", Description = "Purple yam cake with cream cheese frosting", Category = "Desserts", Price = 120, Type = "Unit-Based", IsActive = true },
-                    new MenuItem { Name = "Turon", Description = "Fried banana spring rolls with jackfruit", Category = "Desserts", Price = 70, Type = "Recipe-Based", IsActive = true },
-                    new MenuItem { Name = "Buko Pandan", Description = "Young coconut and pandan-flavored gelatin dessert", Category = "Desserts", Price = 65, Type = "Recipe-Based", IsActive = true },
-        
-                    // Drinks
-                    new MenuItem { Name = "Iced Tea", Description = "Refreshing house-brewed iced tea", Category = "Drinks", Price = 40, Type = "Unit-Based", IsActive = true },
-                    new MenuItem { Name = "Calamansi Juice", Description = "Fresh Philippine lime juice", Category = "Drinks", Price = 50, Type = "Unit-Based", IsActive = true },
-                    new MenuItem { Name = "Mango Shake", Description = "Creamy fresh mango smoothie", Category = "Drinks", Price = 85, Type = "Unit-Based", IsActive = true },
-                    new MenuItem { Name = "Sago't Gulaman", Description = "Sweet tapioca pearls and gelatin drink", Category = "Drinks", Price = 45, Type = "Unit-Based", IsActive = true },
-                    new MenuItem { Name = "Buko Juice", Description = "Fresh young coconut water", Category = "Drinks", Price = 60, Type = "Unit-Based", IsActive = true }
-                };
-
-                await _menuItemService.AddAllMenuItemAsync(menuItems);
-                Debug.WriteLine("Menu items seeded successfully.");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error seeding menu items: {ex.Message}");
-
-            }
-        }
-        #endregion
     }
 }

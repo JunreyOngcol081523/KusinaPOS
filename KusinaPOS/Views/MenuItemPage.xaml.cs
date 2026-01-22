@@ -21,44 +21,45 @@ public partial class MenuItemPage : ContentPage
     }
     private async void SfSwitch_StateChanged(object sender, SwitchStateChangedEventArgs e)
     {
-        if (sender is SfSwitch sw &&
-            sw.BindingContext is Models.MenuItem menuItem)
+        if (sender is SfSwitch sw && sw.BindingContext is Models.MenuItem menuItem)
         {
             try
             {
-                // IsActive is ALREADY updated because of TwoWay binding
                 await _menuItemService.UpdateMenuItemAsync(menuItem);
-               //await _menuItemViewModel.LoadCategoriesWithMenuItems();
+                // No need to reload all categories
             }
             catch (Exception ex)
             {
-                // rollback if DB update fails
-                menuItem.IsActive = !menuItem.IsActive;
-                
-                await PageHelper.DisplayAlertAsync(
-                    "Error",
-                    $"Failed to update status: {ex.Message}",
-                    "OK"
-                );
+                menuItem.IsActive = !menuItem.IsActive; // rollback
+                await PageHelper.DisplayAlertAsync("Error",
+                    $"Failed to update status: {ex.Message}", "OK");
             }
         }
     }
-    //onapppearing
-    //protected override void OnAppearing()
-    //{
-    //    base.OnAppearing();
-    //    _ = SeedOnceAsync();
-    //}
+    private void CategorySegment_SelectionChanged(object sender, Syncfusion.Maui.Buttons.SelectionChangedEventArgs e)
+    {
+        if (_menuItemViewModel.Categories.Count == 0) return;
 
-    //private async Task SeedOnceAsync()
-    //{
-    //    try
-    //    {
-    //        await _menuItemViewModel.SeedMenuItemsAsync();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Debug.WriteLine($"Seed failed: {ex}");
-    //    }
-    //}
+        var selectedIndex = (sender as Syncfusion.Maui.Buttons.SfSegmentedControl)?.SelectedIndex ?? 0;
+        _menuItemViewModel.SelectedCategory = _menuItemViewModel.Categories[selectedIndex];
+
+        // Reset paging
+        _menuItemViewModel.ResetPaging();
+        _menuItemViewModel.HideBorder();
+        // Load first page
+        _ = _menuItemViewModel.LoadMoreMenuItemsAsync();
+    }
+
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        if (_menuItemViewModel.Categories.Any())
+        {
+            _menuItemViewModel.SelectedCategory = _menuItemViewModel.Categories[0];
+            _menuItemViewModel.ResetPaging();
+            _ = _menuItemViewModel.LoadMoreMenuItemsAsync();
+        }
+    }
+
 }

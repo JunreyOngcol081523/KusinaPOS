@@ -5,6 +5,7 @@
              xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
              xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:sfListView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              xmlns:behaviors="clr-namespace:Syncfusion.Maui.Core.Internals;assembly=Syncfusion.Maui.Core"
              x:Class="KusinaPOS.Views.MenuItemPage"
              xmlns:viewmodels="clr-namespace:KusinaPOS.ViewModel"
@@ -101,151 +102,130 @@
                     </Grid>
 
                     <!-- Menu Items List with Expanders -->
-                    <ScrollView Grid.Row="2">
-                        <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding CategoriesWithMenuItems}">
-                            <core:SfBusyIndicator x:Name="busyIndicator"
-                                                  IsRunning="{Binding IsBusy}"
-                                                  AnimationType="CircularMaterial" />
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="viewmodels:CategoryViewModel">
-                                    <expander:SfExpander IsExpanded="{Binding IsExpanded}">
-                                        <expander:SfExpander.Header>
-                                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10" Padding="15,10">
-                                                <Label Grid.Column="0"
-                                                       Text="{Binding Name}"
-                                                       FontSize="12"
+                    <Grid Grid.Row="2" RowDefinitions="Auto,*">
+
+                        <!-- Segmented Control for Categories -->
+                        <buttons:SfSegmentedControl Grid.Row="0"
+                                                    x:Name="categorySegment"
+                                                    ItemsSource="{Binding SegmentItems}"
+                                                    SelectedIndex="{Binding SelectedCategoryIndex}"
+                                                    VisibleSegmentsCount="{Binding SegmentItems.Count}"
+                                                    SelectionChanged="CategorySegment_SelectionChanged"
+                                                    CornerRadius="5"
+                                                    Margin="10,5">
+                            <buttons:SfSegmentedControl.TextStyle>
+                                <buttons:SegmentTextStyle TextColor="{StaticResource TextPrimary}" FontAttributes="Italic" FontSize="12"/>
+                            </buttons:SfSegmentedControl.TextStyle>
+                        </buttons:SfSegmentedControl>
+
+                        <!-- Menu Items ListView -->
+                        <sfListView:SfListView Grid.Row="1"
+                           x:Name="menuItemsListView"
+                           ItemsSource="{Binding FilteredMenuItems}"
+                           ItemSize="80"
+                           AutoFitMode="Height"
+                           LoadMoreOption="Auto"
+                           LoadMoreCommand="{Binding LoadMoreMenuItemsCommand}"
+                           LoadMoreCommandParameter="{Binding Source={x:Reference menuItemsListView}}"
+                           SelectionMode="None">
+
+                            <!-- Item Template -->
+                            <sfListView:SfListView.ItemTemplate>
+                                <DataTemplate x:DataType="models:MenuItem">
+                                    <Border BackgroundColor="{StaticResource Gray200}"
+                                            StrokeShape="RoundRectangle 8"
+                                            Padding="10,5"
+                                            Margin="10,5">
+                                        <Grid ColumnDefinitions="60,*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+
+                                            <!-- Image -->
+                                            <Image Grid.Column="0"
+                                                   Source="{Binding ImagePath, Converter={StaticResource ImageSourceConverter}}"
+                                                   Aspect="AspectFill"
+                                                   HeightRequest="50"
+                                                   WidthRequest="50"
+                                                   VerticalOptions="Center">
+                                                <Image.Clip>
+                                                    <RoundRectangleGeometry Rect="0,0,50,50" CornerRadius="8" />
+                                                </Image.Clip>
+                                            </Image>
+
+                                            <!-- Item Info -->
+                                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                                <Label Text="{Binding Name}"
+                                                       FontSize="14"
                                                        FontAttributes="Bold"
-                                                       TextColor="{StaticResource TextPrimary}"
-                                                       VerticalOptions="Center" />
-
-                                                <Border Grid.Column="1"
-                                                        StrokeShape="RoundRectangle 5"
-                                                        BackgroundColor="Transparent"
-                                                        Stroke="{StaticResource Gray400}"
-                                                        StrokeThickness="1"
-                                                        WidthRequest="20"
-                                                        HeightRequest="20"
-                                                        VerticalOptions="Center">
-                                                    <Border.GestureRecognizers>
-                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MenuItemViewModel}}, Path=EditCategoryCommand}"
-                                                          CommandParameter="{Binding .}" />
-                                                    </Border.GestureRecognizers>
-                                                    <Label Text="✏️" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
-                                                </Border>
-
-                                                <Border Grid.Column="2"
-                                                        StrokeShape="RoundRectangle 5"
-                                                        BackgroundColor="Transparent"
-                                                        Stroke="{StaticResource Gray400}"
-                                                        StrokeThickness="1"
-                                                        WidthRequest="20"
-                                                        HeightRequest="20"
-                                                        VerticalOptions="Center">
-                                                    <Border.GestureRecognizers>
-                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MenuItemViewModel}}, Path=DeleteCategoryCommand}"
-                                                          CommandParameter="{Binding .}" />
-                                                    </Border.GestureRecognizers>
-                                                    <Label Text="🗑️" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
-                                                </Border>
-                                            </Grid>
-                                        </expander:SfExpander.Header>
-
-                                        <expander:SfExpander.Content>
-                                            <VerticalStackLayout Spacing="5" Padding="10,0">
-
-                                                <!-- Per-Category Search -->
-  
-                                                    <SearchBar Text="{Binding SearchText, Mode=TwoWay}"
-                                                                Placeholder="Search Menu Item"
-                                                                TextColor="{StaticResource TextPrimary}"
-                                                                PlaceholderColor="{StaticResource Gray500}" 
-                                                                FontSize="Small"/>
-
-
-                                                <!-- Filtered Menu Items List -->
-                                                <VerticalStackLayout Spacing="5" BindableLayout.ItemsSource="{Binding FilteredMenuItems}">
-                                                    <BindableLayout.ItemTemplate>
-                                                        <DataTemplate x:DataType="models:MenuItem">
-                                                            <Border BackgroundColor="{StaticResource Gray200}"
-                                                                    StrokeShape="RoundRectangle 8"
-                                                                    Padding="10,5">
-                                                                <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
-                                                                    <Label Grid.Column="0"
-                                                                            Text="{Binding Name}"
-                                                                            FontSize="12"
-                                                                            TextColor="{StaticResource TextPrimary}"
-                                                                            VerticalOptions="Center" />
-
-                                                                    <Label Grid.Column="1"
-                                                                           Text="{Binding IsActive, Converter={StaticResource BoolToStatusConverter}}"
-                                                                           FontSize="10"
-                                                                           TextColor="{StaticResource TextSecondary}"
-                                                                           VerticalOptions="Center" />
-
-                                                                    <buttons:SfSwitch Grid.Column="2"
-                                                                              IsOn="{Binding IsActive, Mode=TwoWay}"
-                                                                              WidthRequest="50"
-                                                                              HeightRequest="30"
-                                                                              VerticalOptions="Center"
-                                                                              StateChanged="SfSwitch_StateChanged" />
-
-                                                                    <Border Grid.Column="3"
-                                                                            StrokeShape="RoundRectangle 5"
-                                                                            BackgroundColor="Transparent"
-                                                                            Stroke="{StaticResource Gray400}"
-                                                                            StrokeThickness="1"
-                                                                            WidthRequest="30"
-                                                                            HeightRequest="30"
-                                                                            VerticalOptions="Center">
-                                                                        <Border.GestureRecognizers>
-                                                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MenuItemViewModel}}, Path=EditMenuItemCommand}"
-                                                                              CommandParameter="{Binding .}" />
-                                                                        </Border.GestureRecognizers>
-                                                                        <Image Source="edit.png" HeightRequest="30"/>
-                                                                    </Border>
-                                                                    <Border Grid.Column="4"
-                                                                            StrokeShape="RoundRectangle 5"
-                                                                            BackgroundColor="Transparent"
-                                                                            Stroke="{StaticResource Gray400}"
-                                                                            StrokeThickness="1"
-                                                                            WidthRequest="30"
-                                                                            HeightRequest="30"
-                                                                            VerticalOptions="Center">
-                                                                        <Border.GestureRecognizers>
-                                                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MenuItemViewModel}}, Path=DeleteMenuItemCommand}"
-                                                                              CommandParameter="{Binding .}" />
-                                                                        </Border.GestureRecognizers>
-                                                                        <Image Source="delete.png" HeightRequest="30"/>
-                                                                    </Border>
-                                                                </Grid>
-                                                            </Border>
-                                                        </DataTemplate>
-                                                    </BindableLayout.ItemTemplate>
-
-                                                    <BindableLayout.EmptyView>
-                                                        <Label Text="No menu items match your search"
-                                           FontSize="12"
-                                           TextColor="{StaticResource Gray500}"
-                                           HorizontalOptions="Center"
-                                           Margin="0,10" />
-                                                    </BindableLayout.EmptyView>
-                                                </VerticalStackLayout>
+                                                       TextColor="{StaticResource TextPrimary}" />
+                                                <Label Text="{Binding Price, StringFormat='₱{0:F2}'}"
+                                                       FontSize="12"
+                                                       TextColor="{StaticResource TextSecondary}" />
                                             </VerticalStackLayout>
-                                        </expander:SfExpander.Content>
-                                    </expander:SfExpander>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
 
-                            <BindableLayout.EmptyView>
-                                <Label Text="No categories yet. Add one to get started!"
-                                       FontSize="14"
-                                       TextColor="{StaticResource Gray500}"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center"
-                                       Margin="0,50" />
-                            </BindableLayout.EmptyView>
-                        </VerticalStackLayout>
-                    </ScrollView>
+                                            <Label Grid.Column="2"
+                                                   Text="{Binding IsActive, Converter={StaticResource BoolToStatusConverter}}"
+                                                   FontSize="10"
+                                                   TextColor="{StaticResource TextSecondary}"
+                                                   VerticalOptions="Center" />
+
+                                            <buttons:SfSwitch Grid.Column="3"
+                                                              IsOn="{Binding IsActive, Mode=TwoWay}"
+                                                              WidthRequest="50"
+                                                              HeightRequest="30"
+                                                              VerticalOptions="Center"
+                                                              StateChanged="SfSwitch_StateChanged" />
+
+                                            <Border Grid.Column="4"
+                                                    StrokeShape="RoundRectangle 5"
+                                                    BackgroundColor="Transparent"
+                                                    Stroke="{StaticResource Gray400}"
+                                                    StrokeThickness="1"
+                                                    WidthRequest="30"
+                                                    HeightRequest="30"
+                                                    VerticalOptions="Center">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding Source={x:Reference menuItemsListView}, Path=BindingContext.EditMenuItemCommand}"
+                                                      CommandParameter="{Binding .}" />
+                                                </Border.GestureRecognizers>
+                                                <Image Source="edit.png" HeightRequest="30"/>
+                                            </Border>
+
+                                            <Border Grid.Column="5"
+                                                    StrokeShape="RoundRectangle 5"
+                                                    BackgroundColor="Transparent"
+                                                    Stroke="{StaticResource Gray400}"
+                                                    StrokeThickness="1"
+                                                    WidthRequest="30"
+                                                    HeightRequest="30"
+                                                    VerticalOptions="Center">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding Source={x:Reference menuItemsListView}, Path=BindingContext.DeleteMenuItemCommand}"
+                                                      CommandParameter="{Binding .}" />
+                                                </Border.GestureRecognizers>
+                                                <Image Source="delete.png" HeightRequest="30"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </sfListView:SfListView.ItemTemplate>
+
+                            <!-- Empty View -->
+                            <sfListView:SfListView.EmptyView>
+                                <VerticalStackLayout HorizontalOptions="Center" 
+                                                    VerticalOptions="Center" 
+                                                    Spacing="10"
+                                                    Margin="0,50">
+                                    <Label Text="📋"
+                                           FontSize="48"
+                                           HorizontalOptions="Center" />
+                                    <Label Text="No menu items in this category"
+                                           FontSize="14"
+                                           TextColor="{StaticResource Gray500}"
+                                           HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </sfListView:SfListView.EmptyView>
+
+                        </sfListView:SfListView>
+                    </Grid>
 
 
                     <!-- Add New Item Button -->
@@ -347,8 +327,8 @@
                                            FontAttributes="Bold"
                                            TextColor="{StaticResource TextSecondary}" />
                                     <editors:SfComboBox Placeholder="Select category"
-                                                        ItemsSource="{Binding CategoriesWithMenuItems}"
-                                                        Text="{Binding SelectedCategory, Mode=TwoWay}"
+                                                        ItemsSource="{Binding Categories}"
+                                                        SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
                                                         DisplayMemberPath="Name"
                                                         TextMemberPath="Name"
                                                         TextColor="{StaticResource TextPrimary}"

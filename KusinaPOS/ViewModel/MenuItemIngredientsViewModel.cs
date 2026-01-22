@@ -11,6 +11,9 @@ namespace KusinaPOS.ViewModel
 {
     public partial class MenuItemIngredientsViewModel : ObservableObject
     {
+        [ObservableProperty]
+        private bool isBusy;
+
         // ======================
         // SERVICES
         // ======================
@@ -84,7 +87,9 @@ namespace KusinaPOS.ViewModel
         {
             try
             {
-                // Load all data in parallel for better performance
+                IsBusy = true;
+                await YieldToUIAsync(); // 🔑 CRITICAL
+
                 var menuItemsTask = menuItemService.GetAllMenuItemsAsync();
                 var inventoryItemsTask = inventoryItemService.GetAllInventoryItemsAsync();
                 var categoriesTask = categoryService.GetAllCategoriesAsync();
@@ -93,45 +98,45 @@ namespace KusinaPOS.ViewModel
 
                 var menuItemsList = menuItemsTask.Result.ToList();
 
-                // Load ingredients for all menu items in parallel
                 var ingredientTasks = menuItemsList.Select(async menuItem => new
                 {
                     MenuItem = menuItem,
                     Ingredients = await menuItemIngredientService.GetByMenuItemIdAsync(menuItem.Id)
-                }).ToList();
+                });
 
                 var results = await Task.WhenAll(ingredientTasks);
 
-                // Populate IngredientsText for each menu item
                 foreach (var result in results)
                 {
-                    if (result.Ingredients.Any())
-                    {
-                        result.MenuItem.IngredientsText = string.Join(", ",
-                            result.Ingredients.Select(i => $"{i.InventoryItemName} ({i.QuantityPerMenu:F2} {i.UnitOfMeasurement})"));
-                    }
-                    else
-                    {
-                        result.MenuItem.IngredientsText = "No ingredients";
-                    }
+                    result.MenuItem.IngredientsText =
+                        result.Ingredients.Any()
+                            ? string.Join(", ",
+                                result.Ingredients.Select(i =>
+                                    $"{i.InventoryItemName} ({i.QuantityPerMenu:F2} {i.UnitOfMeasurement})"))
+                            : "No ingredients";
                 }
 
                 MenuItems = new ObservableCollection<MenuItem>(menuItemsList);
                 InventoryItems = new ObservableCollection<InventoryItem>(inventoryItemsTask.Result);
 
-                var categoryList = categoriesTask.Result.ToList();
-                Categories = new List<Category>(new[] { new Category { Name = "All" } }.Concat(categoryList));
+                Categories = new List<Category>(
+                    new[] { new Category { Name = "All" } }.Concat(categoriesTask.Result)
+                );
 
                 FilteredMenuItems = new ObservableCollection<MenuItem>(MenuItems);
-
-                Debug.WriteLine($"Initialized {MenuItems.Count} menu items with ingredients");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error initializing collections: {ex.Message}");
-                await PageHelper.DisplayAlertAsync("Error", "Failed to load data. Please restart the application.", "OK");
+                Debug.WriteLine(ex);
+                await PageHelper.DisplayAlertAsync("Error", "Failed to load data.", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
+
+
 
         // ======================
         // REFRESH INGREDIENTS TEXT
@@ -237,67 +242,34 @@ namespace KusinaPOS.ViewModel
         {
             try
             {
+                IsBusy = true;
+                await YieldToUIAsync(); // 🔑
+
+                MenuItemIngredients.Clear();
+
                 if (SelectedMenuItem == null)
-                {
-                    await MainThread.InvokeOnMainThreadAsync(() => MenuItemIngredients.Clear());
                     return;
-                }
 
-                var ingredients = await menuItemIngredientService.GetByMenuItemIdAsync(SelectedMenuItem.Id);
+                var ingredients =
+                    await menuItemIngredientService.GetByMenuItemIdAsync(SelectedMenuItem.Id);
 
-                Debug.WriteLine($"Loading ingredients for: {SelectedMenuItem.Name}, Found: {ingredients?.Count ?? 0}");
-
-                await MainThread.InvokeOnMainThreadAsync(() =>
+                if (ingredients != null)
                 {
-                    // Smart update: Update existing items, add new ones, remove deleted ones
-                    // This prevents CollectionView reload and maintains scroll position
-
-                    if (ingredients == null || !ingredients.Any())
-                    {
-                        MenuItemIngredients.Clear();
-                        return;
-                    }
-
-                    // Remove items that no longer exist
-                    for (int i = MenuItemIngredients.Count - 1; i >= 0; i--)
-                    {
-                        if (!ingredients.Any(x => x.Id == MenuItemIngredients[i].Id))
-                        {
-                            MenuItemIngredients.RemoveAt(i);
-                        }
-                    }
-
-                    // Update existing items or add new ones
                     foreach (var ing in ingredients)
-                    {
-                        var existing = MenuItemIngredients.FirstOrDefault(x => x.Id == ing.Id);
-
-                        if (existing != null)
-                        {
-                            // Update properties if MenuItemIngredient is ObservableObject
-                            existing.InventoryItemName = ing.InventoryItemName;
-                            existing.QuantityPerMenu = ing.QuantityPerMenu;
-                            existing.UnitOfMeasurement = ing.UnitOfMeasurement;
-                            existing.MenuItemId = ing.MenuItemId;
-                            existing.InventoryItemId = ing.InventoryItemId;
-
-                            Debug.WriteLine($"Updated Ingredient: {ing.InventoryItemName} - QtyPerMenu: {ing.QuantityPerMenu}");
-                        }
-                        else
-                        {
-                            // Add new item
-                            MenuItemIngredients.Add(ing);
-                            Debug.WriteLine($"Added Ingredient: {ing.InventoryItemName} - QtyPerMenu: {ing.QuantityPerMenu}");
-                        }
-                    }
-                });
+                        MenuItemIngredients.Add(ing);
+                }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error loading ingredients: {ex.Message}");
-                await PageHelper.DisplayAlertAsync("Error", "Failed to load ingredients for the selected menu item.", "OK");
+                Debug.WriteLine(ex);
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
+
+
 
         // ======================
         // SEARCH (WITH DEBOUNCE)
@@ -519,5 +491,10 @@ namespace KusinaPOS.ViewModel
                 Debug.WriteLine($"Error navigating back: {ex.Message}");
             }
         }
+        private static async Task YieldToUIAsync()
+        {
+            await Task.Delay(1);
+        }
+
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using KusinaPOS.Models;
+using MenuItem = KusinaPOS.Models.MenuItem;
 
 namespace KusinaPOS.Services
 {
@@ -63,6 +64,20 @@ namespace KusinaPOS.Services
             await InitializeAsync();
             await _db.DeleteAllAsync<Models.MenuItem>();
         }
+        public async Task<List<MenuItem>> GetMenuItemsByCategoryPagedAsync(
+            string category,
+            int pageIndex,
+            int pageSize)
+        {
+            if (string.IsNullOrWhiteSpace(category))
+                return new List<MenuItem>();
 
+            return await _db.Table<MenuItem>()
+                .Where(x => x.Category == category)
+                .OrderBy(x => x.Name)
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
     }
 }

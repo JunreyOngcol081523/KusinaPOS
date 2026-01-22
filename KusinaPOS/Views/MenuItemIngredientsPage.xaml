@@ -9,10 +9,17 @@
              xmlns:behaviors="clr-namespace:CommunityToolkit.Maui.Behaviors;assembly=CommunityToolkit.Maui"
              BackgroundColor="{StaticResource BackgroundDark}">
 
+
     <Grid RowDefinitions="Auto,*" 
           Padding="20"
           RowSpacing="15">
-
+        <syncfusion:SfBusyIndicator
+                        IsRunning="{Binding IsBusy}"
+                        IsVisible="{Binding IsBusy}"
+                        AnimationType="CircularMaterial"
+                        BackgroundColor="#80000000"
+                        Title="Loading..."
+                        InputTransparent="False"/>
         <!-- Header with Back Button -->
         <Grid Grid.Row="0" 
               ColumnDefinitions="Auto,Auto,*"
@@ -47,11 +54,10 @@
                     Padding="8">
 
                 <Grid RowDefinitions="Auto,Auto,*,Auto"
-                      RowSpacing="15"
-                      >
+                      RowSpacing="15">
+
                     <CollectionView 
                                 Grid.Row="0"
-                                
                                 ItemsSource="{Binding Categories}"
                                 SelectionMode="None"
                                 ItemsLayout="HorizontalList">
@@ -68,8 +74,6 @@
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
-
-
 
 
                     <!-- Search Bar -->
@@ -107,7 +111,7 @@
                                                     StrokeShape="RoundRectangle 8"
                                                     WidthRequest="80"
                                                     HeightRequest="80">
-                                            <Image Source="{Binding ImagePath, FallbackValue=placeholder_food.png}"
+                                            <Image Source="{Binding ImagePath, Converter={StaticResource ImageSourceConverter}}"
                                                        Aspect="AspectFill"
                                                        />
                                         </Border>
@@ -313,7 +317,7 @@
                         </CollectionView.ItemTemplate>
                         <CollectionView.EmptyView>
                             <Label Text="NO INGREDIENTS FOUND"
-                               TextColor="Red"
+                               TextColor="{StaticResource TextDisabled}"
                                HorizontalOptions="Center"
                                VerticalOptions="Center"/>
                         </CollectionView.EmptyView>
