@@ -30,7 +30,7 @@ namespace KusinaPOS.ViewModel
         private readonly MenuItemIngredientService menuItemIngredientService;
         private readonly SalesService salesService;
         private readonly IDateTimeService _dateTimeService;
-
+        private readonly InventoryItemService inventoryItemService;
         [ObservableProperty]
         private string selectedCategoryName = "All";
 
@@ -78,7 +78,8 @@ namespace KusinaPOS.ViewModel
             MenuItemService menuItemService,
             MenuItemIngredientService menuItemIngredientService,
             SalesService salesService,
-            IDateTimeService dateTimeService)
+            IDateTimeService dateTimeService,
+            InventoryItemService inventoryItemService)
         {
             try
             {
@@ -116,6 +117,8 @@ namespace KusinaPOS.ViewModel
                 Debug.WriteLine($"Error in POSTerminalViewModel constructor: {ex.Message}");
                 IsLoading = false;
             }
+
+            this.inventoryItemService = inventoryItemService;
         }
 
         /// <summary>
@@ -357,65 +360,95 @@ namespace KusinaPOS.ViewModel
             if (menuItem == null || IsProcessing) return;
 
             IsProcessing = true;
+
             try
             {
-                Debug.WriteLine($"=== Checking ingredients for: {menuItem.Name} ===");
-
-                // Check ingredients in background
-                var ingredients = await Task.Run(async () =>
-                    await menuItemIngredientService.GetByMenuItemIdAsync(menuItem.Id));
+                var ingredients = await menuItemIngredientService
+                    .GetByMenuItemIdAsync(menuItem.Id);
 
                 if (ingredients == null || ingredients.Count == 0)
                 {
                     await PageHelper.DisplayAlertAsync(
                         "No Ingredients",
-                        $"'{menuItem.Name}' has no ingredients configured. Please set up ingredients before adding to order.",
+                        $"'{menuItem.Name}' has no ingredients configured.",
                         "OK");
                     return;
                 }
 
-                Debug.WriteLine($"=== Found {ingredients.Count} ingredients for {menuItem.Name} ===");
+                var existingItem = OrderItems
+                    .FirstOrDefault(o => o.MenuItemId == menuItem.Id);
 
-                // Update order on main thread
+                var totalOrderQty =
+                    menuItem.Quantity + (existingItem?.Quantity ?? 0);
+
+                // 🔒 STOCK VALIDATION
+                foreach (var ingredient in ingredients)
+                {
+                    var inventoryItem = await inventoryItemService
+                        .GetInventoryItemByIdAsync(ingredient.InventoryItemId);
+
+                    if (inventoryItem == null)
+                    {
+                        await PageHelper.DisplayAlertAsync(
+                            "Inventory Missing",
+                            $"Inventory record missing for '{ingredient.InventoryItemName}'.",
+                            "OK");
+                        return;
+                    }
+
+                    var requiredQty =
+                        ingredient.QuantityPerMenu * totalOrderQty;
+
+                    var reservedQty = await GetReservedInventoryQtyAsync(
+                        ingredient.InventoryItemId,
+                        menuItem.Id);
+
+                    var availableQty =
+                        inventoryItem.QuantityOnHand - reservedQty;
+
+                    if (availableQty < requiredQty)
+                    {
+                        await PageHelper.DisplayAlertAsync(
+                            "Insufficient Stock",
+                            $"Not enough {ingredient.InventoryItemName}.\n\n" +
+                            $"Required: {requiredQty}\n" +
+                            $"Available: {availableQty}",
+                            "OK");
+
+                        return; // 🚫 BLOCK
+                    }
+                }
+
+                // ✅ PASSED → UPDATE ORDER
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    // Check if item already exists in order
-                    var existingItem = OrderItems.FirstOrDefault(o => o.MenuItemId == menuItem.Id);
-
                     if (existingItem != null)
                     {
-                        // Update quantity if already in order
                         existingItem.Quantity += menuItem.Quantity;
-                        Debug.WriteLine($"=== Updated existing item. New quantity: {existingItem.Quantity} ===");
                     }
                     else
                     {
-                        // Add new item to order
-                        var orderItem = new OrderItem
+                        OrderItems.Add(new OrderItem
                         {
                             MenuItemId = menuItem.Id,
                             Name = menuItem.Name,
                             Price = menuItem.Price,
                             Quantity = menuItem.Quantity,
                             ImagePath = menuItem.ImagePath
-                        };
-                        OrderItems.Add(orderItem);
-                        Debug.WriteLine($"=== Added new item to order ===");
+                        });
                     }
 
-                    // Reset quantity back to 1
                     menuItem.Quantity = 1;
-
-                    // Recalculate totals
                     CalculateTotals();
                 });
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"=== Error adding to order: {ex.Message} ===");
+                Debug.WriteLine($"AddToOrder error: {ex.Message}");
+
                 await PageHelper.DisplayAlertAsync(
                     "Error",
-                    $"Failed to add item to order: {ex.Message}",
+                    ex.Message,
                     "OK");
             }
             finally
@@ -424,22 +457,113 @@ namespace KusinaPOS.ViewModel
             }
         }
 
-        [RelayCommand]
-        private void IncreaseOrderItemQuantity(OrderItem orderItem)
+
+        private async Task<decimal> GetReservedInventoryQtyAsync(
+            int inventoryItemId,
+            int excludeMenuItemId = 0)
         {
+            decimal reserved = 0;
+
+            foreach (var item in OrderItems)
+            {
+                if (item.MenuItemId == excludeMenuItemId)
+                    continue;
+
+                var ingredients = await menuItemIngredientService
+                    .GetByMenuItemIdAsync(item.MenuItemId);
+
+                var ingredient = ingredients?
+                    .FirstOrDefault(i => i.InventoryItemId == inventoryItemId);
+
+                if (ingredient != null)
+                {
+                    reserved += ingredient.QuantityPerMenu * item.Quantity;
+                }
+            }
+
+            return reserved;
+        }
+        [RelayCommand]
+        private async Task IncreaseOrderItemQuantityAsync(OrderItem orderItem)
+        {
+            if (orderItem == null || IsProcessing) return;
+
+            IsProcessing = true;
+
             try
             {
-                if (orderItem != null)
+                var ingredients = await menuItemIngredientService
+                    .GetByMenuItemIdAsync(orderItem.MenuItemId);
+
+                if (ingredients == null || ingredients.Count == 0)
                 {
-                    orderItem.Quantity++;
-                    CalculateTotals();
+                    await PageHelper.DisplayAlertAsync(
+                        "No Ingredients",
+                        $"Ingredients not configured for '{orderItem.Name}'.",
+                        "OK");
+                    return;
                 }
+
+                var nextQty = orderItem.Quantity + 1;
+
+                foreach (var ingredient in ingredients)
+                {
+                    var inventoryItem = await inventoryItemService
+                        .GetInventoryItemByIdAsync(ingredient.InventoryItemId);
+
+                    if (inventoryItem == null)
+                    {
+                        await PageHelper.DisplayAlertAsync(
+                            "Inventory Missing",
+                            $"Inventory record missing for '{ingredient.InventoryItemName}'.",
+                            "OK");
+                        return;
+                    }
+
+                    var requiredQty =
+                        ingredient.QuantityPerMenu * nextQty;
+
+                    var reservedQty = await GetReservedInventoryQtyAsync(
+                        ingredient.InventoryItemId,
+                        orderItem.MenuItemId);
+
+                    var availableQty =
+                        inventoryItem.QuantityOnHand - reservedQty;
+
+                    if (availableQty < requiredQty)
+                    {
+                        await PageHelper.DisplayAlertAsync(
+                            "Insufficient Stock",
+                            $"Not enough {ingredient.InventoryItemName} to increase quantity.\n\n" +
+                            $"Required: {requiredQty}\n" +
+                            $"Available: {availableQty}",
+                            "OK");
+
+                        return; // 🚫 BLOCK
+                    }
+                }
+
+                // ✅ PASSED
+                orderItem.Quantity++;
+                CalculateTotals();
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error increasing quantity: {ex.Message}");
+                Debug.WriteLine($"Increase quantity error: {ex.Message}");
+
+                await PageHelper.DisplayAlertAsync(
+                    "Error",
+                    ex.Message,
+                    "OK");
+            }
+            finally
+            {
+                IsProcessing = false;
             }
         }
+
+
+
 
         [RelayCommand]
         private void DecreaseOrderItemQuantity(OrderItem orderItem)
@@ -560,44 +684,115 @@ namespace KusinaPOS.ViewModel
                     return;
                 }
 
-                Debug.WriteLine("=== Processing order completion ===");
+                Debug.WriteLine("=== Final inventory validation before checkout ===");
 
-                // Process sale in background
-                var success = await Task.Run(async () =>
+                // 🔒 FINAL INVENTORY CHECK (ORDER-WIDE)
+                foreach (var orderItem in OrderItems)
+                {
+                    var ingredients = await menuItemIngredientService
+                        .GetByMenuItemIdAsync(orderItem.MenuItemId);
+
+                    if (ingredients == null || ingredients.Count == 0)
+                    {
+                        await PageHelper.DisplayAlertAsync(
+                            "Configuration Error",
+                            $"Ingredients not configured for '{orderItem.Name}'.",
+                            "OK");
+                        return;
+                    }
+
+                    foreach (var ingredient in ingredients)
+                    {
+                        var inventoryItem = await inventoryItemService
+                            .GetInventoryItemByIdAsync(ingredient.InventoryItemId);
+
+                        if (inventoryItem == null)
+                        {
+                            await PageHelper.DisplayAlertAsync(
+                                "Inventory Missing",
+                                $"Inventory record missing for '{ingredient.InventoryItemName}'.",
+                                "OK");
+                            return;
+                        }
+
+                        // Total required for THIS ingredient across ENTIRE ORDER
+                        var totalRequiredQty =
+                            ingredient.QuantityPerMenu *
+                            OrderItems
+                                .Where(o => o.MenuItemId == orderItem.MenuItemId)
+                                .Sum(o => o.Quantity);
+
+                        // Plus other menu items using same ingredient
+                        foreach (var otherItem in OrderItems.Where(o => o.MenuItemId != orderItem.MenuItemId))
+                        {
+                            var otherIngredients = await menuItemIngredientService
+                                .GetByMenuItemIdAsync(otherItem.MenuItemId);
+
+                            var sharedIngredient = otherIngredients?
+                                .FirstOrDefault(i => i.InventoryItemId == ingredient.InventoryItemId);
+
+                            if (sharedIngredient != null)
+                            {
+                                totalRequiredQty +=
+                                    sharedIngredient.QuantityPerMenu * otherItem.Quantity;
+                            }
+                        }
+
+                        if (inventoryItem.QuantityOnHand < totalRequiredQty)
+                        {
+                            await PageHelper.DisplayAlertAsync(
+                                "Insufficient Stock",
+                                $"Stock changed while ordering.\n\n" +
+                                $"Ingredient: {ingredient.InventoryItemName}\n" +
+                                $"Required: {totalRequiredQty}\n" +
+                                $"Available: {inventoryItem.QuantityOnHand}",
+                                "OK");
+
+                            Debug.WriteLine(
+                                $"=== FINAL BLOCK: {ingredient.InventoryItemName} | Required: {totalRequiredQty}, Available: {inventoryItem.QuantityOnHand} ===");
+
+                            return; // 🚫 HARD STOP
+                        }
+                    }
+                }
+
+                Debug.WriteLine("=== Inventory validated. Proceeding to sale ===");
+
+                // 🧾 PROCESS SALE (BACKGROUND)
+                var receiptNo = await Task.Run(async () =>
                 {
                     try
                     {
-                        decimal subTotal = subtotal;
-                        decimal change = cashTendered - subTotal;
+                        decimal change = cashTendered - subtotal;
 
                         var sale = new Sale
                         {
                             SaleDate = DateTime.Now,
                             ReceiptNo = GenerateReceiptNo(),
-                            SubTotal = subTotal,
+                            SubTotal = subtotal,
                             Discount = 0,
                             Tax = 0,
-                            TotalAmount = subTotal,
+                            TotalAmount = subtotal,
                             AmountPaid = cashTendered,
                             ChangeAmount = change
                         };
 
                         var saleItems = OrderItemMapper.ToSaleItems(OrderItems);
 
-                        int result = await salesService.CompleteSaleAsync(sale, saleItems);
+                        int result = await salesService
+                            .CompleteSaleAsync(sale, saleItems);
 
                         return result > 0 ? sale.ReceiptNo : null;
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"=== Error in background sale processing: {ex.Message} ===");
+                        Debug.WriteLine($"=== Error during sale commit: {ex.Message} ===");
                         return null;
                     }
                 });
 
-                if (success != null)
+                if (receiptNo != null)
                 {
-                    // Update UI on main thread
                     await MainThread.InvokeOnMainThreadAsync(() =>
                     {
                         OrderItems.Clear();
@@ -607,7 +802,7 @@ namespace KusinaPOS.ViewModel
 
                     await PageHelper.DisplayAlertAsync(
                         "Success",
-                        $"Order completed successfully!\nSales No: {success}",
+                        $"Order completed successfully!\nSales No: {receiptNo}",
                         "OK");
                 }
                 else
@@ -621,6 +816,7 @@ namespace KusinaPOS.ViewModel
             catch (Exception ex)
             {
                 Debug.WriteLine($"=== Error completing order: {ex.Message} ===");
+
                 await PageHelper.DisplayAlertAsync(
                     "Error",
                     "Failed to complete order. Please try again.",
@@ -631,6 +827,7 @@ namespace KusinaPOS.ViewModel
                 IsProcessing = false;
             }
         }
+
 
         private string GenerateReceiptNo()
         {

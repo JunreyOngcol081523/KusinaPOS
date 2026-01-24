@@ -2,52 +2,78 @@
 {
     public static class PageHelper
     {
-        public static Page? GetCurrentPage()
+        private static Page? GetCurrentPage()
         {
             var app = Application.Current;
-            if (app != null && app.Windows.Count > 0)
+            if (app?.Windows?.Count > 0)
             {
-                var window = app.Windows[0];
-                return window?.Page;
+                return app.Windows[0].Page;
             }
             return null;
         }
 
-        public static async Task DisplayAlertAsync(string title, string message, string cancel)
+        // ✅ UI-SAFE ALERT
+        public static Task DisplayAlertAsync(
+            string title,
+            string message,
+            string cancel)
         {
-            var page = GetCurrentPage();
-            if (page != null)
+            return MainThread.InvokeOnMainThreadAsync(async () =>
             {
-                await page.DisplayAlertAsync(title, message, cancel);
-            }
+                var page = GetCurrentPage();
+                if (page != null)
+                {
+                    await page.DisplayAlertAsync(title, message, cancel);
+                }
+            });
         }
 
-        public static async Task<bool> DisplayConfirmAsync(string title, string message, string accept, string cancel)
+        // ✅ UI-SAFE CONFIRM
+        public static Task<bool> DisplayConfirmAsync(
+            string title,
+            string message,
+            string accept,
+            string cancel)
         {
-            var page = GetCurrentPage();
-            if (page != null)
+            return MainThread.InvokeOnMainThreadAsync(async () =>
             {
-                return await page.DisplayAlertAsync(title, message, accept, cancel);
-            }
-            return false;
+                var page = GetCurrentPage();
+                if (page != null)
+                {
+                    return await page.DisplayAlertAsync(
+                        title,
+                        message,
+                        accept,
+                        cancel);
+                }
+                return false;
+            });
         }
 
-        public static async Task NavigateToAsync(Page page)
+        // ✅ UI-SAFE NAVIGATION
+        public static Task NavigateToAsync(Page page)
         {
-            var currentPage = GetCurrentPage();
-            if (currentPage?.Navigation != null)
+            return MainThread.InvokeOnMainThreadAsync(async () =>
             {
-                await currentPage.Navigation.PushAsync(page);
-            }
+                var currentPage = GetCurrentPage();
+                if (currentPage?.Navigation != null)
+                {
+                    await currentPage.Navigation.PushAsync(page);
+                }
+            });
         }
 
-        public static async Task NavigateBackAsync()
+        // ✅ UI-SAFE BACK NAVIGATION
+        public static Task NavigateBackAsync()
         {
-            var currentPage = GetCurrentPage();
-            if (currentPage?.Navigation != null)
+            return MainThread.InvokeOnMainThreadAsync(async () =>
             {
-                await currentPage.Navigation.PopAsync();
-            }
+                var currentPage = GetCurrentPage();
+                if (currentPage?.Navigation != null)
+                {
+                    await currentPage.Navigation.PopAsync();
+                }
+            });
         }
     }
 }

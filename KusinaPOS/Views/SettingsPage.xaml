@@ -7,6 +7,7 @@
     xmlns:viewmodel="clr-namespace:KusinaPOS.ViewModel"
     xmlns:views="clr-namespace:KusinaPOS.Views"
     xmlns:badgeView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
     BackgroundColor="{StaticResource CardBackground}" 
     Title="Settings">
 
@@ -321,7 +322,94 @@
 
                     </Grid>
                 </tabView:SfTabItem>
+                <!--===================PRODUCT SETTINGS===============-->
+                <tabView:SfTabItem Header="Items and Categories Settings"
+                                   ImageSource="inventory.png"
+                                   BackgroundColor="{StaticResource CardBackground}"
+                                   TextColor="{StaticResource TextPrimary}"
+                                    FontSize="12"
+                                    ImageSize="20"
+                                    ImagePosition="Left">
+                    <ScrollView>
+                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
+                            <Border Grid.Row="0" Style="{StaticResource CardBorder}">
+                                <VerticalStackLayout Padding="15">
+                                    <Label Text="Category Settings"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       FontSize="14"
+                                       Margin="0,0,0,15"/>
+                                    <Label Text="Add New Category"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       FontSize="12"
+                                       Margin="0,0,0,5"/>
 
+                                    <Entry Placeholder="Enter New Category Name"
+                                           PlaceholderColor="{StaticResource TextSecondary}"
+                                           HorizontalOptions="Fill"
+                                           Text="{Binding NewCategoryName}"
+                                            TextColor="{StaticResource TextPrimary}"/>
+                                    <Button Text="Save"
+                                            BackgroundColor="{StaticResource Primary}"
+                                            Command="{Binding AddCategoryCommand}"/>
+                                    <syncfusion:SfListView x:Name="listViewcategories" 
+                                                           ItemsSource="{Binding Categories}"
+                                                           ItemSize="100">
+                                        <syncfusion:SfListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Padding="10">
+                                                    <badgeView:SfBadgeView HorizontalOptions="Fill" 
+                                                                           VerticalOptions="Fill"
+                                                                           BadgeText="{Binding NumberOfMenuUnderThisCategory}"
+                                                                           >
+                                                        <badgeView:SfBadgeView.Content>
+                                                            <Border Style="{StaticResource CardBorder}">
+                                                                <Grid Padding="10" ColumnDefinitions="*,Auto" RowDefinitions="Auto">
+
+                                                                    <!-- Category Name -->
+                                                                    <Label Text="{Binding Name}" 
+                                                                       FontSize="14"
+                                                                       VerticalOptions="Center"
+                                                                       TextColor="{StaticResource TextPrimary}" />
+
+                                                                    <!-- Delete Icon -->
+                                                                    <Image Source="delete.png"
+                                                                       HeightRequest="20"
+                                                                       WidthRequest="20"
+                                                                       VerticalOptions="Center"
+                                                                       Margin="5,0"
+                                                                       Grid.Column="1">
+                                                                        <Image.GestureRecognizers>
+                                                                            <TapGestureRecognizer 
+                                                                                Command="{Binding Source={x:Reference listViewcategories}, 
+                                                                                Path=BindingContext.DeleteCategoryCommand}" 
+                                                                                CommandParameter="{Binding .}" />
+                                                                        </Image.GestureRecognizers>
+                                                                    </Image>
+
+                                                                </Grid>
+                                                            </Border>
+                                                        </badgeView:SfBadgeView.Content>
+                                                    </badgeView:SfBadgeView>
+
+                                                </Grid>
+                                            </DataTemplate>
+                                        </syncfusion:SfListView.ItemTemplate>
+                                        <syncfusion:SfListView.ItemsLayout>
+                                            <syncfusion:GridLayout SpanCount="4" />
+                                        </syncfusion:SfListView.ItemsLayout>
+                                    </syncfusion:SfListView>
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border Grid.Row="1">
+
+                            </Border>
+                            <Border Grid.Row="2">
+
+                            </Border>
+                        </Grid>
+                    </ScrollView>
+
+                </tabView:SfTabItem>
                 <!--================= ABOUT SETTINGS ================= -->
                 <tabView:SfTabItem Header="About"
                    ImageSource="info.png"
@@ -342,6 +430,7 @@
                     </Grid>
                     
                 </tabView:SfTabItem>
+
             </tabView:SfTabView.Items>
 
         </tabView:SfTabView>

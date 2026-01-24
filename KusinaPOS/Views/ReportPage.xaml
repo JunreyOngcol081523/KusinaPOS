@@ -3,34 +3,77 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="KusinaPOS.Views.ReportPage"
              xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
+             BackgroundColor="{StaticResource CardBackground}"
              Title="ReportPage">
-    <Grid Padding="16">
-        <tabView:SfTabView x:Name="reportTabView"
-                           ContentTransitionDuration ="1000"
+    <Grid Padding="16" RowDefinitions="Auto,*">
+        <!-- Top Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,0,0,8">
+            <ImageButton Grid.Column="0"
+                    Margin="0,0,15,0"
+                    WidthRequest="10"
+                    HeightRequest="10"
+                    Command="{Binding GoBackCommand}"
+                    Source="arrowback.png"
+                    BackgroundColor="Transparent">
+            </ImageButton>
+            <Label Grid.Column="1" 
+                   Text="{Binding StoreName, StringFormat='Reports - {0}'}"
+                   FontSize="15" 
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource TextPrimary}"
+                   VerticalOptions="Center" />
+
+            <Label Grid.Column="2" 
+                   Text="{Binding CurrentDateTime}" 
+                   FontSize="12"
+                   TextColor="{StaticResource TextSecondary}"
+                   VerticalOptions="Center"
+                   Margin="0,0,15,0" />
+
+            <HorizontalStackLayout Grid.Column="3" Spacing="8" VerticalOptions="Center">
+                <Label Text="{Binding LoggedInUserName}" 
+                       FontSize="12"
+                       TextColor="{StaticResource TextSecondary}"
+                       VerticalOptions="Center" />
+                <Border StrokeShape="RoundRectangle 15"
+                        WidthRequest="30"
+                        HeightRequest="30"
+                        BackgroundColor="{StaticResource Primary}">
+                    <Label Text="⚙" 
+                           FontSize="16"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           TextColor="White" />
+                </Border>
+            </HorizontalStackLayout>
+        </Grid>
+        <tabView:SfTabView Grid.Row="1" 
+                           x:Name="reportTabView"
+                           ContentTransitionDuration ="200"
                            TabBarPlacement="Bottom"
                            TabBarCornerRadius="24">
             <tabView:SfTabView.Items>
                 <tabView:SfTabItem Header="Sales" ImageSource="sales.png" 
                                    BackgroundColor="{StaticResource CardBackground}" 
                                    TextColor="{StaticResource TextPrimary}"
-                                   FontSize="18"
-                                   ImageSize="40"
+                                   FontSize="12"
+                                   ImageSize="20"
                                    ImagePosition="Left" >
                     
                 </tabView:SfTabItem>
                 <tabView:SfTabItem Header="Menu Items" ImageSource="fast_moving.png" 
                                    BackgroundColor="{StaticResource CardBackground}" 
                                    TextColor="{StaticResource TextPrimary}"
-                                   FontSize="18"
-                                   ImageSize="40"
+                                   FontSize="12"
+                                   ImageSize="20"
                                    ImagePosition="Left" >
                     
                 </tabView:SfTabItem>
                 <tabView:SfTabItem Header="Inventory" ImageSource="inventory_check.png" 
                                    BackgroundColor="{StaticResource CardBackground}"   
                                    TextColor="{StaticResource TextPrimary}"
-                                   FontSize="18"
-                                   ImageSize="40"
+                                   FontSize="12"
+                                   ImageSize="20"
                                    ImagePosition="Left" >
                     
                 </tabView:SfTabItem>

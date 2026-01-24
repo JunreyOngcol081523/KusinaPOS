@@ -21,7 +21,7 @@ namespace KusinaPOS.ViewModel
         private readonly MenuItemService menuItemService;
         private readonly InventoryItemService inventoryItemService;
         private readonly CategoryService categoryService;
-
+        private readonly IDateTimeService _dateTimeService;
         // ======================
         // DEBOUNCE TOKENS
         // ======================
@@ -50,9 +50,11 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty] private string selectedMenuItemName;
         [ObservableProperty] private MenuItem selectedMenuItem;
         [ObservableProperty] private string searchText;
-        [ObservableProperty] private string storeName;
         [ObservableProperty] private InventoryItem selectedInventoryItem;
-
+        [ObservableProperty] private string currentDateTime = string.Empty;
+        [ObservableProperty] private string loggedInUserName = string.Empty;
+        [ObservableProperty] private string loggedInUserId = string.Empty;
+        [ObservableProperty] private string storeName = "Kusina POS";
         // ======================
         // CONSTRUCTOR
         // ======================
@@ -60,16 +62,20 @@ namespace KusinaPOS.ViewModel
             MenuItemIngredientService menuItemIngredientService,
             MenuItemService menuItemService,
             InventoryItemService inventoryItemService,
-            CategoryService categoryService)
+            CategoryService categoryService,
+            IDateTimeService dateTimeService)
         {
-            this.menuItemIngredientService = menuItemIngredientService;
-            this.menuItemService = menuItemService;
-            this.inventoryItemService = inventoryItemService;
-            this.categoryService = categoryService;
+
 
             try
             {
-                StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "KusinaPOS");
+                this.menuItemIngredientService = menuItemIngredientService;
+                this.menuItemService = menuItemService;
+                this.inventoryItemService = inventoryItemService;
+                this.categoryService = categoryService;
+                _dateTimeService = dateTimeService;
+                LoadPreferences();
+                _dateTimeService.DateTimeChanged += (s, e) => CurrentDateTime = e;
             }
             catch (Exception ex)
             {
@@ -78,6 +84,7 @@ namespace KusinaPOS.ViewModel
             }
 
             _ = InitializeCollectionsAsync();
+            _dateTimeService = dateTimeService;
         }
 
         // ======================
@@ -135,7 +142,14 @@ namespace KusinaPOS.ViewModel
                 IsBusy = false;
             }
         }
+        private void LoadPreferences()
+        {
+            LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
+            LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
+            StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
+            CurrentDateTime = _dateTimeService.CurrentDateTime;
 
+        }
 
 
         // ======================

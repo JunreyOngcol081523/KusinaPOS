@@ -15,29 +15,50 @@
           RowSpacing="15">
         <syncfusion:SfBusyIndicator
                         IsRunning="{Binding IsBusy}"
-                        IsVisible="{Binding IsBusy}"
                         AnimationType="CircularMaterial"
                         BackgroundColor="#80000000"
-                        Title="Loading..."
                         InputTransparent="False"/>
         <!-- Header with Back Button -->
-        <Grid Grid.Row="0" 
-              ColumnDefinitions="Auto,Auto,*"
-              ColumnSpacing="5">
+        <!-- Top Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,0,0,8">
             <ImageButton Grid.Column="0"
-                        Source="arrowback.png"
-                        BackgroundColor="Transparent"
-                        WidthRequest="12"
-                        HeightRequest="12"
-                        Command="{Binding GoBackCommand}"/>
-            <Label Grid.Column="1"
-                   Text="{Binding StoreName, StringFormat='Manage Menu - Ingredients Per Serving - {0}'}"
-                   TextColor="{StaticResource TextPrimary}"
-                   FontSize="15"
+                    Margin="0,0,15,0"
+                    WidthRequest="10"
+                    HeightRequest="10"
+                    Command="{Binding GoBackCommand}"
+                    Source="arrowback.png"
+                    BackgroundColor="Transparent">
+            </ImageButton>
+            <Label Grid.Column="1" 
+                   Text="{Binding StoreName, StringFormat='Reports - {0}'}"
+                   FontSize="15" 
                    FontAttributes="Bold"
-                   VerticalOptions="Center"/>
+                   TextColor="{StaticResource TextPrimary}"
+                   VerticalOptions="Center" />
 
+            <Label Grid.Column="2" 
+                   Text="{Binding CurrentDateTime}" 
+                   FontSize="12"
+                   TextColor="{StaticResource TextSecondary}"
+                   VerticalOptions="Center"
+                   Margin="0,0,15,0" />
 
+            <HorizontalStackLayout Grid.Column="3" Spacing="8" VerticalOptions="Center">
+                <Label Text="{Binding LoggedInUserName}" 
+                       FontSize="12"
+                       TextColor="{StaticResource TextSecondary}"
+                       VerticalOptions="Center" />
+                <Border StrokeShape="RoundRectangle 15"
+                        WidthRequest="30"
+                        HeightRequest="30"
+                        BackgroundColor="{StaticResource Primary}">
+                    <Label Text="⚙" 
+                           FontSize="16"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           TextColor="White" />
+                </Border>
+            </HorizontalStackLayout>
         </Grid>
 
         <!-- Main Content -->

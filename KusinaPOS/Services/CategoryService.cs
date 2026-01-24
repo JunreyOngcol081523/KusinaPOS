@@ -44,7 +44,7 @@ namespace KusinaPOS.Services
 
             if (category != null)
             {
-                
+
                 await _db.UpdateAsync(category);
             }
         }
@@ -77,6 +77,18 @@ namespace KusinaPOS.Services
         public async Task AddAllCategoriesAsync(List<Category> categories)
         {
             await _db.InsertAllAsync(categories);
+        }
+        //delete category async
+        public async Task DeleteCategoryAsync(Category _category)
+        {
+            int categoryId = _category.Id;
+            var category = await _db.Table<Category>()
+                                    .Where(c => c.Id == categoryId)
+                                    .FirstOrDefaultAsync();
+            if (category != null)
+            {
+                await _db.DeleteAsync(category);
+            }
         }
     }
 }

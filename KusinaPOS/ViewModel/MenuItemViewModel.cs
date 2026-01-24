@@ -63,7 +63,7 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty] private decimal initialStock;
         [ObservableProperty] private decimal costPerUnit;
         [ObservableProperty] private decimal reOrderLevel;
-        [ObservableProperty] private string newCategoryName;
+
         [ObservableProperty] private string labelText = "Add New Menu Item";
         [ObservableProperty] private List<SfSegmentItem> segmentItems = new();
 
@@ -85,7 +85,7 @@ namespace KusinaPOS.ViewModel
 
         public ImageSource MenuImageSource =>
             string.IsNullOrWhiteSpace(ImagePath) || !File.Exists(ImagePath)
-                ? "placeholder_food.png"
+                ? "kusinaposlogo.png"
                 : ImageSource.FromFile(ImagePath);
 
         public string ImageLabel =>
@@ -127,6 +127,7 @@ namespace KusinaPOS.ViewModel
         private async Task InitializeAsync()
         {
             await LoadCategoriesAsync();
+            await ReloadMenuItemsAsync();
         }
 
         #region Categories
@@ -210,47 +211,7 @@ namespace KusinaPOS.ViewModel
         #endregion
 
         #region CRUD
-        [RelayCommand]
-        public async Task AddCategoryAsync()
-        {
-            if (string.IsNullOrWhiteSpace(NewCategoryName))
-            {
-                await PageHelper.DisplayAlertAsync("Validation", "Enter category name.", "OK");
-                return;
-            }
 
-            // Check for duplicates
-            if (Categories.Any(c => c.Name.Equals(NewCategoryName.Trim(), StringComparison.OrdinalIgnoreCase)))
-            {
-                await PageHelper.DisplayAlertAsync("Validation", "Category already exists.", "OK");
-                return;
-            }
-
-            try
-            {
-                IsBusy = true;
-
-                // Add to database
-                await _categoryService.AddCategoryAsync(NewCategoryName.Trim());
-
-                // Reload categories
-                await LoadCategoriesAsync();
-
-                // Clear input
-                NewCategoryName = string.Empty;
-
-                // Optionally, select the newly added category
-                SelectedCategory = Categories.LastOrDefault();
-            }
-            catch (Exception ex)
-            {
-                await PageHelper.DisplayAlertAsync("Error", $"Failed to add category: {ex.Message}", "OK");
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
         [RelayCommand]
         public async Task SaveMenuItemAsync()
         {
@@ -332,16 +293,28 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         public void EditMenuItem(MenuItem item)
         {
+            if (item == null) return;
+
             SelectedMenuItemId = item.Id;
             MenuItemName = item.Name;
             MenuDescription = item.Description;
             MenuItemPrice = item.Price;
             IsActive = item.IsActive;
+
+            SelectedCategory = Categories
+                .FirstOrDefault(c =>
+                    string.Equals(c.Name?.Trim(),
+                                  item.Category?.Trim(),
+                                  StringComparison.OrdinalIgnoreCase))
+                ?? Categories.FirstOrDefault();
+
             SelectedMenuType = item.Type;
             ImagePath = item.ImagePath ?? string.Empty;
             LabelText = $"Edit: {item.Name}";
+
             ShowBorder();
         }
+
         [RelayCommand]
         public void AddMenuItem()
         {
@@ -445,6 +418,14 @@ namespace KusinaPOS.ViewModel
         public async Task GoBackAsync()
         {
             await Shell.Current.GoToAsync("..");
+        }
+        [RelayCommand]
+        public async Task ShowMenuTypeDialogAsync()
+        {
+            await PageHelper.DisplayAlertAsync("Menu Types",
+                "Unit-Based: Items sold by unit (e.g., pieces, bottles).\n\n" +
+                "Recipe-Based: Items made from ingredients (e.g., dishes, meals).",
+                "OK");
         }
     }
 }

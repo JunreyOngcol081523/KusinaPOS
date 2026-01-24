@@ -72,7 +72,7 @@
                     BackgroundColor="{StaticResource SurfaceDark}"
                     StrokeShape="RoundRectangle 15"
                     Padding="15">
-                <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="15">
+                <Grid RowDefinitions="Auto,*,Auto" RowSpacing="15">
 
                     <!-- Header -->
                     <Label Grid.Row="0"
@@ -81,42 +81,25 @@
                            FontAttributes="Bold"
                            TextColor="{StaticResource TextPrimary}" />
 
-                    <!-- Search and Add Category -->
-                    <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
-
-                        <Entry Grid.Column="0"
-                               Placeholder="Enter Category Name"
-                                TextColor="{StaticResource TextPrimary}"
-                                PlaceholderColor="{StaticResource Gray500}"
-                               FontSize="Small"
-                                Text="{Binding NewCategoryName}"/>
-
-                        <Button Grid.Column="1"
-                                Text="Add Category"
-                                BackgroundColor="{StaticResource Primary}"
-                                TextColor="White"
-                                FontSize="Small"
-                                FontAttributes="Bold"
-                                CornerRadius="10"
-                                Command="{Binding AddCategoryCommand}"/>
-                    </Grid>
-
                     <!-- Menu Items List with Expanders -->
-                    <Grid Grid.Row="2" RowDefinitions="Auto,*">
+                    <Grid Grid.Row="1" RowDefinitions="Auto,*">
 
                         <!-- Segmented Control for Categories -->
-                        <buttons:SfSegmentedControl Grid.Row="0"
+                        
+                            <buttons:SfSegmentedControl  Grid.Row="0"
                                                     x:Name="categorySegment"
                                                     ItemsSource="{Binding SegmentItems}"
                                                     SelectedIndex="{Binding SelectedCategoryIndex}"
-                                                    VisibleSegmentsCount="{Binding SegmentItems.Count}"
+                                                    VisibleSegmentsCount="4"
                                                     SelectionChanged="CategorySegment_SelectionChanged"
+                                                    AutoScrollToSelectedSegment="True"
                                                     CornerRadius="5"
                                                     Margin="10,5">
-                            <buttons:SfSegmentedControl.TextStyle>
-                                <buttons:SegmentTextStyle TextColor="{StaticResource TextPrimary}" FontAttributes="Italic" FontSize="12"/>
-                            </buttons:SfSegmentedControl.TextStyle>
-                        </buttons:SfSegmentedControl>
+                                <buttons:SfSegmentedControl.TextStyle>
+                                    <buttons:SegmentTextStyle TextColor="{StaticResource TextPrimary}" FontAttributes="Italic" FontSize="12"/>
+                                </buttons:SfSegmentedControl.TextStyle>
+                            </buttons:SfSegmentedControl>
+                       
 
                         <!-- Menu Items ListView -->
                         <sfListView:SfListView Grid.Row="1"
@@ -215,10 +198,10 @@
                                                     Spacing="10"
                                                     Margin="0,50">
                                     <Label Text="📋"
-                                           FontSize="48"
+                                           FontSize="35"
                                            HorizontalOptions="Center" />
                                     <Label Text="No menu items in this category"
-                                           FontSize="14"
+                                           FontSize="12"
                                            TextColor="{StaticResource Gray500}"
                                            HorizontalOptions="Center" />
                                 </VerticalStackLayout>
@@ -229,7 +212,7 @@
 
 
                     <!-- Add New Item Button -->
-                    <Button Grid.Row="3"
+                    <Button Grid.Row="2"
                             Text="ADD NEW ITEM"
                             BackgroundColor="Transparent"
                             BorderColor="{StaticResource Primary}"
@@ -381,7 +364,8 @@
                                            TextColor="{StaticResource TextSecondary}" />
 
                                         <Entry Keyboard="Numeric"
-                                                Text="{Binding InitialStock, Mode=TwoWay}" />
+                                                Text="{Binding InitialStock, Mode=TwoWay}"
+                                               TextColor="{StaticResource TextPrimary}"/>
                                     </VerticalStackLayout>
 
                                     <!-- Row 3: Cost Per Unit -->
@@ -393,7 +377,8 @@
                                            TextColor="{StaticResource TextSecondary}" />
 
                                         <Entry Keyboard="Numeric"
-                                               Text="{Binding CostPerUnit, Mode=TwoWay}" />
+                                               Text="{Binding CostPerUnit, Mode=TwoWay}"
+                                               TextColor="{StaticResource TextPrimary}"/>
                                     </VerticalStackLayout>
 
                                     <!-- Row 3: Reorder Level -->
@@ -451,7 +436,7 @@
                                                 Grid.Column="0"
                                                 WidthRequest="100"
                                                 HeightRequest="100"
-                                                BackgroundColor="Green">
+                                                BackgroundColor="Transparent">
                                             <Image Source="{Binding MenuImageSource}"
                                                    WidthRequest="100"
                                                    HeightRequest="100"

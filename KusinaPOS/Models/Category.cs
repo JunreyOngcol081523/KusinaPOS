@@ -16,5 +16,7 @@ namespace KusinaPOS.Models
 
         [ObservableProperty]
         private bool isSelected;
+        [ObservableProperty]
+        private int numberOfMenuUnderThisCategory;
     }
 }

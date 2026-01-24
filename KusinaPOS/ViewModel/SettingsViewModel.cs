@@ -17,8 +17,10 @@ namespace KusinaPOS.ViewModel
 {
     public partial class SettingsViewModel : ObservableObject {
 
-        private SettingsService _settingsService=null;
+        private readonly SettingsService? _settingsService=null;
         private readonly IDateTimeService? _dateTimeService;
+        private readonly CategoryService? _categoryService;
+        private readonly MenuItemService? _menuItemService;
         //===================================
         // Observable Properties
         //===================================
@@ -56,13 +58,22 @@ namespace KusinaPOS.ViewModel
         private bool isRefreshing;
         [ObservableProperty]
         private ObservableCollection<DBBackupInfo> backups;
-        public SettingsViewModel(SettingsService settingsService , IDateTimeService dateTimeService)
+        [ObservableProperty]
+        private ObservableCollection<Category> categories = new();
+        [ObservableProperty] private string newCategoryName;
+        [ObservableProperty] private Category selectedCategory;
+        public SettingsViewModel(SettingsService settingsService , 
+            IDateTimeService dateTimeService, 
+            CategoryService categoryService, 
+            MenuItemService menuItemService)
         {
 
             
             try
             {
                 _settingsService = settingsService;
+                _categoryService = categoryService;
+                _menuItemService = menuItemService;
                 BackupLocation = Preferences.Get(DatabaseConstants.BackupLocationKey, DatabaseConstants.BackupFolder);
                 ImagePath = _settingsService.GetStoreLogo;
 
@@ -76,10 +87,95 @@ namespace KusinaPOS.ViewModel
 
                 LoadStoreSettings();
                 LoadAboutHtml();
+                LoadCategories();
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error in MenuItemViewModel constructor: {ex.Message}");
+            }
+        }
+        private async void LoadCategories()
+        {
+            var categoryList = await _categoryService.GetAllCategoriesAsync();
+            var menuItems = await _menuItemService.GetAllMenuItemsAsync();
+
+            foreach (var category in categoryList)
+            {
+                category.NumberOfMenuUnderThisCategory = menuItems.Count(m => m.Category == category.Name);
+            }
+
+            Categories = new ObservableCollection<Category>(categoryList);
+        }
+        [RelayCommand]
+        public async Task AddCategoryAsync()
+        {
+            if (string.IsNullOrWhiteSpace(NewCategoryName))
+            {
+                await PageHelper.DisplayAlertAsync("Validation", "Enter category name.", "OK");
+                return;
+            }
+
+            // Check for duplicates
+            if (Categories.Any(c => c.Name.Equals(NewCategoryName.Trim(), StringComparison.OrdinalIgnoreCase)))
+            {
+                await PageHelper.DisplayAlertAsync("Validation", "Category already exists.", "OK");
+                return;
+            }
+
+            try
+            {
+                IsBusy = true;
+
+                // Add to database
+                await _categoryService.AddCategoryAsync(NewCategoryName.Trim());
+
+                // Reload categories
+                LoadCategories();
+                await PageHelper.DisplayAlertAsync("Success", "Category added.", "OK");
+                // Clear input
+                NewCategoryName = string.Empty;
+
+                // Optionally, select the newly added category
+                SelectedCategory = Categories.LastOrDefault();
+            }
+            catch (Exception ex)
+            {
+                await PageHelper.DisplayAlertAsync("Error", $"Failed to add category: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+        //delete category where there are no menu items under this category
+        [RelayCommand]
+        public async Task DeleteCategoryAsync(Category category)
+        {
+            if (category == null) return;
+            var menuItems = await _menuItemService.GetMenuItemsByCategoryAsync(category.Name);
+            if (menuItems.Any())
+            {
+                await PageHelper.DisplayAlertAsync("Cannot Delete", "There are menu items under this category. Please delete them first or edit its category", "OK");
+                return;
+            }
+            bool confirm = await PageHelper.DisplayConfirmAsync("Confirm Delete",
+                $"Are you sure you want to delete the category '{category.Name}'?",
+                "Delete", "Cancel");
+            if (!confirm) return;
+            try
+            {
+                IsBusy = true;
+                await _categoryService.DeleteCategoryAsync(category);
+                LoadCategories();
+                await PageHelper.DisplayAlertAsync("Success", "Category deleted.", "OK");
+            }
+            catch (Exception ex)
+            {
+                await PageHelper.DisplayAlertAsync("Error", $"Failed to delete category: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
         private void OnDateTimeChanged(object? sender, string dateTime)
