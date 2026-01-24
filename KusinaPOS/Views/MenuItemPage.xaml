@@ -89,7 +89,7 @@
                             <buttons:SfSegmentedControl  Grid.Row="0"
                                                     x:Name="categorySegment"
                                                     ItemsSource="{Binding SegmentItems}"
-                                                    SelectedIndex="{Binding SelectedCategoryIndex}"
+                                                    SelectedIndex="{Binding SelectedCategoryIndex, Mode=TwoWay}"
                                                     VisibleSegmentsCount="4"
                                                     SelectionChanged="CategorySegment_SelectionChanged"
                                                     AutoScrollToSelectedSegment="True"
@@ -311,13 +311,13 @@
                                            TextColor="{StaticResource TextSecondary}" />
                                     <editors:SfComboBox Placeholder="Select category"
                                                         ItemsSource="{Binding Categories}"
-                                                        SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                                                        SelectedItem="{Binding SelectedCategoryForEdit, Mode=TwoWay}"
                                                         DisplayMemberPath="Name"
                                                         TextMemberPath="Name"
                                                         TextColor="{StaticResource TextPrimary}"
                                                         BackgroundColor="{StaticResource Gray100}"
                                                         Stroke="{StaticResource Gray400}"
-                                                        IsEditable="true" />
+                                                        IsEditable="False" />
                                 </VerticalStackLayout>
 
                                 <!-- Row 1: Price -->

@@ -48,8 +48,15 @@ namespace KusinaPOS.ViewModel
         #endregion
 
         #region Selection
-        [ObservableProperty] private Category? selectedCategory;
         [ObservableProperty] private int selectedCategoryIndex;
+        // Only for SegmentedControl filtering
+        [ObservableProperty]
+        private Category? selectedSegmentCategory;
+
+        // Only for ComboBox editing
+        [ObservableProperty]
+        private Category? selectedCategoryForEdit;
+
         #endregion
 
         #region Form Fields
@@ -157,9 +164,9 @@ namespace KusinaPOS.ViewModel
             {
                 Categories = new ObservableCollection<Category>(list);
 
-                if (Categories.Any() && SelectedCategory == null)
+                if (Categories.Any() && SelectedSegmentCategory == null)
                 {
-                    SelectedCategory = Categories[0];
+                    SelectedSegmentCategory = Categories[0];
                 }
             });
             UpdateSegmentItems();
@@ -169,13 +176,21 @@ namespace KusinaPOS.ViewModel
         partial void OnSelectedCategoryIndexChanged(int value)
         {
             if (value >= 0 && value < Categories.Count)
-                SelectedCategory = Categories[value];
+            {
+                SelectedSegmentCategory = Categories[value];
+               // _ = ReloadMenuItemsAsync(); // Only reload menu items for the segment
+            }
+        }
+        partial void OnSelectedSegmentCategoryChanged(Category? value)
+        {
+            Debug.WriteLine($"SelectedSegmentCategory changed to: {value?.Name}");
+            if (value != null)
+            {
+                _ = ReloadMenuItemsAsync();
+            }
         }
 
-        partial void OnSelectedCategoryChanged(Category? value)
-        {
-            _ = ReloadMenuItemsAsync();
-        }
+
         #endregion
 
         #region Menu Items Paging
@@ -190,12 +205,12 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         public async Task LoadMoreMenuItemsAsync()
         {
-            if (IsBusy || !_hasMoreItems || SelectedCategory == null) return;
+            if (IsBusy || !_hasMoreItems || SelectedSegmentCategory == null) return;
 
             IsBusy = true;
 
             var items = await _menuItemService.GetMenuItemsByCategoryPagedAsync(
-                SelectedCategory.Name,
+                SelectedSegmentCategory.Name,
                 _currentPage,
                 PageSize);
 
@@ -231,7 +246,7 @@ namespace KusinaPOS.ViewModel
                     Id = SelectedMenuItemId,
                     Name = MenuItemName.Trim(),
                     Description = MenuDescription?.Trim(),
-                    Category = SelectedCategory!.Name,
+                    Category = SelectedCategoryForEdit!.Name,
                     Price = MenuItemPrice,
                     Type = SelectedMenuType,
                     ImagePath = ImagePath,
@@ -301,7 +316,7 @@ namespace KusinaPOS.ViewModel
             MenuItemPrice = item.Price;
             IsActive = item.IsActive;
 
-            SelectedCategory = Categories
+            SelectedCategoryForEdit = Categories
                 .FirstOrDefault(c =>
                     string.Equals(c.Name?.Trim(),
                                   item.Category?.Trim(),
@@ -324,7 +339,7 @@ namespace KusinaPOS.ViewModel
             MenuDescription = string.Empty;
             MenuItemPrice = 0;
             SelectedMenuType = string.Empty;
-            SelectedCategory = Categories.FirstOrDefault();
+            SelectedCategoryForEdit = Categories.FirstOrDefault();
             SelectedUnit = string.Empty;
             InitialStock = 0;
             CostPerUnit = 0;
@@ -400,7 +415,7 @@ namespace KusinaPOS.ViewModel
         private bool ValidateMenuItem()
         {
             if (string.IsNullOrWhiteSpace(MenuItemName) ||
-                SelectedCategory == null ||
+                SelectedCategoryForEdit == null ||
                 MenuItemPrice <= 0)
             {
                 _ = PageHelper.DisplayAlertAsync("Validation", "Please complete required fields.", "OK");

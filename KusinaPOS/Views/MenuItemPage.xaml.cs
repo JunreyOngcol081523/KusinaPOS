@@ -41,7 +41,7 @@ public partial class MenuItemPage : ContentPage
         if (_menuItemViewModel.Categories.Count == 0) return;
 
         var selectedIndex = (sender as Syncfusion.Maui.Buttons.SfSegmentedControl)?.SelectedIndex ?? 0;
-        _menuItemViewModel.SelectedCategory = _menuItemViewModel.Categories[selectedIndex];
+        _menuItemViewModel.SelectedSegmentCategory = _menuItemViewModel.Categories[selectedIndex];
 
         // Reset paging
         _menuItemViewModel.ResetPaging();
@@ -56,7 +56,7 @@ public partial class MenuItemPage : ContentPage
         base.OnAppearing();
         if (_menuItemViewModel.Categories.Any())
         {
-            _menuItemViewModel.SelectedCategory = _menuItemViewModel.Categories[0];
+            _menuItemViewModel.SelectedSegmentCategory = _menuItemViewModel.Categories[0];
             _menuItemViewModel.ResetPaging();
             _ = _menuItemViewModel.LoadMoreMenuItemsAsync();
         }
