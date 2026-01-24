@@ -114,50 +114,94 @@
                 </Grid>
 
                 <!-- Inventory List -->
-                <Border Grid.Row="2"
-                        BackgroundColor="{StaticResource BackgroundDark}"
-                        Stroke="{StaticResource Gray200}"
-                        StrokeThickness="1"
-                        StrokeShape="RoundRectangle 5">
-                    <CollectionView ItemsSource="{Binding InventoryItems}"
-                                    SelectionMode="Single"
-                                    SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
-                        <CollectionView.Header>
-                            <Grid ColumnDefinitions="2*,*,*,*,Auto,Auto"
-                                  Padding="15,10"
-                                  BackgroundColor="{StaticResource Gray100}">
-                                <Label Grid.Column="0" Text="Name" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" HorizontalTextAlignment="Start" />
-                                <Label Grid.Column="1" Text="Quantity" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" HorizontalTextAlignment="Start" />
-                                <Label Grid.Column="2" Text="Unit" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" HorizontalTextAlignment="Start" />
-                                <Label Grid.Column="3" Text="Active" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" HorizontalTextAlignment="Start" />
-                                <Label Grid.Column="4" Grid.ColumnSpan="2" Text="Action" TextColor="{StaticResource TextSecondary}" FontSize="12" FontAttributes="Bold" HorizontalTextAlignment="Start" />
-                            </Grid>
-                        </CollectionView.Header>
+                <Border Grid.Row="2" Style="{StaticResource CardBorder}">
+                    <Grid RowDefinitions="*,Auto" Padding="0">
+                        <!-- DataGrid -->
+                        <sfdatagrid:SfDataGrid Grid.Row="0"
+                               x:Name="inventoryDataGrid"
+                               AutoGenerateColumnsMode="None"
+                               ItemsSource="{Binding Source={x:Reference inventoryPager}, Path=PagedSource}"
+                               SelectionMode="Single"
+                               SelectedRow="{Binding SelectedItem, Mode=TwoWay}"
+                               ColumnWidthMode="Fill"
+                               RowHeight="50"
+                               HeaderRowHeight="40"      
+                               SortingMode="Single">
 
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid ColumnDefinitions="2*,*,*,*,Auto,Auto"
-                                      Padding="8,5"
-                                      BackgroundColor="{StaticResource BackgroundDark}">
-                                    <Grid.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectItemCommand}"
-                                                              CommandParameter="{Binding .}" />
-                                    </Grid.GestureRecognizers>
+                            <sfdatagrid:SfDataGrid.Columns>
+                                <!-- Name Column -->
+                                <sfdatagrid:DataGridTextColumn MappingName="Name"
+                                                                HeaderText="Name"
+                                                               ColumnWidthMode="Auto"/>
 
-                                    <Label Grid.Column="0" FontSize="12" Text="{Binding Name}" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center" HorizontalTextAlignment="Start" />
-                                    <Label Grid.Column="1" FontSize="12" Text="{Binding QuantityOnHand}" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center" HorizontalTextAlignment="Center" />
-                                    <Label Grid.Column="2" FontSize="12" Text="{Binding Unit}" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center" HorizontalTextAlignment="Center" />
+                                <!-- Quantity Column -->
+                                <sfdatagrid:DataGridTextColumn MappingName="QuantityOnHand"
+                                                               HeaderText="Quantity"
+                                                               ColumnWidthMode="Auto"
+                                                               Format="N0"/>
 
-                                    <Switch Grid.Column="3" IsToggled="{Binding IsActive}" OnColor="{StaticResource Primary}" ThumbColor="{StaticResource White}" VerticalOptions="Center" HorizontalOptions="End" />
+                                <!-- Unit Column -->
+                                <sfdatagrid:DataGridTextColumn MappingName="Unit"
+                                               HeaderText="Unit" Width="80"/>
 
-                                    <ImageButton Grid.Column="4" Source="edit.png" BackgroundColor="Transparent" WidthRequest="12" HeightRequest="12" Margin="5,0" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditItemCommand}" CommandParameter="{Binding .}" />
-                                    <ImageButton Grid.Column="5" Source="view.png" BackgroundColor="Transparent" WidthRequest="12" HeightRequest="12" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ViewTransactionsCommand}" CommandParameter="{Binding .}" />
+                                <!-- Active Column (Switch) -->
+                                <sfdatagrid:DataGridTemplateColumn MappingName="IsActive"
+                                                   HeaderText="Active"
+                                                   >
+                                    <sfdatagrid:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Switch IsToggled="{Binding IsActive}"
+                                                    OnColor="{StaticResource Primary}"
+                                                    ThumbColor="{StaticResource White}"
+                                                    VerticalOptions="Center"
+                                                    HorizontalOptions="End"
+                                                    Margin="0,0,10,0"/>
+                                        </DataTemplate>
+                                    </sfdatagrid:DataGridTemplateColumn.CellTemplate>
+                                </sfdatagrid:DataGridTemplateColumn>
 
-                                    <BoxView Grid.ColumnSpan="6" HeightRequest="1" BackgroundColor="{StaticResource Gray100}" VerticalOptions="End" />
-                                </Grid>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                                <!-- Action Column (Edit & View Buttons) -->
+                                <sfdatagrid:DataGridTemplateColumn HeaderText="Action"
+                                                   ColumnWidthMode="Auto">
+                                    <sfdatagrid:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <HorizontalStackLayout Spacing="5"
+                                                   HorizontalOptions="Start"
+                                                   VerticalOptions="Center"
+                                                   Padding="5,0">
+                                                <ImageButton Source="edit.png"
+                                                            BackgroundColor="Transparent"
+                                                            WidthRequest="15"
+                                                            HeightRequest="15"
+                                                            Command="{Binding Source={x:Reference inventoryDataGrid}, Path=BindingContext.EditItemCommand}"
+                                                            CommandParameter="{Binding .}"/>
+
+                                                <ImageButton Source="view.png"
+                                                                BackgroundColor="Transparent"
+                                                                WidthRequest="15"
+                                                                HeightRequest="15"
+                                                                Command="{Binding Source={x:Reference inventoryDataGrid}, Path=BindingContext.ViewTransactionsCommand}"
+                                                                CommandParameter="{Binding .}"/>
+                                            </HorizontalStackLayout>
+                                        </DataTemplate>
+                                    </sfdatagrid:DataGridTemplateColumn.CellTemplate>
+                                </sfdatagrid:DataGridTemplateColumn>
+                            </sfdatagrid:SfDataGrid.Columns>
+
+
+                        </sfdatagrid:SfDataGrid>
+
+                        <!-- DataPager -->
+                        <pager:SfDataPager Grid.Row="1"
+                           x:Name="inventoryPager"
+                           PageSize="5"
+                           NumericButtonCount="5"
+                           Source="{Binding InventoryItems}"
+                           BackgroundColor="{StaticResource CardBackground}"
+                           HorizontalOptions="Center"
+                           Margin="0,8,0,8"
+                           />
+                    </Grid>
                 </Border>
             </Grid>
         </Border>
@@ -290,13 +334,13 @@
                            HeaderGridLinesVisibility="None"
                            AutoGenerateColumnsMode="None"
                            ItemsSource="{Binding Source={x:Reference transactionPager}, Path=PagedSource}"
-                           ColumnWidthMode="Auto"
+                           ColumnWidthMode="FitByCell"
                            SortingMode="Single">
                         <sfdatagrid:SfDataGrid.Columns>
-                            <sfdatagrid:DataGridTextColumn MappingName="TransactionDate" Format="MMM dd, yyyy hh:mm tt" HeaderText="Log Date"/>
-                            <sfdatagrid:DataGridTextColumn MappingName="QuantityChange" HeaderText="Quantity Changed" Format="N2"/>
+                            <sfdatagrid:DataGridTextColumn MappingName="TransactionDate" Format="MMM dd, yyyy hh:mm tt" HeaderText="Log Date" />
+                            <sfdatagrid:DataGridTextColumn MappingName="QuantityChange" HeaderText="Quantity Changed" Format="N0" />
                             <sfdatagrid:DataGridTextColumn MappingName="Reason" HeaderText="Reason" />
-                            <sfdatagrid:DataGridTextColumn MappingName="Remarks" HeaderText="Remarks" />
+                            <sfdatagrid:DataGridTextColumn MappingName="Remarks" HeaderText="Remarks"/>
                         </sfdatagrid:SfDataGrid.Columns>
                     </sfdatagrid:SfDataGrid>
 

@@ -311,6 +311,26 @@ namespace KusinaPOS.Services
                 Debug.WriteLine($"[PRINT SALES ERROR] {ex}");
             }
         }
+        public async Task<List<Sale>> GetSalesByDateRangeAsync(DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                var startOfDay = fromDate.Date;
+                var endOfDay = toDate.Date.AddDays(1).AddTicks(-1);
+
+                return await _db.Table<Sale>()
+                    .Where(s => s.SaleDate >= startOfDay
+                             && s.SaleDate <= endOfDay
+                             && s.Status == "Completed")
+                    .OrderByDescending(s => s.SaleDate)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[GET SALES BY DATE RANGE ERROR] {ex}");
+                return new List<Sale>();
+            }
+        }
 
     }
 }
