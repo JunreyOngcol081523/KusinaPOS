@@ -87,7 +87,6 @@
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
-
 	<ItemGroup>
 	  <Compile Remove="Converters\BoolToCategoryBgConverter.cs" />
 	  <Compile Remove="Helpers\DialogHelper.cs" />
@@ -105,6 +104,7 @@
 		<PackageReference Include="Syncfusion.Maui.Expander" Version="32.1.24" />
 		<PackageReference Include="Syncfusion.Maui.Inputs" Version="32.1.24" />
 		<PackageReference Include="Syncfusion.Maui.TabView" Version="32.1.24" />
+		<PackageReference Include="Syncfusion.XlsIO.Net.Core" Version="32.1.24" />
 	</ItemGroup>
 
 	<ItemGroup>

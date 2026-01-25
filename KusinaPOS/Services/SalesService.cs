@@ -1,17 +1,22 @@
-﻿using SQLite;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using KusinaPOS.Models;
+using KusinaPOS.Models.SQLViews;
+using SQLite;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using KusinaPOS.Models;
 using MenuItem = KusinaPOS.Models.MenuItem;
-using System.Diagnostics;
 
 namespace KusinaPOS.Services
 {
     public class SalesService
     {
         private readonly SQLiteAsyncConnection _db;
+        
+        private SaleItem saleItems;
 
         public SalesService(IDatabaseService databaseService)
         {
@@ -156,6 +161,21 @@ namespace KusinaPOS.Services
                 return new List<Sale>();
             }
         }
+        public async Task<List<SaleItemWithMenuName>> GetSaleItemsWithMenuNameAsync(int saleId)
+        {
+            try
+            {
+                return await _db.Table<SaleItemWithMenuName>()
+                                .Where(x => x.SaleId == saleId)
+                                .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error loading sale items: {ex.Message}");
+                return new List<SaleItemWithMenuName>();
+            }
+        }
+
 
         #endregion
 

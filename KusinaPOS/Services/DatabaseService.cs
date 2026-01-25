@@ -42,6 +42,19 @@ namespace KusinaPOS.Services
             await _database.CreateTableAsync<SaleItem>();
             await _database.CreateTableAsync<InventoryTransaction>();
             await _database.CreateTableAsync<Category>();
+            await _database.ExecuteAsync(@"
+            CREATE VIEW IF NOT EXISTS View_SaleItemsWithMenuName AS
+            SELECT
+                si.Id,
+                si.SaleId,
+                si.MenuItemId,
+                mi.Name AS MenuItemName,
+                si.Quantity,
+                si.UnitPrice,
+                (si.Quantity * si.UnitPrice) AS LineTotal
+            FROM SaleItem si
+            INNER JOIN MenuItem mi ON mi.Id = si.MenuItemId;
+        ");
         }
     }
 

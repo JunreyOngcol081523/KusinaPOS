@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="KusinaPOS.Views.ReportPage"
              xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
+             xmlns:sfpopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
              BackgroundColor="{StaticResource CardBackground}"
              Title="ReportPage">
     <Grid Padding="16" RowDefinitions="Auto,*">
@@ -127,7 +128,7 @@
                                         </VerticalStackLayout>
 
                                         <!-- Quick Filters -->
-                                        <VerticalStackLayout Spacing="8">
+                                        <VerticalStackLayout Spacing="5">
                                             <Label Text="Quick Filters"
                                                    TextColor="{StaticResource TextSecondary}"
                                                    FontSize="12"/>
@@ -138,7 +139,7 @@
                                                     BorderWidth="1"
                                                     CornerRadius="8"
                                                     FontSize="14"
-                                                    HeightRequest="44"
+                                                    
                                                     Command="{Binding FilterTodayCommand}"/>
                                             <Button Text="This Week"
                                                     BackgroundColor="{StaticResource CardDark}"
@@ -147,7 +148,7 @@
                                                     BorderWidth="1"
                                                     CornerRadius="8"
                                                     FontSize="14"
-                                                    HeightRequest="44"
+                                                    
                                                     Command="{Binding FilterWeekCommand}"/>
                                             <Button Text="This Month"
                                                     BackgroundColor="{StaticResource CardDark}"
@@ -156,7 +157,7 @@
                                                     BorderWidth="1"
                                                     CornerRadius="8"
                                                     FontSize="14"
-                                                    HeightRequest="44"
+                                                    
                                                     Command="{Binding FilterMonthCommand}"/>
                                         </VerticalStackLayout>
 
@@ -167,8 +168,6 @@
                                                 FontSize="16"
                                                 FontAttributes="Bold"
                                                 CornerRadius="8"
-                                                HeightRequest="50"
-                                                Margin="0,10,0,0"
                                                 Command="{Binding GenerateReportCommand}"/>
                                     </VerticalStackLayout>
                                 </Border>
@@ -179,74 +178,74 @@
 
                                 <!-- Summary Cards (KPIs) - Smaller and More Compact -->
                                 <Grid Grid.Row="0"
-          ColumnDefinitions="*,*,*,*"
-          ColumnSpacing="15">
+                                      ColumnDefinitions="*,*,*,*"
+                                      ColumnSpacing="15">
 
                                     <!-- Total Sales -->
                                     <Border Grid.Column="0"
-                BackgroundColor="{StaticResource SurfaceDark}"
-                StrokeShape="RoundRectangle 12"
-                Stroke="{StaticResource Gray200}"
-                StrokeThickness="1"
-                Padding="15">
+                                            BackgroundColor="{StaticResource SurfaceDark}"
+                                            StrokeShape="RoundRectangle 12"
+                                            Stroke="{StaticResource Gray200}"
+                                            StrokeThickness="1"
+                                            Padding="15">
                                         <VerticalStackLayout Spacing="5">
                                             <Label Text="Total Sales"
-                       TextColor="{StaticResource TextSecondary}"
-                       FontSize="11"/>
+                                                   TextColor="{StaticResource TextSecondary}"
+                                                   FontSize="11"/>
                                             <Label Text="{Binding TotalSales, StringFormat='₱{0:N2}', FallbackValue='₱0.00'}"
-                       TextColor="{StaticResource Primary}"
-                       FontSize="18"
-                       FontAttributes="Bold"/>
+                                                   TextColor="{StaticResource Primary}"
+                                                   FontSize="18"
+                                                   FontAttributes="Bold"/>
                                         </VerticalStackLayout>
                                     </Border>
 
                                     <!-- Total Transactions -->
                                     <Border Grid.Column="1"
-                BackgroundColor="{StaticResource SurfaceDark}"
-                StrokeShape="RoundRectangle 12"
-                Stroke="{StaticResource Gray200}"
-                StrokeThickness="1"
-                Padding="15">
+                                            BackgroundColor="{StaticResource SurfaceDark}"
+                                            StrokeShape="RoundRectangle 12"
+                                            Stroke="{StaticResource Gray200}"
+                                            StrokeThickness="1"
+                                            Padding="15">
                                         <VerticalStackLayout Spacing="5">
                                             <Label Text="Transactions"
-                       TextColor="{StaticResource TextSecondary}"
-                       FontSize="11"/>
+                                                   TextColor="{StaticResource TextSecondary}"
+                                                   FontSize="11"/>
                                             <Label Text="{Binding TotalTransactions, FallbackValue='0'}"
-                       TextColor="{StaticResource Primary}"
-                       FontSize="18"
-                       FontAttributes="Bold"/>
+                                                   TextColor="{StaticResource Primary}"
+                                                   FontSize="18"
+                                                   FontAttributes="Bold"/>
                                         </VerticalStackLayout>
                                     </Border>
 
                                     <!-- Cash Collected -->
                                     <Border Grid.Column="2"
-                BackgroundColor="{StaticResource SurfaceDark}"
-                StrokeShape="RoundRectangle 12"
-                Stroke="{StaticResource Gray200}"
-                StrokeThickness="1"
-                Padding="15">
+                                            BackgroundColor="{StaticResource SurfaceDark}"
+                                            StrokeShape="RoundRectangle 12"
+                                            Stroke="{StaticResource Gray200}"
+                                            StrokeThickness="1"
+                                            Padding="15">
                                         <VerticalStackLayout Spacing="5">
                                             <Label Text="Cash Collected"
-                       TextColor="{StaticResource TextSecondary}"
-                       FontSize="11"/>
+                                                   TextColor="{StaticResource TextSecondary}"
+                                                   FontSize="11"/>
                                             <Label Text="{Binding CashCollected, StringFormat='₱{0:N2}', FallbackValue='₱0.00'}"
-                       TextColor="{StaticResource Primary}"
-                       FontSize="18"
-                       FontAttributes="Bold"/>
+                                                   TextColor="{StaticResource Primary}"
+                                                   FontSize="18"
+                                                   FontAttributes="Bold"/>
                                         </VerticalStackLayout>
                                     </Border>
 
                                     <!-- Average Sale -->
                                     <Border Grid.Column="3"
-                BackgroundColor="{StaticResource SurfaceDark}"
-                StrokeShape="RoundRectangle 12"
-                Stroke="{StaticResource Gray200}"
-                StrokeThickness="1"
-                Padding="15">
+                                            BackgroundColor="{StaticResource SurfaceDark}"
+                                            StrokeShape="RoundRectangle 12"
+                                            Stroke="{StaticResource Gray200}"
+                                            StrokeThickness="1"
+                                            Padding="15">
                                         <VerticalStackLayout Spacing="5">
                                             <Label Text="Average Sale"
-                       TextColor="{StaticResource TextSecondary}"
-                       FontSize="11"/>
+                                                   TextColor="{StaticResource TextSecondary}"
+                                                   FontSize="11"/>
                                             <Label Text="{Binding AverageSale, StringFormat='₱{0:N2}', FallbackValue='₱0.00'}"
                                                    TextColor="{StaticResource Primary}"
                                                    FontSize="18"
@@ -287,72 +286,73 @@
                                         </Grid>
 
                                         <!-- Transaction List -->
-                                        <ScrollView Grid.Row="1">
-                                            <CollectionView ItemsSource="{Binding SalesTransactions}"
-                                                            EmptyView="No transactions found for selected period">
-                                                <CollectionView.ItemTemplate>
-                                                    <!-- In the CollectionView.ItemTemplate -->
-                                                    <DataTemplate>
-                                                        <Border BackgroundColor="{StaticResource CardDark}"
+
+                                        <CollectionView  Grid.Row="1" ItemsSource="{Binding SalesTransactions}"
+                                                         EmptyView="No transactions found for selected period"
+                                                         SelectionMode="Single"
+                                                         SelectedItem="{Binding SelectedSaleTransaction}">
+                                            <CollectionView.ItemTemplate>
+                                                <!-- In the CollectionView.ItemTemplate -->
+                                                <DataTemplate>
+                                                    <Border BackgroundColor="{StaticResource CardDark}"
                                                                 StrokeShape="RoundRectangle 8"
                                                                 Stroke="{StaticResource Gray200}"
                                                                 StrokeThickness="1"
-                                                                Padding="15"
+                                                                Padding="8"
                                                                 Margin="0,0,0,10">
-                                                            <Grid ColumnDefinitions="*,Auto"
+                                                        <Grid ColumnDefinitions="*,Auto"
                                                                   RowDefinitions="Auto,Auto"
                                                                   RowSpacing="8">
 
-                                                                <!-- Receipt Number -->
-                                                                <Label Grid.Column="0" Grid.Row="0"
+                                                            <!-- Receipt Number -->
+                                                            <Label Grid.Column="0" Grid.Row="0"
                                                                        Text="{Binding ReceiptNo}"
                                                                        TextColor="{StaticResource TextPrimary}"
-                                                                       FontSize="15"
+                                                                       FontSize="12"
                                                                        FontAttributes="Bold"/>
 
-                                                                <!-- Total Amount -->
-                                                                <Label Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                                                            <!-- Total Amount -->
+                                                            <Label Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
                                                                        Text="{Binding TotalAmount, StringFormat='₱{0:N2}'}"
                                                                        TextColor="{StaticResource Primary}"
-                                                                       FontSize="20"
+                                                                       FontSize="15"
                                                                        FontAttributes="Bold"
                                                                        VerticalOptions="Center"
                                                                        HorizontalOptions="End"/>
 
-                                                                <!-- Date & Time -->
-                                                                <Label Grid.Column="0" Grid.Row="1"
+                                                            <!-- Date & Time -->
+                                                            <Label Grid.Column="0" Grid.Row="1"
                                                                        Text="{Binding SaleDate, StringFormat='{0:MMM dd, yyyy hh:mm tt}'}"
                                                                        TextColor="{StaticResource TextSecondary}"
-                                                                       FontSize="13"/>
-                                                            </Grid>
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </CollectionView.ItemTemplate>
+                                                                       FontSize="10"/>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </CollectionView.ItemTemplate>
 
-                                                <!-- Empty View Styling -->
-                                                <CollectionView.EmptyViewTemplate>
-                                                    <DataTemplate>
-                                                        <VerticalStackLayout VerticalOptions="Center"
+                                            <!-- Empty View Styling -->
+                                            <CollectionView.EmptyViewTemplate>
+                                                <DataTemplate>
+                                                    <VerticalStackLayout VerticalOptions="Center"
                                                                              HorizontalOptions="Center"
                                                                              Padding="40">
-                                                            <Label Text="📊"
-                                                                   FontSize="48"
+                                                        <Label Text="📊"
+                                                                   FontSize="35"
                                                                    HorizontalOptions="Center"
                                                                    Margin="0,0,0,15"/>
-                                                            <Label Text="No transactions found"
+                                                        <Label Text="No transactions found"
                                                                    TextColor="{StaticResource TextSecondary}"
-                                                                   FontSize="16"
+                                                                   FontSize="12"
                                                                    HorizontalOptions="Center"/>
-                                                            <Label Text="Try adjusting your date range"
+                                                        <Label Text="Try adjusting your date range"
                                                                    TextColor="{StaticResource TextSecondary}"
-                                                                   FontSize="13"
+                                                                   FontSize="12"
                                                                    HorizontalOptions="Center"
                                                                    Margin="0,5,0,0"/>
-                                                        </VerticalStackLayout>
-                                                    </DataTemplate>
-                                                </CollectionView.EmptyViewTemplate>
-                                            </CollectionView>
-                                        </ScrollView>
+                                                    </VerticalStackLayout>
+                                                </DataTemplate>
+                                            </CollectionView.EmptyViewTemplate>
+                                        </CollectionView>
                                     </Grid>
                                 </Border>
 
