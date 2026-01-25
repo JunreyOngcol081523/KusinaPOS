@@ -55,6 +55,27 @@ namespace KusinaPOS.Services
             FROM SaleItem si
             INNER JOIN MenuItem mi ON mi.Id = si.MenuItemId;
         ");
+            await _database.ExecuteAsync(@"
+            CREATE VIEW IF NOT EXISTS vwSaleItemsWithDateMenuItem AS
+            SELECT
+                si.Id AS SaleItemId,
+                si.SaleId,
+                s.ReceiptNo,
+                s.SaleDate,
+                si.MenuItemId,
+                m.Name AS MenuItemName,
+                m.Category,
+                m.ImagePath,
+                si.Quantity,
+                si.UnitPrice,
+                (si.Quantity * si.UnitPrice) AS LineTotal
+            FROM SaleItem si
+            INNER JOIN Sale s
+                ON si.SaleId = s.Id
+            INNER JOIN MenuItem m
+                ON si.MenuItemId = m.Id;
+
+            ");
         }
     }
 

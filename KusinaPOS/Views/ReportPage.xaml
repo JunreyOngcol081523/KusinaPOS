@@ -6,6 +6,10 @@
              xmlns:sfpopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
              xmlns:sfListView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              xmlns:syncfusion="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
+             xmlns:pager="clr-namespace:Syncfusion.Maui.DataGrid.DataPager;assembly=Syncfusion.Maui.DataGrid"
+             xmlns:sfexpander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
+             xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+             xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
              BackgroundColor="{StaticResource CardBackground}"
              Title="ReportPage">
     <Grid>
@@ -72,6 +76,7 @@
         </sfpopup:SfPopup>
         <Grid Padding="16" RowDefinitions="Auto,*">
             <!-- Top Header -->
+            <!--#region header -->
             <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,0,0,8">
                 <ImageButton Grid.Column="0"
                     Margin="0,0,15,0"
@@ -112,12 +117,15 @@
                     </Border>
                 </HorizontalStackLayout>
             </Grid>
+
+            <!--#endregion-->
             <tabView:SfTabView Grid.Row="1" 
                            x:Name="reportTabView"
                            ContentTransitionDuration ="200"
                            TabBarPlacement="Bottom"
                            TabBarCornerRadius="24">
                 <tabView:SfTabView.Items>
+                    <!--#region sales report -->
                     <tabView:SfTabItem Header="Sales" ImageSource="sales.png" 
                                    BackgroundColor="{StaticResource CardBackground}" 
                                    TextColor="{StaticResource TextPrimary}"
@@ -427,14 +435,235 @@
 
                         </Grid>
                     </tabView:SfTabItem>
+                    <!--#endregion-->
+                    <!--#region menu items reports -->
                     <tabView:SfTabItem Header="Menu Items" ImageSource="fast_moving.png" 
-                                   BackgroundColor="{StaticResource CardBackground}" 
-                                   TextColor="{StaticResource TextPrimary}"
-                                   FontSize="12"
-                                   ImageSize="20"
-                                   ImagePosition="Left" >
+                                       BackgroundColor="{StaticResource CardBackground}" 
+                                       TextColor="{StaticResource TextPrimary}"
+                                       FontSize="12"
+                                       ImageSize="20"
+                                       ImagePosition="Left">
 
+                        <Grid RowDefinitions="Auto,*" Padding="20" RowSpacing="20">
+
+                            <!-- Header -->
+                            <VerticalStackLayout Grid.Row="0" Spacing="8">
+                                <Label Text="Menu Items Report"
+                   TextColor="{StaticResource TextPrimary}"
+                   FontSize="Large"
+                   FontAttributes="Bold"/>
+                                <Label Text="Track menu item sales and performance"
+                   TextColor="{StaticResource TextSecondary}"
+                   FontSize="Small"/>
+                            </VerticalStackLayout>
+
+                            <!-- Main Content: 2 Columns -->
+                            <Grid Grid.Row="1" ColumnDefinitions="300,*" ColumnSpacing="10">
+
+                                <!-- Column 1: Filter Form -->
+                                <ScrollView Grid.Column="0">
+                                    <Border Style="{StaticResource CardBorder}"
+                                            Padding="12">
+
+                                        <VerticalStackLayout Spacing="10">
+
+                                            <!-- Header -->
+                                            <Label Text="Filters"
+                                                   FontSize="14"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{StaticResource TextPrimary}" />
+
+                                            <!-- Date Range (compact row) -->
+                                            <Grid ColumnDefinitions="*,*"
+                                                    ColumnSpacing="8">
+                                                <DatePicker Date="{Binding FromDate}" />
+                                                <DatePicker Grid.Column="1"
+                                                            Date="{Binding ToDate}" />
+                                            </Grid>
+
+                                            <!-- Category -->
+                                            <Picker Title="Category"
+                                                    ItemsSource="{Binding Categories}"
+                                                    SelectedItem="{Binding SelectedCategory}" />
+
+                                            <!-- Quick Filters (compact buttons) -->
+                                            <Grid ColumnDefinitions="*,*,*"
+                                                    ColumnSpacing="6">
+                                                <Button Text="Today"
+                                                        FontSize="12"
+                                                        Padding="6"
+                                                        Command="{Binding FilterMenuTodayCommand}" />
+
+                                                <Button Text="Week"
+                                                        Grid.Column="1"
+                                                        FontSize="12"
+                                                        Padding="6"
+                                                        Command="{Binding FilterMenuWeekCommand}" />
+
+                                                <Button Text="Month"
+                                                        Grid.Column="2"
+                                                        FontSize="12"
+                                                        Padding="6"
+                                                        Command="{Binding FilterMenuMonthCommand}" />
+                                            </Grid>
+
+                                            <!-- Generate -->
+                                            <Button Text="Generate"
+                                                    FontSize="13"
+                                                    Padding="10"
+                                                    BackgroundColor="{StaticResource Primary}"
+                                                    TextColor="White"
+                                                    Command="{Binding GenerateMenuReportCommand}" />
+                                            <Label Text="Export to Excel"
+                                                   TextColor="{StaticResource TextSecondary}"
+                                                   FontSize="14" TextDecorations="Underline">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding ExportMenuReportCommand}" />
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </ScrollView>
+
+
+                                <!-- Column 2: Menu Items Report + Charts -->
+                                <Grid Grid.Column="1" >
+                                    <core:SfBusyIndicator x:Name="busyIndicator"
+                                                          IsRunning="{Binding IsBusy}"
+                                                          AnimationType="CircularMaterial" 
+                                                          Title="Loading..."
+                                                          TextColor="White"/>
+                                    <!-- Tab View for Menu Items -->
+                                    <tabView:SfTabView TabWidthMode="Default" VerticalOptions="Fill" HorizontalOptions="Fill">
+
+                                        <!-- Tab 1: Top 5 Income-Generating Menu Items -->
+                                        <tabView:SfTabItem Header="Top Income-Generating Menu" TextColor="{StaticResource TextPrimary}" >
+                                            <tabView:SfTabItem.Content>
+                                                <chart:SfCartesianChart Margin="10">
+                                                    <chart:SfCartesianChart.XAxes>
+                                                        <chart:CategoryAxis>
+                                                            <chart:CategoryAxis.LabelStyle>
+                                                                <chart:ChartAxisLabelStyle TextColor="{StaticResource TextPrimary}" 
+                                                               FontSize="14" 
+                                                               LabelFormat="N2"/>
+                                                            </chart:CategoryAxis.LabelStyle>
+                                                        </chart:CategoryAxis>
+                                                    </chart:SfCartesianChart.XAxes>
+                                                    <chart:SfCartesianChart.YAxes>
+                                                        <chart:NumericalAxis>
+                                                            <chart:NumericalAxis.LabelStyle>
+                                                                <chart:ChartAxisLabelStyle TextColor="{StaticResource TextSecondary}" 
+                                                               FontSize="14"
+                                                               LabelFormat="N2"/>
+                                                            </chart:NumericalAxis.LabelStyle>
+                                                        </chart:NumericalAxis>
+                                                    </chart:SfCartesianChart.YAxes>
+                                                    <chart:ColumnSeries XBindingPath="MenuItemName"
+                                                                        ItemsSource="{Binding Top5MenuItems}"
+                                                                        YBindingPath="TotalSales"
+                                                                        ShowDataLabels="True"/>
+                                                </chart:SfCartesianChart>
+                                            </tabView:SfTabItem.Content>
+                                        </tabView:SfTabItem>
+
+                                        <!-- Tab 2: Top 5 Menu Items by Sold Quantity -->
+                                        <tabView:SfTabItem Header="Top 5 Sold Menu" TextColor="{StaticResource TextPrimary}" >
+                                            <tabView:SfTabItem.Content>
+                                                <chart:SfCartesianChart IsTransposed="false" Margin="10">
+                                                    <!-- Optional: Custom DataLabel Template -->
+                                                    <chart:SfCartesianChart.Resources>
+                                                        <DataTemplate x:Key="labelTemplate">
+                                                            <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                                                                <Image Source="arr.png" WidthRequest="15" HeightRequest="15"/>
+                                                                <Label Text="{Binding Item.Values}" VerticalOptions="Center" FontSize="12"/>
+                                                            </HorizontalStackLayout>
+                                                        </DataTemplate>
+                                                    </chart:SfCartesianChart.Resources>
+                                                    <!-- Axes -->
+                                                    <chart:SfCartesianChart.XAxes>
+                                                        <chart:CategoryAxis LabelRotation="0">
+                                                            <chart:CategoryAxis.LabelStyle>
+                                                                <chart:ChartAxisLabelStyle TextColor="{StaticResource TextPrimary}" FontSize="14"/>
+                                                            </chart:CategoryAxis.LabelStyle>
+                                                        </chart:CategoryAxis>
+                                                    </chart:SfCartesianChart.XAxes>
+                                                    <chart:SfCartesianChart.YAxes>
+                                                        <chart:NumericalAxis>
+                                                            <chart:NumericalAxis.LabelStyle>
+                                                                <chart:ChartAxisLabelStyle TextColor="{StaticResource TextSecondary}" 
+                                                               FontSize="14"
+                                                               LabelFormat="N0"/>
+                                                            </chart:NumericalAxis.LabelStyle>
+                                                        </chart:NumericalAxis>
+                                                    </chart:SfCartesianChart.YAxes>
+                                                    <!-- ColumnSeries -->
+                                                    <chart:ColumnSeries ItemsSource="{Binding AllMenuItemsByCategory}"
+                                            XBindingPath="MenuItemName"
+                                            YBindingPath="QuantitySold"
+                                            ShowDataLabels="True"
+                                            LabelTemplate="{StaticResource labelTemplate}">
+                                                        <chart:ColumnSeries.DataLabelSettings>
+                                                            <!-- Show numeric label outside the bar -->
+                                                            <chart:CartesianDataLabelSettings LabelPlacement="Outer"
+                                                                  BarAlignment="Middle"/>
+                                                        </chart:ColumnSeries.DataLabelSettings>
+                                                    </chart:ColumnSeries>
+                                                </chart:SfCartesianChart>
+                                            </tabView:SfTabItem.Content>
+                                        </tabView:SfTabItem>
+
+                                        <!-- Tab 3: Menu Items DataGrid -->
+                                        <tabView:SfTabItem Header="Menu Items Table" TextColor="{StaticResource TextPrimary}" >
+                                            <tabView:SfTabItem.Content>
+                                                <Grid RowDefinitions="*,Auto" Padding="0">
+
+                                                    <syncfusion:SfDataGrid Grid.Row="0"
+                                                                           ItemsSource="{Binding Source={x:Reference dataPager}, Path=PagedSource }"  
+                                                                           AutoGenerateColumnsMode="None"
+                                                                           ColumnWidthMode="Fill"
+                                                                           HorizontalOptions="Fill"
+                                                                           VerticalOptions="Fill"
+                                                                           SelectionMode="None"
+                                                                           HeightRequest="35"
+                                                                           >
+                                                        <syncfusion:SfDataGrid.Columns>
+                                                            <syncfusion:DataGridTextColumn
+                                                                        MappingName="MenuItemName"
+                                                                        HeaderText="Item Name"/>
+                                                            <syncfusion:DataGridTextColumn
+                                                                        MappingName="Category"
+                                                                        HeaderText="Category"/>
+                                                            <syncfusion:DataGridTextColumn
+                                                                        MappingName="QuantitySold"
+                                                                        HeaderText="Qty Sold"/>
+                                                            <syncfusion:DataGridTextColumn
+                                                                        MappingName="TotalSales"
+                                                                        HeaderText="Total Sales"
+                                                                        Format="₱{0:N2}"/>
+                                                        </syncfusion:SfDataGrid.Columns>
+                                                    </syncfusion:SfDataGrid>
+                                                    <pager:SfDataPager Grid.Row="1"
+                                                                       x:Name="dataPager"
+                                                                       PageSize="5"
+                                                                       NumericButtonCount="5"
+                                                                       Source="{Binding MenuItemsReport}"
+                                                                       BackgroundColor="{StaticResource CardBackground}"
+                                                                       HorizontalOptions="Center"
+                                                                       Margin="0,8,0,8"
+                                                                       />
+                                                </Grid>
+                                            </tabView:SfTabItem.Content>
+                                        </tabView:SfTabItem>
+
+                                    </tabView:SfTabView>
+                                </Grid>
+
+                            </Grid>
+
+                        </Grid>
                     </tabView:SfTabItem>
+
+                    <!--#endregion-->
                     <tabView:SfTabItem Header="Inventory" ImageSource="inventory_check.png" 
                                    BackgroundColor="{StaticResource CardBackground}"   
                                    TextColor="{StaticResource TextPrimary}"

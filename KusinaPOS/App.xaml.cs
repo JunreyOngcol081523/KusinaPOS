@@ -27,9 +27,7 @@ namespace KusinaPOS
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            // Start initialization in background
-            _ = InitializeAppInBackgroundAsync();
-
+            _ = InitializeAppInBackgroundAsync();     
             return new Window(new AppShell());
         }
 
@@ -79,9 +77,9 @@ namespace KusinaPOS
                 // Optionally show error to user on main thread
                 await MainThread.InvokeOnMainThreadAsync(async () =>
                 {
-                    await Application.Current?.MainPage?.DisplayAlert(
+                    await PageHelper.DisplayAlertAsync(
                         "Initialization Error",
-                        "Failed to initialize the application. Please restart.",
+                        $"Failed to initialize the application. {ex.Message}",
                         "OK");
                 });
             }
