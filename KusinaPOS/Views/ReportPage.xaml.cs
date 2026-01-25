@@ -8,5 +8,9 @@ public partial class ReportPage : ContentPage
 	{
 		InitializeComponent();
 		BindingContext = vm;
+        vm.ShowSaleItemsPopupRequested += () =>
+        {
+            SaleItemsPopup.Show();
+        };
     }
 }

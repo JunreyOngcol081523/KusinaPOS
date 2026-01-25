@@ -4,135 +4,199 @@
              x:Class="KusinaPOS.Views.ReportPage"
              xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
              xmlns:sfpopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:sfListView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
              BackgroundColor="{StaticResource CardBackground}"
              Title="ReportPage">
-    <Grid Padding="16" RowDefinitions="Auto,*">
-        <!-- Top Header -->
-        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,0,0,8">
-            <ImageButton Grid.Column="0"
+    <Grid>
+        <sfpopup:SfPopup x:Name="SaleItemsPopup"
+                        AnimationMode="Fade" 
+                        HeaderHeight="60"
+                        HeightRequest="300"
+                        WidthRequest="400"
+                        ShowCloseButton="True"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Center"
+                        IsOpen="{Binding IsOpenPopup}">
+            <sfpopup:SfPopup.HeaderTemplate>
+                <DataTemplate>
+                    <Label Text="Sales Items" 
+                               FontAttributes="Bold"
+                               FontSize="18"
+                               HorizontalTextAlignment="Center"
+                               VerticalTextAlignment="Center"/>
+                </DataTemplate>
+            </sfpopup:SfPopup.HeaderTemplate>
+            <sfpopup:SfPopup.ContentTemplate>
+
+                <DataTemplate>
+                    <Grid Padding="10">
+                        <syncfusion:SfDataGrid x:Name="SaleItemsDataGrid"
+                                AutoGenerateColumnsMode ="None"
+                               ItemsSource="{Binding SaleItems}"
+                               SelectionMode="None"
+                               RowHeight="50">
+
+                            <!-- Columns -->
+                            <syncfusion:SfDataGrid.Columns>
+                                <!-- Menu Item Name -->
+                                <syncfusion:DataGridTextColumn   MappingName="MenuItemName"
+                               HeaderText="Item Name"
+                               Width="150" />
+
+                                <!-- Quantity -->
+                                <syncfusion:DataGridTextColumn   MappingName="Quantity"
+                               HeaderText="Qty"
+                               
+                               Width="80" />
+
+                                <!-- Unit Price -->
+                                <syncfusion:DataGridTextColumn   MappingName="UnitPrice"
+                               HeaderText="Unit Price"
+                               Format="₱{0:N2}"
+                               
+                               Width="80" />
+
+                                <!-- Line Total -->
+                                <syncfusion:DataGridTextColumn   MappingName="LineTotal"
+                               HeaderText="Line Total"
+                               Format="₱{0:N2}"
+                               
+                               Width="80" />
+                            </syncfusion:SfDataGrid.Columns>
+                        </syncfusion:SfDataGrid>
+
+                    </Grid>
+                </DataTemplate>
+            </sfpopup:SfPopup.ContentTemplate>
+        </sfpopup:SfPopup>
+        <Grid Padding="16" RowDefinitions="Auto,*">
+            <!-- Top Header -->
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,0,0,8">
+                <ImageButton Grid.Column="0"
                     Margin="0,0,15,0"
                     WidthRequest="10"
                     HeightRequest="10"
                     Command="{Binding GoBackCommand}"
                     Source="arrowback.png"
                     BackgroundColor="Transparent">
-            </ImageButton>
-            <Label Grid.Column="1" 
+                </ImageButton>
+                <Label Grid.Column="1" 
                    Text="{Binding StoreName, StringFormat='Reports - {0}'}"
                    FontSize="15" 
                    FontAttributes="Bold"
                    TextColor="{StaticResource TextPrimary}"
                    VerticalOptions="Center" />
 
-            <Label Grid.Column="2" 
+                <Label Grid.Column="2" 
                    Text="{Binding CurrentDateTime}" 
                    FontSize="12"
                    TextColor="{StaticResource TextSecondary}"
                    VerticalOptions="Center"
                    Margin="0,0,15,0" />
 
-            <HorizontalStackLayout Grid.Column="3" Spacing="8" VerticalOptions="Center">
-                <Label Text="{Binding LoggedInUserName}" 
+                <HorizontalStackLayout Grid.Column="3" Spacing="8" VerticalOptions="Center">
+                    <Label Text="{Binding LoggedInUserName}" 
                        FontSize="12"
                        TextColor="{StaticResource TextSecondary}"
                        VerticalOptions="Center" />
-                <Border StrokeShape="RoundRectangle 15"
+                    <Border StrokeShape="RoundRectangle 15"
                         WidthRequest="30"
                         HeightRequest="30"
                         BackgroundColor="{StaticResource Primary}">
-                    <Label Text="⚙" 
+                        <Label Text="⚙" 
                            FontSize="16"
                            HorizontalOptions="Center"
                            VerticalOptions="Center"
                            TextColor="White" />
-                </Border>
-            </HorizontalStackLayout>
-        </Grid>
-        <tabView:SfTabView Grid.Row="1" 
+                    </Border>
+                </HorizontalStackLayout>
+            </Grid>
+            <tabView:SfTabView Grid.Row="1" 
                            x:Name="reportTabView"
                            ContentTransitionDuration ="200"
                            TabBarPlacement="Bottom"
                            TabBarCornerRadius="24">
-            <tabView:SfTabView.Items>
-                <tabView:SfTabItem Header="Sales" ImageSource="sales.png" 
+                <tabView:SfTabView.Items>
+                    <tabView:SfTabItem Header="Sales" ImageSource="sales.png" 
                                    BackgroundColor="{StaticResource CardBackground}" 
                                    TextColor="{StaticResource TextPrimary}"
                                    FontSize="12"
                                    ImageSize="20"
                                    ImagePosition="Left" >
-                    <Grid RowDefinitions="Auto,*" 
+                        <Grid RowDefinitions="Auto,*" 
                           Padding="20"
                           RowSpacing="20">
 
-                        <!-- Header Section -->
-                        <VerticalStackLayout Grid.Row="0" Spacing="8">
-                            <Label Text="Sales Report"
+                            <!-- Header Section -->
+                            <VerticalStackLayout Grid.Row="0" Spacing="8">
+                                <Label Text="Sales Report"
                                            TextColor="{StaticResource TextPrimary}"
                                            FontSize="Large"
                                            FontAttributes="Bold"/>
-                            <Label Text="Track sales performance and transaction history"
+                                <Label Text="Track sales performance and transaction history"
                                            TextColor="{StaticResource TextSecondary}"
                                            FontSize="Small"/>
-                        </VerticalStackLayout>
+                            </VerticalStackLayout>
 
-                        <!-- Main Content - 2 Columns -->
-                        <Grid Grid.Row="1"
+                            <!-- Main Content - 2 Columns -->
+                            <Grid Grid.Row="1"
                               ColumnDefinitions="300,*"
                               ColumnSpacing="20">
 
-                            <!-- Column 1: Filter Form -->
-                            <ScrollView Grid.Column="0">
-                                <Border BackgroundColor="{StaticResource SurfaceDark}"
+                                <!-- Column 1: Filter Form -->
+                                <ScrollView Grid.Column="0">
+                                    <Border BackgroundColor="{StaticResource SurfaceDark}"
                                         StrokeShape="RoundRectangle 12"
                                         Stroke="{StaticResource Gray200}"
                                         StrokeThickness="1"
                                         Padding="20">
-                                    <VerticalStackLayout Spacing="15">
-                                        <Label Text="Filter by Date Range"
+                                        <VerticalStackLayout Spacing="15">
+                                            <Label Text="Filter by Date Range"
                                                TextColor="{StaticResource TextPrimary}"
                                                FontSize="16"
                                                FontAttributes="Bold"/>
 
-                                        <!-- From Date -->
-                                        <VerticalStackLayout Spacing="8">
-                                            <Label Text="From Date"
+                                            <!-- From Date -->
+                                            <VerticalStackLayout Spacing="8">
+                                                <Label Text="From Date"
                                                     TextColor="{StaticResource TextSecondary}"
                                                     FontSize="12"/>
-                                            <Border BackgroundColor="{StaticResource CardDark}"
+                                                <Border BackgroundColor="{StaticResource CardDark}"
                                                     StrokeShape="RoundRectangle 8"
                                                     Stroke="{StaticResource Gray200}"
                                                     StrokeThickness="1"
                                                     Padding="8,5">
-                                                <DatePicker Date="{Binding FromDate}"
+                                                    <DatePicker Date="{Binding FromDate}"
                                                             TextColor="{StaticResource TextPrimary}"
                                                             FontSize="12"
                                                             BackgroundColor="Transparent"/>
-                                            </Border>
-                                        </VerticalStackLayout>
+                                                </Border>
+                                            </VerticalStackLayout>
 
-                                        <!-- To Date -->
-                                        <VerticalStackLayout Spacing="8">
-                                            <Label Text="To Date"
+                                            <!-- To Date -->
+                                            <VerticalStackLayout Spacing="8">
+                                                <Label Text="To Date"
                                                    TextColor="{StaticResource TextSecondary}"
                                                    FontSize="12"/>
-                                            <Border BackgroundColor="{StaticResource CardDark}"
+                                                <Border BackgroundColor="{StaticResource CardDark}"
                                                     StrokeShape="RoundRectangle 8"
                                                     Stroke="{StaticResource Gray200}"
                                                     StrokeThickness="1"
                                                     Padding="8,5">
-                                                <DatePicker Date="{Binding ToDate}"
+                                                    <DatePicker Date="{Binding ToDate}"
                                                             TextColor="{StaticResource TextPrimary}"
                                                             FontSize="12"
                                                             BackgroundColor="Transparent"/>
-                                            </Border>
-                                        </VerticalStackLayout>
+                                                </Border>
+                                            </VerticalStackLayout>
 
-                                        <!-- Quick Filters -->
-                                        <VerticalStackLayout Spacing="5">
-                                            <Label Text="Quick Filters"
+                                            <!-- Quick Filters -->
+                                            <VerticalStackLayout Spacing="5">
+                                                <Label Text="Quick Filters"
                                                    TextColor="{StaticResource TextSecondary}"
                                                    FontSize="12"/>
-                                            <Button Text="Today"
+                                                <Button Text="Today"
                                                     BackgroundColor="{StaticResource CardDark}"
                                                     TextColor="{StaticResource TextPrimary}"
                                                     BorderColor="{StaticResource Gray200}"
@@ -141,7 +205,7 @@
                                                     FontSize="14"
                                                     
                                                     Command="{Binding FilterTodayCommand}"/>
-                                            <Button Text="This Week"
+                                                <Button Text="This Week"
                                                     BackgroundColor="{StaticResource CardDark}"
                                                     TextColor="{StaticResource TextPrimary}"
                                                     BorderColor="{StaticResource Gray200}"
@@ -150,7 +214,7 @@
                                                     FontSize="14"
                                                     
                                                     Command="{Binding FilterWeekCommand}"/>
-                                            <Button Text="This Month"
+                                                <Button Text="This Month"
                                                     BackgroundColor="{StaticResource CardDark}"
                                                     TextColor="{StaticResource TextPrimary}"
                                                     BorderColor="{StaticResource Gray200}"
@@ -159,160 +223,160 @@
                                                     FontSize="14"
                                                     
                                                     Command="{Binding FilterMonthCommand}"/>
-                                        </VerticalStackLayout>
+                                            </VerticalStackLayout>
 
-                                        <!-- Generate Button -->
-                                        <Button Text="Generate Report"
+                                            <!-- Generate Button -->
+                                            <Button Text="Generate Report"
                                                 BackgroundColor="{StaticResource Primary}"
                                                 TextColor="White"
                                                 FontSize="16"
                                                 FontAttributes="Bold"
                                                 CornerRadius="8"
                                                 Command="{Binding GenerateReportCommand}"/>
-                                    </VerticalStackLayout>
-                                </Border>
-                            </ScrollView>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </ScrollView>
 
-                            <!-- Column 2: Sales Reports -->
-                            <Grid Grid.Column="1" RowDefinitions="Auto,*" RowSpacing="20">
+                                <!-- Column 2: Sales Reports -->
+                                <Grid Grid.Column="1" RowDefinitions="Auto,*" RowSpacing="20">
 
-                                <!-- Summary Cards (KPIs) - Smaller and More Compact -->
-                                <Grid Grid.Row="0"
+                                    <!-- Summary Cards (KPIs) - Smaller and More Compact -->
+                                    <Grid Grid.Row="0"
                                       ColumnDefinitions="*,*,*,*"
                                       ColumnSpacing="15">
 
-                                    <!-- Total Sales -->
-                                    <Border Grid.Column="0"
+                                        <!-- Total Sales -->
+                                        <Border Grid.Column="0"
                                             BackgroundColor="{StaticResource SurfaceDark}"
                                             StrokeShape="RoundRectangle 12"
                                             Stroke="{StaticResource Gray200}"
                                             StrokeThickness="1"
                                             Padding="15">
-                                        <VerticalStackLayout Spacing="5">
-                                            <Label Text="Total Sales"
+                                            <VerticalStackLayout Spacing="5">
+                                                <Label Text="Total Sales"
                                                    TextColor="{StaticResource TextSecondary}"
                                                    FontSize="11"/>
-                                            <Label Text="{Binding TotalSales, StringFormat='₱{0:N2}', FallbackValue='₱0.00'}"
+                                                <Label Text="{Binding TotalSales, StringFormat='₱{0:N2}', FallbackValue='₱0.00'}"
                                                    TextColor="{StaticResource Primary}"
                                                    FontSize="18"
                                                    FontAttributes="Bold"/>
-                                        </VerticalStackLayout>
-                                    </Border>
+                                            </VerticalStackLayout>
+                                        </Border>
 
-                                    <!-- Total Transactions -->
-                                    <Border Grid.Column="1"
+                                        <!-- Total Transactions -->
+                                        <Border Grid.Column="1"
                                             BackgroundColor="{StaticResource SurfaceDark}"
                                             StrokeShape="RoundRectangle 12"
                                             Stroke="{StaticResource Gray200}"
                                             StrokeThickness="1"
                                             Padding="15">
-                                        <VerticalStackLayout Spacing="5">
-                                            <Label Text="Transactions"
+                                            <VerticalStackLayout Spacing="5">
+                                                <Label Text="Transactions"
                                                    TextColor="{StaticResource TextSecondary}"
                                                    FontSize="11"/>
-                                            <Label Text="{Binding TotalTransactions, FallbackValue='0'}"
+                                                <Label Text="{Binding TotalTransactions, FallbackValue='0'}"
                                                    TextColor="{StaticResource Primary}"
                                                    FontSize="18"
                                                    FontAttributes="Bold"/>
-                                        </VerticalStackLayout>
-                                    </Border>
+                                            </VerticalStackLayout>
+                                        </Border>
 
-                                    <!-- Cash Collected -->
-                                    <Border Grid.Column="2"
+                                        <!-- Cash Collected -->
+                                        <Border Grid.Column="2"
                                             BackgroundColor="{StaticResource SurfaceDark}"
                                             StrokeShape="RoundRectangle 12"
                                             Stroke="{StaticResource Gray200}"
                                             StrokeThickness="1"
                                             Padding="15">
-                                        <VerticalStackLayout Spacing="5">
-                                            <Label Text="Cash Collected"
+                                            <VerticalStackLayout Spacing="5">
+                                                <Label Text="Cash Collected"
                                                    TextColor="{StaticResource TextSecondary}"
                                                    FontSize="11"/>
-                                            <Label Text="{Binding CashCollected, StringFormat='₱{0:N2}', FallbackValue='₱0.00'}"
+                                                <Label Text="{Binding CashCollected, StringFormat='₱{0:N2}', FallbackValue='₱0.00'}"
                                                    TextColor="{StaticResource Primary}"
                                                    FontSize="18"
                                                    FontAttributes="Bold"/>
-                                        </VerticalStackLayout>
-                                    </Border>
+                                            </VerticalStackLayout>
+                                        </Border>
 
-                                    <!-- Average Sale -->
-                                    <Border Grid.Column="3"
+                                        <!-- Average Sale -->
+                                        <Border Grid.Column="3"
                                             BackgroundColor="{StaticResource SurfaceDark}"
                                             StrokeShape="RoundRectangle 12"
                                             Stroke="{StaticResource Gray200}"
                                             StrokeThickness="1"
                                             Padding="15">
-                                        <VerticalStackLayout Spacing="5">
-                                            <Label Text="Average Sale"
+                                            <VerticalStackLayout Spacing="5">
+                                                <Label Text="Average Sale"
                                                    TextColor="{StaticResource TextSecondary}"
                                                    FontSize="11"/>
-                                            <Label Text="{Binding AverageSale, StringFormat='₱{0:N2}', FallbackValue='₱0.00'}"
+                                                <Label Text="{Binding AverageSale, StringFormat='₱{0:N2}', FallbackValue='₱0.00'}"
                                                    TextColor="{StaticResource Primary}"
                                                    FontSize="18"
                                                    FontAttributes="Bold"/>
-                                        </VerticalStackLayout>
-                                    </Border>
-                                </Grid>
+                                            </VerticalStackLayout>
+                                        </Border>
+                                    </Grid>
 
-                                <!-- Sales List Section - Takes Remaining Space -->
-                                <Border Grid.Row="1"
+                                    <!-- Sales List Section - Takes Remaining Space -->
+                                    <Border Grid.Row="1"
                                         BackgroundColor="{StaticResource SurfaceDark}"
                                         StrokeShape="RoundRectangle 12"
                                         Stroke="{StaticResource Gray200}"
                                         StrokeThickness="1"
                                         Padding="20">
-                                    <Grid RowDefinitions="Auto,*">
-                                        <!-- Header -->
-                                        <Grid Grid.Row="0" 
+                                        <Grid RowDefinitions="Auto,*">
+                                            <!-- Header -->
+                                            <Grid Grid.Row="0" 
                                               ColumnDefinitions="*,Auto" 
                                               Margin="0,0,0,15">
-                                            <Label Grid.Column="0"
+                                                <Label Grid.Column="0"
                                                    Text="Transaction History"
                                                    TextColor="{StaticResource TextPrimary}"
                                                    FontSize="16"
                                                    FontAttributes="Bold"
                                                    VerticalOptions="Center"/>
-                                            <Label Grid.Column="1"
+                                                <Label Grid.Column="1"
                                                    Text="Export to Excel"
                                                    TextColor="{StaticResource TextSecondary}"
                                                    FontSize="14"
                                                    TextDecorations="Underline"
                                                    FontAttributes="Italic"
                                                    VerticalOptions="Center">
-                                                <Label.GestureRecognizers>
-                                                    <TapGestureRecognizer Command="{Binding ExportToExcelCommand}"/>
-                                                </Label.GestureRecognizers>
-                                            </Label>
-                                        </Grid>
+                                                    <Label.GestureRecognizers>
+                                                        <TapGestureRecognizer Command="{Binding ExportToExcelCommand}"/>
+                                                    </Label.GestureRecognizers>
+                                                </Label>
+                                            </Grid>
 
-                                        <!-- Transaction List -->
+                                            <!-- Transaction List -->
 
-                                        <CollectionView  Grid.Row="1" ItemsSource="{Binding SalesTransactions}"
+                                            <CollectionView  Grid.Row="1" ItemsSource="{Binding SalesTransactions}"
                                                          EmptyView="No transactions found for selected period"
                                                          SelectionMode="Single"
                                                          SelectedItem="{Binding SelectedSaleTransaction}">
-                                            <CollectionView.ItemTemplate>
-                                                <!-- In the CollectionView.ItemTemplate -->
-                                                <DataTemplate>
-                                                    <Border BackgroundColor="{StaticResource CardDark}"
+                                                <CollectionView.ItemTemplate>
+                                                    <!-- In the CollectionView.ItemTemplate -->
+                                                    <DataTemplate>
+                                                        <Border BackgroundColor="{StaticResource CardDark}"
                                                                 StrokeShape="RoundRectangle 8"
                                                                 Stroke="{StaticResource Gray200}"
                                                                 StrokeThickness="1"
                                                                 Padding="8"
                                                                 Margin="0,0,0,10">
-                                                        <Grid ColumnDefinitions="*,Auto"
+                                                            <Grid ColumnDefinitions="*,Auto"
                                                                   RowDefinitions="Auto,Auto"
                                                                   RowSpacing="8">
 
-                                                            <!-- Receipt Number -->
-                                                            <Label Grid.Column="0" Grid.Row="0"
+                                                                <!-- Receipt Number -->
+                                                                <Label Grid.Column="0" Grid.Row="0"
                                                                        Text="{Binding ReceiptNo}"
                                                                        TextColor="{StaticResource TextPrimary}"
                                                                        FontSize="12"
                                                                        FontAttributes="Bold"/>
 
-                                                            <!-- Total Amount -->
-                                                            <Label Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                                                                <!-- Total Amount -->
+                                                                <Label Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
                                                                        Text="{Binding TotalAmount, StringFormat='₱{0:N2}'}"
                                                                        TextColor="{StaticResource Primary}"
                                                                        FontSize="15"
@@ -320,65 +384,70 @@
                                                                        VerticalOptions="Center"
                                                                        HorizontalOptions="End"/>
 
-                                                            <!-- Date & Time -->
-                                                            <Label Grid.Column="0" Grid.Row="1"
+                                                                <!-- Date & Time -->
+                                                                <Label Grid.Column="0" Grid.Row="1"
                                                                        Text="{Binding SaleDate, StringFormat='{0:MMM dd, yyyy hh:mm tt}'}"
                                                                        TextColor="{StaticResource TextSecondary}"
                                                                        FontSize="10"/>
-                                                        </Grid>
-                                                    </Border>
-                                                </DataTemplate>
-                                            </CollectionView.ItemTemplate>
+                                                            </Grid>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </CollectionView.ItemTemplate>
 
-                                            <!-- Empty View Styling -->
-                                            <CollectionView.EmptyViewTemplate>
-                                                <DataTemplate>
-                                                    <VerticalStackLayout VerticalOptions="Center"
+                                                <!-- Empty View Styling -->
+                                                <CollectionView.EmptyViewTemplate>
+                                                    <DataTemplate>
+                                                        <VerticalStackLayout VerticalOptions="Center"
                                                                              HorizontalOptions="Center"
                                                                              Padding="40">
-                                                        <Label Text="📊"
+                                                            <Label Text="📊"
                                                                    FontSize="35"
                                                                    HorizontalOptions="Center"
                                                                    Margin="0,0,0,15"/>
-                                                        <Label Text="No transactions found"
+                                                            <Label Text="No transactions found"
                                                                    TextColor="{StaticResource TextSecondary}"
                                                                    FontSize="12"
                                                                    HorizontalOptions="Center"/>
-                                                        <Label Text="Try adjusting your date range"
+                                                            <Label Text="Try adjusting your date range"
                                                                    TextColor="{StaticResource TextSecondary}"
                                                                    FontSize="12"
                                                                    HorizontalOptions="Center"
                                                                    Margin="0,5,0,0"/>
-                                                    </VerticalStackLayout>
-                                                </DataTemplate>
-                                            </CollectionView.EmptyViewTemplate>
-                                        </CollectionView>
-                                    </Grid>
-                                </Border>
+                                                        </VerticalStackLayout>
+                                                    </DataTemplate>
+                                                </CollectionView.EmptyViewTemplate>
+                                            </CollectionView>
+                                        </Grid>
+                                    </Border>
+
+                                </Grid>
 
                             </Grid>
 
-                        </Grid>
 
-                    </Grid>
-                </tabView:SfTabItem>
-                <tabView:SfTabItem Header="Menu Items" ImageSource="fast_moving.png" 
+                        </Grid>
+                    </tabView:SfTabItem>
+                    <tabView:SfTabItem Header="Menu Items" ImageSource="fast_moving.png" 
                                    BackgroundColor="{StaticResource CardBackground}" 
                                    TextColor="{StaticResource TextPrimary}"
                                    FontSize="12"
                                    ImageSize="20"
                                    ImagePosition="Left" >
-                    
-                </tabView:SfTabItem>
-                <tabView:SfTabItem Header="Inventory" ImageSource="inventory_check.png" 
+
+                    </tabView:SfTabItem>
+                    <tabView:SfTabItem Header="Inventory" ImageSource="inventory_check.png" 
                                    BackgroundColor="{StaticResource CardBackground}"   
                                    TextColor="{StaticResource TextPrimary}"
                                    FontSize="12"
                                    ImageSize="20"
                                    ImagePosition="Left" >
-                    
-                </tabView:SfTabItem>
-            </tabView:SfTabView.Items>
-        </tabView:SfTabView>
+
+                    </tabView:SfTabItem>
+                </tabView:SfTabView.Items>
+            </tabView:SfTabView>
+
+
+
+        </Grid>
     </Grid>
 </ContentPage>

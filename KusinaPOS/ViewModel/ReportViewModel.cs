@@ -49,7 +49,9 @@ namespace KusinaPOS.ViewModel
 
         #region UI State
         [ObservableProperty] private bool isBusy;
+        [ObservableProperty] private bool isOpenPopup;
         #endregion
+        public event Action? ShowSaleItemsPopupRequested;
 
         #region Constructor
         public ReportViewModel(
@@ -241,6 +243,7 @@ namespace KusinaPOS.ViewModel
             }
 
             _ = LoadSaleItemsAsync(value.Id);
+            IsOpenPopup = true;
         }
         private async Task LoadSaleItemsAsync(int saleId)
         {
