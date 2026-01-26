@@ -40,6 +40,7 @@ namespace KusinaPOS.ViewModel
         private string imagePath;
         [ObservableProperty]
         private string _htmlSource = string.Empty;
+
         // Date & Time
         [ObservableProperty]
         private string _currentDateTime;
@@ -88,6 +89,7 @@ namespace KusinaPOS.ViewModel
                 LoadStoreSettings();
                 LoadAboutHtml();
                 LoadCategories();
+                LoadPOSSettings();
             }
             catch (Exception ex)
             {
@@ -544,6 +546,208 @@ namespace KusinaPOS.ViewModel
             {
                 Debug.WriteLine($"Error navigating back: {ex.Message}");
             }
+        }
+        //========================POS SETTINGS========================//
+        //load preferences
+        public void LoadPOSSettings()
+        {
+            // Load Discount Settings
+            AllowDiscount = Preferences.Get(SettingsConstants.AllowDiscountKey, false);
+            IsDiscountFixedAmount = Preferences.Get(SettingsConstants.IsDiscountFixedAmountKey, true);
+            IsDiscountPercentage = Preferences.Get(SettingsConstants.IsDiscountPercentageKey, false);
+            DiscountValue = Preferences.Get(SettingsConstants.DiscountValueKey, string.Empty);
+            // Load VAT Settings
+            AllowVAT = Preferences.Get(SettingsConstants.AllowVATKey, false);
+            IsVATFixedAmount = Preferences.Get(SettingsConstants.IsVATFixedAmountKey, true);
+            IsVATPercentage = Preferences.Get(SettingsConstants.IsVATPercentageKey, false);
+            VatValue = Preferences.Get(SettingsConstants.VATValueKey, string.Empty);
+            // Load Printer Settings
+            AllowPrint = Preferences.Get(SettingsConstants.AllowPrintKey, false);
+            SelectedPrinter = Preferences.Get(SettingsConstants.SelectedPrinterKey, string.Empty);
+        }
+        // Discount Settings
+        [ObservableProperty]
+        private bool allowDiscount;
+
+        partial void OnAllowDiscountChanged(bool value)
+        {
+            // Trigger when allowDiscount changes
+             Preferences.Set(SettingsConstants.AllowDiscountKey, value);
+            if (!value)
+            {
+                // Clear discount when disabled
+                DiscountValue = string.Empty;
+            }
+        }
+
+        [ObservableProperty]
+        private bool isDiscountFixedAmount = true;
+
+        partial void OnIsDiscountFixedAmountChanged(bool value)
+        {
+            Preferences.Set(SettingsConstants.IsDiscountFixedAmountKey, value);
+            // Trigger when discount type changes to fixed amount
+            if (value)
+            {
+                IsDiscountPercentage = false;
+            }
+        }
+
+        [ObservableProperty]
+        private bool isDiscountPercentage;
+
+        partial void OnIsDiscountPercentageChanged(bool value)
+        {
+            Preferences.Set(SettingsConstants.IsDiscountPercentageKey, value);
+            // Trigger when discount type changes to percentage
+            if (value)
+            {
+                IsDiscountFixedAmount = false;
+            }
+        }
+
+        [ObservableProperty]
+        private string discountValue;
+
+        partial void OnDiscountValueChanged(string value)
+        {
+            Preferences.Set(SettingsConstants.DiscountValueKey, value);
+        }
+
+        // VAT Settings
+        [ObservableProperty]
+        private bool allowVAT;
+
+        partial void OnAllowVATChanged(bool value)
+        {
+            Preferences.Set(SettingsConstants.AllowVATKey, value);
+            if (!value)
+            {
+                // Reset VAT settings when disabled
+            }
+        }
+
+        [ObservableProperty]
+        private bool isVATFixedAmount = true;
+
+        partial void OnIsVATFixedAmountChanged(bool value)
+        {
+            Preferences.Set(SettingsConstants.IsVATFixedAmountKey, value);
+            if (value)
+            {
+                IsVATPercentage = false;
+            }
+        }
+
+        [ObservableProperty]
+        private bool isVATPercentage;
+
+        partial void OnIsVATPercentageChanged(bool value)
+        {
+            Preferences.Set(SettingsConstants.IsVATPercentageKey, value);
+            if (value)
+            {
+                IsVATFixedAmount = false;
+            }
+        }
+        [ObservableProperty]
+        private string vatValue;
+        partial void OnVatValueChanged(string value)
+        {
+            Preferences.Set(SettingsConstants.VATValueKey, value);
+        }
+        // Printer Settings
+        [ObservableProperty]
+        private bool allowPrint;
+
+        partial void OnAllowPrintChanged(bool value)
+        {
+            Preferences.Set(SettingsConstants.AllowPrintKey, value);
+            if (!value)
+            {
+                // Disconnect printer or clear printer settings
+            }
+        }
+
+        [ObservableProperty]
+        private ObservableCollection<string> availablePrinters = new();
+
+        partial void OnAvailablePrintersChanged(ObservableCollection<string> value)
+        {
+            // Trigger when available printers list changes
+        }
+
+        [ObservableProperty]
+        private string selectedPrinter;
+
+        partial void OnSelectedPrinterChanged(string value)
+        {
+            // Trigger when selected printer changes
+            Preferences.Set(SettingsConstants.SelectedPrinterKey, value);
+            if (!string.IsNullOrEmpty(value))
+            {
+                PrinterConnectionStatus = "Printer selected, ready to connect";
+                PrinterConnectionStatusColor = Colors.Blue;
+            }
+        }
+
+        [ObservableProperty]
+        private string printerConnectionStatus = "Not connected";
+
+        partial void OnPrinterConnectionStatusChanged(string value)
+        {
+            // Trigger when connection status changes
+        }
+
+        [ObservableProperty]
+        private Color printerConnectionStatusColor = Colors.Gray;
+
+        partial void OnPrinterConnectionStatusColorChanged(Color value)
+        {
+            // Trigger when connection status color changes
+        }
+
+        // Commands
+        [RelayCommand]
+        private async Task FindPrinter()
+        {
+            // Your bluetooth printer discovery logic
+            AvailablePrinters.Clear();
+            PrinterConnectionStatus = "Searching for printers...";
+            PrinterConnectionStatusColor = Colors.Orange;
+
+            // Add found printers to AvailablePrinters
+            // Simulate finding printers
+            AvailablePrinters.Add("Thermal Printer 1");
+            AvailablePrinters.Add("Bluetooth Printer 2");
+
+            PrinterConnectionStatus = $"Found {AvailablePrinters.Count} printer(s)";
+            PrinterConnectionStatusColor = Colors.Blue;
+        }
+
+        [RelayCommand]
+        private async Task ConnectPrinter()
+        {
+            if (SelectedPrinter == null)
+            {
+                PrinterConnectionStatus = "Please select a printer";
+                PrinterConnectionStatusColor = Colors.Orange;
+                return;
+            }
+
+            PrinterConnectionStatus = "Connecting...";
+            PrinterConnectionStatusColor = Colors.Orange;
+
+            // Your connection logic here
+            await Task.Delay(1000); // Simulate connection delay
+
+            // On success:
+            PrinterConnectionStatus = "Connected successfully";
+            PrinterConnectionStatusColor = Colors.Green;
+
+            // On failure:
+            // PrinterConnectionStatus = "Connection failed";
+            // PrinterConnectionStatusColor = Colors.Red;
         }
     }
 

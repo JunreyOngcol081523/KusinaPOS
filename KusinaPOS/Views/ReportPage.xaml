@@ -492,18 +492,30 @@
                                                 <Button Text="Today"
                                                         FontSize="12"
                                                         Padding="6"
+                                                        BorderWidth="1"
+                                                        CornerRadius="8"
+                                                        BorderColor="{StaticResource Gray200}"
+                                                        BackgroundColor="{StaticResource CardDark}"
                                                         Command="{Binding FilterMenuTodayCommand}" />
 
                                                 <Button Text="Week"
                                                         Grid.Column="1"
                                                         FontSize="12"
                                                         Padding="6"
+                                                        BorderWidth="1"
+                                                        CornerRadius="8"
+                                                        BorderColor="{StaticResource Gray200}"
+                                                        BackgroundColor="{StaticResource CardDark}"
                                                         Command="{Binding FilterMenuWeekCommand}" />
 
                                                 <Button Text="Month"
                                                         Grid.Column="2"
                                                         FontSize="12"
                                                         Padding="6"
+                                                        BorderWidth="1"
+                                                        CornerRadius="8"
+                                                        BorderColor="{StaticResource Gray200}"
+                                                        BackgroundColor="{StaticResource CardDark}"
                                                         Command="{Binding FilterMenuMonthCommand}" />
                                             </Grid>
 

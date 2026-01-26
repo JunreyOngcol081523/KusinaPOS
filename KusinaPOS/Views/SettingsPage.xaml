@@ -64,6 +64,7 @@
 
             <tabView:SfTabView.Items>
 
+                <!--#region store settings -->
                 <!-- ================= STORE SETTINGS ================= -->
                 <tabView:SfTabItem Header="Store Settings"
                                    ImageSource="settings.png"
@@ -148,7 +149,9 @@
                         </VerticalStackLayout>
                     </ScrollView>
                 </tabView:SfTabItem>
+                <!--#endregion-->
 
+                <!--#region database settings -->
                 <!-- ================= DATABASE SETTINGS ================= -->
                 <tabView:SfTabItem Header="Database Settings"
                    ImageSource="database.png"
@@ -323,6 +326,8 @@
 
                     </Grid>
                 </tabView:SfTabItem>
+                <!--#endregion-->
+                <!--#region POS and categories settings -->
                 <!--===================PRODUCT SETTINGS===============-->
                 <tabView:SfTabItem Header="Items and Categories Settings"
                                    ImageSource="inventory.png"
@@ -333,6 +338,7 @@
                                     ImagePosition="Left">
                     <ScrollView>
                         <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
+                            <!--#region category settings -->
                             <Border Grid.Row="0" Style="{StaticResource CardBorder}">
                                 <syncfusionex:SfExpander AnimationDuration="200" IsExpanded="False">
                                     <syncfusionex:SfExpander.Header>
@@ -427,9 +433,326 @@
                                     </syncfusionex:SfExpander.Content>
                                 </syncfusionex:SfExpander>
                             </Border>
-                            <Border Grid.Row="1">
+                            <!--#endregion-->
+                            <!--#region POS settings -->
+                            <Border Grid.Row="1" Style="{StaticResource CardBorder}">
+                                <syncfusionex:SfExpander AnimationDuration="200" IsExpanded="False">
+                                    <syncfusionex:SfExpander.Header>
+                                        <Grid Padding="10,0">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="48"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="40"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <!-- Icon -->
+                                            <Image Source="settings_icon.png" 
+                                                   Grid.Column="0"
+                                                   HeightRequest="24"
+                                                   WidthRequest="24"
+                                                   VerticalOptions="Center"/>
+                                            <!-- Header Text -->
+                                            <Label Text="POS Settings"
+                                                   CharacterSpacing="0.25"
+                                                   FontSize="16" 
+                                                   FontAttributes="Bold"
+                                                   Grid.Column="1" 
+                                                   VerticalOptions="Center"
+                                                   TextColor="{StaticResource TextPrimary}"/>
+                                        </Grid>
+                                    </syncfusionex:SfExpander.Header>
 
+                                    <syncfusionex:SfExpander.Content>
+                                        <ScrollView Padding="20,15,20,20">
+                                            <VerticalStackLayout Spacing="25">
+
+                                                <!-- Discount Settings Section -->
+                                                <Border StrokeShape="RoundRectangle 8"
+                                                        Stroke="{StaticResource TextSecondary}"
+                                                        StrokeThickness="1"
+                                                        Padding="15"
+                                                        BackgroundColor="{StaticResource CardBackground}">
+                                                    <VerticalStackLayout Spacing="12">
+                                                        <!-- Section Header with Icon -->
+                                                        <HorizontalStackLayout Spacing="8">
+                                                            <Label Text="💰"
+                                                                   FontSize="18"
+                                                                   VerticalOptions="Center"/>
+                                                            <Label Text="Discount Settings"
+                                                                   FontSize="14"
+                                                                   FontAttributes="Bold"
+                                                                   VerticalOptions="Center"
+                                                                   TextColor="{StaticResource TextPrimary}"/>
+                                                        </HorizontalStackLayout>
+
+                                                        <BoxView HeightRequest="1" 
+                                                                 Color="{StaticResource TextSecondary}" 
+                                                                 Opacity="0.3"
+                                                                 Margin="0,5,0,10"/>
+
+                                                        <!-- Enable/Disable Toggle -->
+                                                        <Border StrokeShape="RoundRectangle 6"
+                                                                BackgroundColor="{StaticResource CardBackground}"
+                                                                Padding="12">
+                                                            <Grid ColumnDefinitions="*,Auto">
+                                                                <Label Text="Enable Discount"
+                                                                       FontSize="13"
+                                                                       VerticalOptions="Center"
+                                                                       TextColor="{StaticResource TextPrimary}"/>
+                                                                <Switch Grid.Column="1"
+                                                                        IsToggled="{Binding AllowDiscount, Mode=TwoWay}"
+                                                                        VerticalOptions="Center"/>
+                                                            </Grid>
+                                                        </Border>
+
+                                                        <!-- Discount Type Selection -->
+                                                        <Label Text="Discount Type"
+                                                            FontSize="12"
+                                                            FontAttributes="Bold"
+                                                            TextColor="{StaticResource TextPrimary}"
+                                                            Margin="0,8,0,5"/>
+
+                                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                                            <Border Grid.Column="0"
+                                                                    StrokeShape="RoundRectangle 6"
+                                                                    Stroke="{StaticResource TextSecondary}"
+                                                                    StrokeThickness="1"
+                                                                    Padding="10,8"
+                                                                    BackgroundColor="{StaticResource CardBackground}">
+                                                                <RadioButton Content="Fixed Amount"
+                                                                             IsChecked="{Binding IsDiscountFixedAmount, Mode=TwoWay}"
+                                                                             TextColor="{StaticResource TextPrimary}"
+                                                                             FontSize="12"/>
+                                                            </Border>
+
+                                                            <Border Grid.Column="1"
+                                                                    StrokeShape="RoundRectangle 6"
+                                                                    Stroke="{StaticResource TextSecondary}"
+                                                                    StrokeThickness="1"
+                                                                    Padding="10,8"
+                                                                    BackgroundColor="{StaticResource CardBackground}">
+                                                                <RadioButton Content="Percentage"
+                                                                             IsChecked="{Binding IsDiscountPercentage, Mode=TwoWay}"
+                                                                             TextColor="{StaticResource TextPrimary}"
+                                                                             FontSize="12"/>
+                                                            </Border>
+                                                        </Grid>
+
+                                                        <!-- Discount Value Input -->
+                                                        <Label Text="Discount Value"
+                                                               FontSize="12"
+                                                               FontAttributes="Bold"
+                                                               TextColor="{StaticResource TextPrimary}"
+                                                               Margin="0,8,0,5"/>
+
+                                                        <Border StrokeShape="RoundRectangle 6"
+                                                                Stroke="{StaticResource TextSecondary}"
+                                                                StrokeThickness="1"
+                                                                Padding="2">
+                                                            <Entry Placeholder="Enter amount or percentage"
+                                                                   PlaceholderColor="{StaticResource TextSecondary}"
+                                                                   Text="{Binding DiscountValue, Mode=TwoWay}"
+                                                                   Keyboard="Numeric"
+                                                                   TextColor="{StaticResource TextPrimary}"
+                                                                   BackgroundColor="Transparent"/>
+                                                        </Border>
+                                                    </VerticalStackLayout>
+                                                </Border>
+
+                                                <!-- VAT Settings Section -->
+                                                <Border StrokeShape="RoundRectangle 8"
+                                                        Stroke="{StaticResource TextSecondary}"
+                                                        StrokeThickness="1"
+                                                        Padding="15"
+                                                        BackgroundColor="{StaticResource CardBackground}">
+                                                    <VerticalStackLayout Spacing="12">
+                                                        <!-- Section Header with Icon -->
+                                                        <HorizontalStackLayout Spacing="8">
+                                                            <Label Text="📊"
+                                                                   FontSize="18"
+                                                                   VerticalOptions="Center"/>
+                                                            <Label Text="VAT Settings"
+                                                                   FontSize="14"
+                                                                   FontAttributes="Bold"
+                                                                   VerticalOptions="Center"
+                                                                   TextColor="{StaticResource TextPrimary}"/>
+                                                        </HorizontalStackLayout>
+
+                                                        <BoxView HeightRequest="1" 
+                                                                 Color="{StaticResource TextSecondary}" 
+                                                                 Opacity="0.3"
+                                                                 Margin="0,5,0,10"/>
+
+                                                        <!-- Enable/Disable Toggle -->
+                                                        <Border StrokeShape="RoundRectangle 6"
+                                                                BackgroundColor="{StaticResource CardBackground}"
+                                                                Padding="12">
+                                                            <Grid ColumnDefinitions="*,Auto">
+                                                                <Label Text="Enable VAT"
+                                                                       FontSize="13"
+                                                                       VerticalOptions="Center"
+                                                                       TextColor="{StaticResource TextPrimary}"/>
+                                                                <Switch Grid.Column="1"
+                                                                        IsToggled="{Binding AllowVAT, Mode=TwoWay}"
+                                                                        VerticalOptions="Center"/>
+                                                            </Grid>
+                                                        </Border>
+
+                                                        <!-- VAT Type Selection -->
+                                                        <Label Text="VAT Type"
+                                                               FontSize="12"
+                                                               FontAttributes="Bold"
+                                                               TextColor="{StaticResource TextPrimary}"
+                                                               Margin="0,8,0,5"/>
+
+                                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                                            <Border Grid.Column="0"
+                                                                    StrokeShape="RoundRectangle 6"
+                                                                    Stroke="{StaticResource TextSecondary}"
+                                                                    StrokeThickness="1"
+                                                                    Padding="10,8"
+                                                                    BackgroundColor="{StaticResource CardBackground}">
+                                                                <RadioButton Content="Fixed Amount"
+                                                                             IsChecked="{Binding IsVATFixedAmount, Mode=TwoWay}"
+                                                                             TextColor="{StaticResource TextPrimary}"
+                                                                             FontSize="12"/>
+                                                            </Border>
+
+                                                            <Border Grid.Column="1"
+                                                                    StrokeShape="RoundRectangle 6"
+                                                                    Stroke="{StaticResource TextSecondary}"
+                                                                    StrokeThickness="1"
+                                                                    Padding="10,8"
+                                                                    BackgroundColor="{StaticResource CardBackground}">
+                                                                <RadioButton Content="Percentage"
+                                                                             IsChecked="{Binding IsVATPercentage, Mode=TwoWay}"
+                                                                             TextColor="{StaticResource TextPrimary}"
+                                                                             FontSize="12"/>
+                                                            </Border>
+                                                        </Grid>
+
+                                                        <!-- VAT Value Input -->
+                                                        <Label Text="VAT Value"
+                                                               FontSize="12"
+                                                               FontAttributes="Bold"
+                                                               TextColor="{StaticResource TextPrimary}"
+                                                               Margin="0,8,0,5"/>
+
+                                                        <Border StrokeShape="RoundRectangle 6"
+                                                                Stroke="{StaticResource TextSecondary}"
+                                                                StrokeThickness="1"
+                                                                Padding="2">
+                                                            <Entry Placeholder="Enter amount or percentage"
+                                                                   PlaceholderColor="{StaticResource TextSecondary}"
+                                                                   Text="{Binding VatValue, Mode=TwoWay}"
+                                                                   Keyboard="Numeric"
+                                                                   TextColor="{StaticResource TextPrimary}"
+                                                                   BackgroundColor="Transparent"/>
+                                                        </Border>
+                                                    </VerticalStackLayout>
+                                                </Border>
+
+                                                <!-- Printer Settings Section -->
+                                                <Border StrokeShape="RoundRectangle 8"
+                                                        Stroke="{StaticResource TextSecondary}"
+                                                        StrokeThickness="1"
+                                                        Padding="15"
+                                                        BackgroundColor="{StaticResource CardBackground}">
+                                                    <VerticalStackLayout Spacing="12">
+                                                        <!-- Section Header with Icon -->
+                                                        <HorizontalStackLayout Spacing="8">
+                                                            <Label Text="🖨️"
+                                                                   FontSize="18"
+                                                                   VerticalOptions="Center"/>
+                                                            <Label Text="Printer Settings"
+                                                                    FontSize="14"
+                                                                    FontAttributes="Bold"
+                                                                    VerticalOptions="Center"
+                                                                    TextColor="{StaticResource TextPrimary}"/>
+                                                        </HorizontalStackLayout>
+
+                                                        <BoxView HeightRequest="1" 
+                                                                 Color="{StaticResource TextSecondary}" 
+                                                                 Opacity="0.3"
+                                                                 Margin="0,5,0,10"/>
+
+                                                        <!-- Enable/Disable Toggle -->
+                                                        <Border StrokeShape="RoundRectangle 6"
+                                                                BackgroundColor="{StaticResource CardBackground}"
+                                                                Padding="12">
+                                                            <Grid ColumnDefinitions="*,Auto">
+                                                                <Label Text="Enable Printing"
+                                                                       FontSize="13"
+                                                                       VerticalOptions="Center"
+                                                                       TextColor="{StaticResource TextPrimary}"/>
+                                                                <Switch Grid.Column="1"
+                                                                        IsToggled="{Binding AllowPrint, Mode=TwoWay}"
+                                                                        VerticalOptions="Center"/>
+                                                            </Grid>
+                                                        </Border>
+
+                                                        <!-- Printer Discovery -->
+                                                        <Label Text="Discover Printers"
+                                                               FontSize="12"
+                                                               FontAttributes="Bold"
+                                                               TextColor="{StaticResource TextPrimary}"
+                                                               Margin="0,8,0,5"/>
+
+                                                        <Button Text="🔍 Find Bluetooth Printers"
+                                                                Command="{Binding FindPrinterCommand}"
+                                                                BackgroundColor="{StaticResource Primary}"
+                                                                TextColor="White"
+                                                                CornerRadius="6"
+                                                                HeightRequest="44"/>
+
+                                                        <!-- Printer Selection -->
+                                                        <Label Text="Select Printer"
+                                                               FontSize="12"
+                                                               FontAttributes="Bold"
+                                                               TextColor="{StaticResource TextPrimary}"
+                                                               Margin="0,8,0,5"/>
+
+                                                        <Border StrokeShape="RoundRectangle 6"
+                                                                Stroke="{StaticResource TextSecondary}"
+                                                                StrokeThickness="1"
+                                                                Padding="2">
+                                                            <Picker ItemsSource="{Binding AvailablePrinters}"
+                                                                    SelectedItem="{Binding SelectedPrinter}"
+                                                                    Title="Choose a printer"
+                                                                    TextColor="{StaticResource TextPrimary}"
+                                                                    BackgroundColor="Transparent"/>
+                                                        </Border>
+
+                                                        <!-- Connect Button -->
+                                                        <Button Text="🔗 Connect to Printer"
+                                                                Command="{Binding ConnectPrinterCommand}"
+                                                                BackgroundColor="{StaticResource Primary}"
+                                                                TextColor="White"
+                                                                CornerRadius="6"
+                                                                HeightRequest="44"
+                                                                Margin="0,8,0,0"/>
+
+                                                        <!-- Connection Status -->
+                                                        <Border StrokeShape="RoundRectangle 6"
+                                                                Padding="12"
+                                                                BackgroundColor="{StaticResource CardBackground}"
+                                                                Margin="0,5,0,0">
+                                                            <Label Text="{Binding PrinterConnectionStatus}"
+                                                                   FontSize="12"
+                                                                   HorizontalOptions="Center"
+                                                                   HorizontalTextAlignment="Center"
+                                                                   TextColor="{Binding PrinterConnectionStatusColor}"/>
+                                                        </Border>
+                                                    </VerticalStackLayout>
+                                                </Border>
+
+                                            </VerticalStackLayout>
+                                        </ScrollView>
+                                    </syncfusionex:SfExpander.Content>
+                                </syncfusionex:SfExpander>
                             </Border>
+                            <!--#endregion-->
                             <Border Grid.Row="2">
 
                             </Border>
@@ -437,6 +760,8 @@
                     </ScrollView>
 
                 </tabView:SfTabItem>
+                <!--#endregion-->
+                <!--#region about settings -->
                 <!--================= ABOUT SETTINGS ================= -->
                 <tabView:SfTabItem Header="About"
                    ImageSource="info.png"
@@ -455,8 +780,9 @@
                                  HorizontalOptions="Fill"
                                  Grid.Row="1"/>
                     </Grid>
-                    
+
                 </tabView:SfTabItem>
+                <!--#endregion-->
 
             </tabView:SfTabView.Items>
 

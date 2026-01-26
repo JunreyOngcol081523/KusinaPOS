@@ -15,6 +15,7 @@ namespace KusinaPOS.Helpers
         public const string StoreAddressKey = "StoreAddressKey";
         public const string BackupLocationKey = "BackupLocationKey";
         public const string LastBackupDateKey = "LastBackupDateKey";
+
         public static string DatabasePath =>
             Path.Combine(FileSystem.AppDataDirectory, DatabaseFileName);
         public static string SettingsFolder =>
