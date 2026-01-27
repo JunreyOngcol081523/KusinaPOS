@@ -83,12 +83,12 @@
                                FontSize="35"
                                HorizontalOptions="Start" />
 
-                            <Label Text="$1,845.50" 
+                            <Label Text="{Binding TodaySalesTotal}" 
                                FontSize="25" 
                                FontAttributes="Bold"
                                TextColor="{StaticResource Primary}" />
 
-                            <Label Text="Total Transactions: 72" 
+                            <Label Text="{Binding TodayTransactionsCount}" 
                                FontSize="12"
                                TextColor="{StaticResource TextSecondary}" />
                         </VerticalStackLayout>
@@ -100,26 +100,23 @@
                         StrokeShape="RoundRectangle 15"
                         Padding="15">
                         <VerticalStackLayout Spacing="8">
-                            <Label Text="INVENTORY STATUS" 
+                            <Label Text="WEEKLY SALES" 
                                FontSize="12" 
                                FontAttributes="Bold"
                                TextColor="{StaticResource TextSecondary}" />
 
-                            <Label Text="🥩" 
+                            <Label Text="💰" 
                                FontSize="35"
                                HorizontalOptions="Start" />
 
-                            <Label Text="Meat Stock: 35.4 kg" 
-                               FontSize="14" 
+                            <Label Text="{Binding WeeklySalesTotal}" 
+                               FontSize="25" 
                                FontAttributes="Bold"
-                               TextColor="{StaticResource TextPrimary}" />
+                               TextColor="{StaticResource Primary}" />
 
-                            <HorizontalStackLayout Spacing="5">
-                                <Label Text="⚠️" FontSize="12" />
-                                <Label Text="Low Stock Alert: Beef Tenderloin (5 kg remaining)" 
-                                   FontSize="11"
-                                   TextColor="{StaticResource Warning}" />
-                            </HorizontalStackLayout>
+                            <Label Text="{Binding WeeklyTransactionsCount}" 
+                               FontSize="12"
+                               TextColor="{StaticResource TextSecondary}" />
                         </VerticalStackLayout>
                     </Border>
 

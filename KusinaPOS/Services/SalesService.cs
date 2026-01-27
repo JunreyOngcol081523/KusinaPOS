@@ -351,6 +351,44 @@ namespace KusinaPOS.Services
                 return new List<Sale>();
             }
         }
+        public decimal GetTodaySale(DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                var sales = Task
+                    .Run(() => GetSalesByDateRangeAsync(fromDate, toDate))
+                    .GetAwaiter()
+                    .GetResult();
 
-    }
+                decimal totalAmount = 0m;
+
+                foreach (var sale in sales)
+                    totalAmount += sale.TotalAmount;
+
+                return totalAmount;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[GET TODAY SALE TOTAL ERROR] {ex}");
+                return 0m;
+            }
+        }
+        public int GetTotalTransactionsCount(DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                var sales = Task
+                    .Run(() => GetSalesByDateRangeAsync(fromDate, toDate))
+                    .GetAwaiter()
+                    .GetResult();
+                return sales.Count;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[GET TOTAL TRANSACTIONS COUNT ERROR] {ex}");
+                return 0;
+            }
+        }   
+
+        }
 }

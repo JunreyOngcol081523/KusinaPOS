@@ -127,7 +127,9 @@
                                RowHeight="50"
                                HeaderRowHeight="40"      
                                SortingMode="Single">
-
+                            <sfdatagrid:SfDataGrid.GroupColumnDescriptions>
+                                <sfdatagrid:GroupColumnDescription ColumnName="IsLowStock"/>
+                            </sfdatagrid:SfDataGrid.GroupColumnDescriptions>
                             <sfdatagrid:SfDataGrid.Columns>
                                 <!-- Name Column -->
                                 <sfdatagrid:DataGridTextColumn MappingName="Name"

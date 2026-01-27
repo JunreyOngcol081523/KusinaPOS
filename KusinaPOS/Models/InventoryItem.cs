@@ -1,7 +1,5 @@
 ﻿using SQLite;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace KusinaPOS.Models
 {
@@ -26,7 +24,9 @@ namespace KusinaPOS.Models
         public decimal ReOrderLevel { get; set; }
 
         public bool IsActive { get; set; } = true;
+
+        // Computed (not stored in DB)
+        [Ignore]
+        public bool IsLowStock => QuantityOnHand <= ReOrderLevel;
     }
-
-
 }

@@ -21,6 +21,7 @@
                         ShowCloseButton="True"
                         VerticalOptions="Center"
                         HorizontalOptions="Center"
+                         BackgroundColor="{StaticResource CardBackground}"
                         IsOpen="{Binding IsOpenPopup}">
             <sfpopup:SfPopup.HeaderTemplate>
                 <DataTemplate>
@@ -28,7 +29,9 @@
                                FontAttributes="Bold"
                                FontSize="18"
                                HorizontalTextAlignment="Center"
-                               VerticalTextAlignment="Center"/>
+                               VerticalTextAlignment="Center"
+                                TextColor="{StaticResource Gray100}"
+                           />
                 </DataTemplate>
             </sfpopup:SfPopup.HeaderTemplate>
             <sfpopup:SfPopup.ContentTemplate>
@@ -133,8 +136,8 @@
                                    ImageSize="20"
                                    ImagePosition="Left" >
                         <Grid RowDefinitions="Auto,*" 
-                          Padding="20"
-                          RowSpacing="20">
+                              Padding="20"
+                              RowSpacing="20">
 
                             <!-- Header Section -->
                             <VerticalStackLayout Grid.Row="0" Spacing="8">

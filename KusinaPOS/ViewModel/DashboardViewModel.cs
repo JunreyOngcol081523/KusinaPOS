@@ -25,6 +25,14 @@ namespace KusinaPOS.ViewModel
 
         [ObservableProperty]
         private string storeName = string.Empty;
+        [ObservableProperty]
+        private string todaySalesTotal;
+        [ObservableProperty]
+        private string todayTransactionsCount;
+        [ObservableProperty]
+        private string weeklySalesTotal;
+        [ObservableProperty]
+        private string weeklyTransactionsCount;
 
         [ObservableProperty]
         private string appLogo = "kusinaposlogo.png"; // Default immediately
@@ -53,7 +61,9 @@ namespace KusinaPOS.ViewModel
                 StoreName = "Kusina POS";
                 AppLogo = "kusinaposlogo.png";
                 AppTitle = "Kusina POS";
-
+                TodaySalesTotal = $"₱{_salesService.GetTodaySale(DateTime.Today, DateTime.Today):N2}";
+                TodayTransactionsCount = $"Today's Transaction: {_salesService.GetTotalTransactionsCount(DateTime.Today,DateTime.Today)}";
+                _=FilterWeekSales();
                 Debug.WriteLine("DashboardViewModel constructor completed");
             }
             catch (Exception ex)
@@ -244,6 +254,13 @@ namespace KusinaPOS.ViewModel
             {
                 Debug.WriteLine($"Navigation error: {ex.Message}");
             }
+        }
+        private async Task FilterWeekSales()
+        {
+            var fromDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
+            var toDate = DateTime.Today;
+            WeeklyTransactionsCount = $"Weekly Transactions: {_salesService.GetTotalTransactionsCount(fromDate, toDate)}";
+            WeeklySalesTotal = $"₱{_salesService.GetTodaySale(fromDate, toDate):N2}";
         }
     }
 }
