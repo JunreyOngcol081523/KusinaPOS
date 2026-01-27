@@ -14,8 +14,6 @@ namespace KusinaPOS.Helpers
 
         // VAT Settings Keys
         public const string AllowVATKey = "AllowVATKey";
-        public const string IsVATFixedAmountKey = "IsVATFixedAmountKey";
-        public const string IsVATPercentageKey = "IsVATPercentageKey";
         public const string VATValueKey = "VATValueKey";
 
         // Printer Settings Keys

@@ -48,12 +48,24 @@ namespace KusinaPOS.ViewModel
         private string subtotalAmount = "₱0.00";
 
         [ObservableProperty]
+        private string discountedAmount = "₱0.00";
+
+        [ObservableProperty]
+        private string vATAmount = "₱0.00";
+
+        [ObservableProperty]
+        private string totalPayableAmount = "₱0.00";
+
+        [ObservableProperty]
         private string cashTenderedAmount = string.Empty;
 
         [ObservableProperty]
         private string changeAmount = "₱0.00";
 
         private decimal subtotal = 0;
+        private decimal discountValue = 0;
+        private decimal vatValue = 0;
+        private decimal totalPayable = 0;
 
         // Date & Time
         [ObservableProperty]
@@ -612,10 +624,54 @@ namespace KusinaPOS.ViewModel
         {
             try
             {
+                // 1. Calculate Subtotal
                 subtotal = OrderItems.Sum(o => o.Subtotal);
                 SubtotalAmount = $"₱{subtotal:F2}";
 
-                // Calculate change if cash tendered
+                // 2. Get Discount Settings from Preferences
+                bool allowDiscount = Preferences.Get(SettingsConstants.AllowDiscountKey, false);
+                bool isDiscountFixedAmount = Preferences.Get(SettingsConstants.IsDiscountFixedAmountKey, false);
+                bool isDiscountPercentage = Preferences.Get(SettingsConstants.IsDiscountPercentageKey, false);
+                decimal discountSettingValue = (decimal)Preferences.Get(SettingsConstants.DiscountValueKey, 0.0);
+
+                // 3. Calculate Discount
+                decimal discountAmount = 0;
+                if (allowDiscount)
+                {
+                    if (isDiscountFixedAmount)
+                    {
+                        // Fixed amount discount
+                        discountAmount = discountSettingValue;
+                    }
+                    else if (isDiscountPercentage)
+                    {
+                        // Percentage discount
+                        discountAmount = subtotal * (discountSettingValue / 100);
+                    }
+                }
+
+                // 4. Calculate Discounted Amount
+                discountValue = subtotal - discountAmount;
+                DiscountedAmount = $"₱{discountValue:F2}";
+
+                // 5. Get VAT Settings from Preferences
+                bool allowVAT = Preferences.Get(SettingsConstants.AllowVATKey, false);
+                decimal vatSettingValue = (decimal)Preferences.Get(SettingsConstants.VATValueKey, 0.0);
+
+                // 6. Calculate VAT
+                decimal vatAmount = 0;
+                if (allowVAT)
+                {
+                    vatAmount = discountValue * (vatSettingValue / 100);
+                }
+                vatValue = vatAmount;
+                VATAmount = $"₱{vatValue:F2}";
+
+                // 7. Calculate Total Payable
+                totalPayable = discountValue + vatValue;
+                TotalPayableAmount = $"₱{totalPayable:F2}";
+
+                // 8. Calculate change if cash tendered
                 CalculateChange();
             }
             catch (Exception ex)
@@ -642,7 +698,7 @@ namespace KusinaPOS.ViewModel
             {
                 if (decimal.TryParse(CashTenderedAmount, out decimal cashTendered))
                 {
-                    var change = cashTendered - subtotal;
+                    var change = cashTendered - totalPayable;
                     ChangeAmount = change >= 0 ? $"₱{change:F2}" : "₱0.00";
                 }
                 else
@@ -660,6 +716,7 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         private async Task CompleteOrder()
         {
+
             if (IsProcessing) return;
 
             IsProcessing = true;
@@ -675,7 +732,7 @@ namespace KusinaPOS.ViewModel
                 }
 
                 if (!decimal.TryParse(CashTenderedAmount, out decimal cashTendered) ||
-                    cashTendered < subtotal)
+                    cashTendered < totalPayable)
                 {
                     await PageHelper.DisplayAlertAsync(
                         "Insufficient Payment",
@@ -683,7 +740,12 @@ namespace KusinaPOS.ViewModel
                         "OK");
                     return;
                 }
-
+                bool confirm = await PageHelper.DisplayConfirmAsync(
+                    "Confirm Checkout",
+                    "Are you sure you want to complete this order?",
+                    "Yes",
+                    "No");
+                if (!confirm) return;
                 Debug.WriteLine("=== Final inventory validation before checkout ===");
 
                 // 🔒 FINAL INVENTORY CHECK (ORDER-WIDE)
@@ -763,16 +825,19 @@ namespace KusinaPOS.ViewModel
                 {
                     try
                     {
-                        decimal change = cashTendered - subtotal;
+                        decimal change = cashTendered - totalPayable;
+
+                        // Calculate discount amount for saving to database
+                        decimal discountAmountForDB = subtotal - discountValue;
 
                         var sale = new Sale
                         {
                             SaleDate = DateTime.Now,
                             ReceiptNo = GenerateReceiptNo(),
                             SubTotal = subtotal,
-                            Discount = 0,
-                            Tax = 0,
-                            TotalAmount = subtotal,
+                            Discount = discountAmountForDB,
+                            Tax = vatValue,
+                            TotalAmount = totalPayable,
                             AmountPaid = cashTendered,
                             ChangeAmount = change
                         };

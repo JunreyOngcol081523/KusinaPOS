@@ -295,6 +295,7 @@ namespace KusinaPOS.ViewModel
             StoreAddress = storeAddress;
         }
 
+        #region database settings
         //===================================DATABASE SETTINGS===================================
         // backup database
         [RelayCommand]
@@ -329,7 +330,7 @@ namespace KusinaPOS.ViewModel
                 await PageHelper.DisplayAlertAsync("Success",
                     $"Database backed up successfully.", "OK");
                 //save to preferences date last backup
-                Preferences.Set(DatabaseConstants.LastBackupDateKey,DateTime.UtcNow.Ticks);
+                Preferences.Set(DatabaseConstants.LastBackupDateKey, DateTime.UtcNow.Ticks);
             }
             catch (Exception ex)
             {
@@ -546,7 +547,8 @@ namespace KusinaPOS.ViewModel
             {
                 Debug.WriteLine($"Error navigating back: {ex.Message}");
             }
-        }
+        } 
+        #endregion
         //========================POS SETTINGS========================//
         //load preferences
         public void LoadPOSSettings()
@@ -558,8 +560,6 @@ namespace KusinaPOS.ViewModel
             DiscountValue = Preferences.Get(SettingsConstants.DiscountValueKey, string.Empty);
             // Load VAT Settings
             AllowVAT = Preferences.Get(SettingsConstants.AllowVATKey, false);
-            IsVATFixedAmount = Preferences.Get(SettingsConstants.IsVATFixedAmountKey, true);
-            IsVATPercentage = Preferences.Get(SettingsConstants.IsVATPercentageKey, false);
             VatValue = Preferences.Get(SettingsConstants.VATValueKey, string.Empty);
             // Load Printer Settings
             AllowPrint = Preferences.Get(SettingsConstants.AllowPrintKey, false);
@@ -627,29 +627,6 @@ namespace KusinaPOS.ViewModel
             }
         }
 
-        [ObservableProperty]
-        private bool isVATFixedAmount = true;
-
-        partial void OnIsVATFixedAmountChanged(bool value)
-        {
-            Preferences.Set(SettingsConstants.IsVATFixedAmountKey, value);
-            if (value)
-            {
-                IsVATPercentage = false;
-            }
-        }
-
-        [ObservableProperty]
-        private bool isVATPercentage;
-
-        partial void OnIsVATPercentageChanged(bool value)
-        {
-            Preferences.Set(SettingsConstants.IsVATPercentageKey, value);
-            if (value)
-            {
-                IsVATFixedAmount = false;
-            }
-        }
         [ObservableProperty]
         private string vatValue;
         partial void OnVatValueChanged(string value)

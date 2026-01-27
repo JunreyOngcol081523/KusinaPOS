@@ -9,7 +9,7 @@
              xmlns:converters="clr-namespace:KusinaPOS.Converters"
              BackgroundColor="{StaticResource BackgroundDark}"
              >
-    
+
     <ContentPage.Resources>
         <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
     </ContentPage.Resources>
@@ -120,7 +120,7 @@
                  Padding="8">
                 <Grid Grid.Row="0" IsVisible="{Binding IsLoading}"
                       BackgroundColor="#80000000">
-                        <ActivityIndicator
+                    <ActivityIndicator
                             IsRunning="{Binding IsLoading}"
                             IsVisible="{Binding IsLoading}"
                             HorizontalOptions="Center"
@@ -221,10 +221,11 @@
                     Stroke="{StaticResource Gray300}"
                     StrokeThickness="1">
 
-                <Grid RowDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto"
+                <Grid RowDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
                         RowSpacing="5">
 
-                    <Label Text="Current Order"
+                    <Label Grid.Row="0"
+                            Text="Current Order"
                            FontSize="15"
                            FontAttributes="Bold"
                            TextColor="{StaticResource TextPrimary}" />
@@ -304,8 +305,46 @@
                                TextColor="{StaticResource TextPrimary}" />
                     </Grid>
 
-                    <!-- CASH -->
+                    <!-- DISCOUNTED AMOUNT -->
                     <Grid Grid.Row="3"
+                            ColumnDefinitions="*,Auto">
+                        <Label Text="Discounted Amount"
+                               TextColor="{StaticResource TextSecondary}" 
+                               VerticalTextAlignment="Center"/>
+                        <Label Grid.Column="1"
+                               Text="{Binding DiscountedAmount}"
+                               VerticalTextAlignment="Center"
+                               TextColor="{StaticResource TextPrimary}" />
+                    </Grid>
+
+                    <!-- VAT % -->
+                    <Grid Grid.Row="4"
+                            ColumnDefinitions="*,Auto">
+                        <Label Text="VAT %"
+                               TextColor="{StaticResource TextSecondary}" 
+                               VerticalTextAlignment="Center"/>
+                        <Label Grid.Column="1"
+                               Text="{Binding VATAmount}"
+                               VerticalTextAlignment="Center"
+                               TextColor="{StaticResource TextPrimary}" />
+                    </Grid>
+
+                    <!-- TOTAL PAYABLE -->
+                    <Grid Grid.Row="5"
+                            ColumnDefinitions="*,Auto">
+                        <Label Text="Total Payable"
+                               TextColor="{StaticResource TextSecondary}" 
+                               FontAttributes="Bold"
+                               VerticalTextAlignment="Center"/>
+                        <Label Grid.Column="1"
+                               Text="{Binding TotalPayableAmount}"
+                               FontAttributes="Bold"
+                               VerticalTextAlignment="Center"
+                               TextColor="{StaticResource TextPrimary}" />
+                    </Grid>
+
+                    <!-- CASH TENDERED -->
+                    <Grid Grid.Row="6"
                             ColumnDefinitions="*,Auto">
                         <Label Text="Cash Tendered ₱"
                                TextColor="{StaticResource TextSecondary}" 
@@ -318,7 +357,7 @@
                     </Grid>
 
                     <!-- CHANGE -->
-                    <Grid Grid.Row="4"
+                    <Grid Grid.Row="7"
                             ColumnDefinitions="*,Auto">
                         <Label Text="Change"
                                TextColor="{StaticResource TextSecondary}" 
@@ -331,21 +370,12 @@
                     </Grid>
 
                     <!-- NUMERIC KEYPAD -->
-                    <Border Grid.Row="5">
+                    <Border Grid.Row="8">
 
                         <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*"
                                 ColumnSpacing="1">
 
                             <Button Grid.Column="0"
-                                    Text="0"
-                                    FontSize="8"
-                                    FontAttributes="Bold"
-                                    BackgroundColor="{StaticResource Gray300}"
-                                    TextColor="{StaticResource TextPrimary}"
-                                    Command="{Binding NumberPadCommand}"
-                                    CommandParameter="0" />
-
-                            <Button Grid.Column="1"
                                     Text="1"
                                     FontSize="8"
                                     FontAttributes="Bold"
@@ -354,7 +384,7 @@
                                     Command="{Binding NumberPadCommand}"
                                     CommandParameter="1" />
 
-                            <Button Grid.Column="2"
+                            <Button Grid.Column="1"
                                     Text="2"
                                     FontSize="8"
                                     FontAttributes="Bold"
@@ -363,7 +393,7 @@
                                     Command="{Binding NumberPadCommand}"
                                     CommandParameter="2" />
 
-                            <Button Grid.Column="3"
+                            <Button Grid.Column="2"
                                     Text="3"
                                     FontSize="8"
                                     FontAttributes="Bold"
@@ -372,7 +402,7 @@
                                     Command="{Binding NumberPadCommand}"
                                     CommandParameter="3" />
 
-                            <Button Grid.Column="4"
+                            <Button Grid.Column="3"
                                     Text="4"
                                     FontSize="8"
                                     FontAttributes="Bold"
@@ -380,26 +410,26 @@
                                     TextColor="{StaticResource TextPrimary}"
                                     Command="{Binding NumberPadCommand}"
                                     CommandParameter="4" />
-                                    
-                            <Button Grid.Column="5"
+
+                            <Button Grid.Column="4"
                                     Text="5"
                                     FontSize="8"
                                     FontAttributes="Bold"
-                                    TextColor="{StaticResource TextPrimary}"
                                     BackgroundColor="{StaticResource Gray300}"
+                                    TextColor="{StaticResource TextPrimary}"
                                     Command="{Binding NumberPadCommand}"
                                     CommandParameter="5" />
-                                    
-                            <Button Grid.Column="6"
+
+                            <Button Grid.Column="5"
                                     Text="6"
                                     FontSize="8"
                                     FontAttributes="Bold"
                                     TextColor="{StaticResource TextPrimary}"
-                                    Command="{Binding NumberPadCommand}"
                                     BackgroundColor="{StaticResource Gray300}"
+                                    Command="{Binding NumberPadCommand}"
                                     CommandParameter="6" />
 
-                            <Button Grid.Column="7"
+                            <Button Grid.Column="6"
                                     Text="7"
                                     FontSize="8"
                                     FontAttributes="Bold"
@@ -408,7 +438,7 @@
                                     BackgroundColor="{StaticResource Gray300}"
                                     CommandParameter="7" />
 
-                            <Button Grid.Column="8"
+                            <Button Grid.Column="7"
                                     Text="8"
                                     FontSize="8"
                                     FontAttributes="Bold"
@@ -417,7 +447,7 @@
                                     BackgroundColor="{StaticResource Gray300}"
                                     CommandParameter="8" />
 
-                            <Button Grid.Column="9"
+                            <Button Grid.Column="8"
                                     Text="9"
                                     FontSize="8"
                                     FontAttributes="Bold"
@@ -425,6 +455,15 @@
                                     Command="{Binding NumberPadCommand}"
                                     BackgroundColor="{StaticResource Gray300}"
                                     CommandParameter="9" />
+
+                            <Button Grid.Column="9"
+                                    Text="0"
+                                    FontSize="8"
+                                    FontAttributes="Bold"
+                                    TextColor="{StaticResource TextPrimary}"
+                                    Command="{Binding NumberPadCommand}"
+                                    BackgroundColor="{StaticResource Gray300}"
+                                    CommandParameter="0" />
                             <!-- BACKSPACE BUTTON -->
                             <Button Grid.Column="10"
                                     Text="~"
@@ -437,7 +476,7 @@
                     </Border>
 
                     <!-- COMPLETE -->
-                    <Button Grid.Row="6"
+                    <Button Grid.Row="9"
                             Text="COMPLETE ORDER"
                             CornerRadius="12"
                             BackgroundColor="{StaticResource Primary}"

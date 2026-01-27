@@ -599,41 +599,10 @@
                                                             </Grid>
                                                         </Border>
 
-                                                        <!-- VAT Type Selection -->
-                                                        <Label Text="VAT Type"
-                                                               FontSize="12"
-                                                               FontAttributes="Bold"
-                                                               TextColor="{StaticResource TextPrimary}"
-                                                               Margin="0,8,0,5"/>
 
-                                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                                                            <Border Grid.Column="0"
-                                                                    StrokeShape="RoundRectangle 6"
-                                                                    Stroke="{StaticResource TextSecondary}"
-                                                                    StrokeThickness="1"
-                                                                    Padding="10,8"
-                                                                    BackgroundColor="{StaticResource CardBackground}">
-                                                                <RadioButton Content="Fixed Amount"
-                                                                             IsChecked="{Binding IsVATFixedAmount, Mode=TwoWay}"
-                                                                             TextColor="{StaticResource TextPrimary}"
-                                                                             FontSize="12"/>
-                                                            </Border>
-
-                                                            <Border Grid.Column="1"
-                                                                    StrokeShape="RoundRectangle 6"
-                                                                    Stroke="{StaticResource TextSecondary}"
-                                                                    StrokeThickness="1"
-                                                                    Padding="10,8"
-                                                                    BackgroundColor="{StaticResource CardBackground}">
-                                                                <RadioButton Content="Percentage"
-                                                                             IsChecked="{Binding IsVATPercentage, Mode=TwoWay}"
-                                                                             TextColor="{StaticResource TextPrimary}"
-                                                                             FontSize="12"/>
-                                                            </Border>
-                                                        </Grid>
 
                                                         <!-- VAT Value Input -->
-                                                        <Label Text="VAT Value"
+                                                        <Label Text="VAT %"
                                                                FontSize="12"
                                                                FontAttributes="Bold"
                                                                TextColor="{StaticResource TextPrimary}"
@@ -643,7 +612,7 @@
                                                                 Stroke="{StaticResource TextSecondary}"
                                                                 StrokeThickness="1"
                                                                 Padding="2">
-                                                            <Entry Placeholder="Enter amount or percentage"
+                                                            <Entry Placeholder="Enter VAT percentage"
                                                                    PlaceholderColor="{StaticResource TextSecondary}"
                                                                    Text="{Binding VatValue, Mode=TwoWay}"
                                                                    Keyboard="Numeric"
