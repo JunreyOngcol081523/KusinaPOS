@@ -15,6 +15,7 @@
             <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
             <converters:UnitToBoolConverter x:Key="UnitToBoolConverter" />
             <converters:ImageSourceConverter x:Key="ImageSourceConverter" />
+            <converters:StockColorConverter x:Key="StockColorConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

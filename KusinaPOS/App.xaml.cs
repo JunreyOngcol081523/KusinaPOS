@@ -40,41 +40,23 @@ namespace KusinaPOS
             {
                 System.Diagnostics.Debug.WriteLine("=== Starting app initialization ===");
 
-                // Run heavy initialization on background thread
-                await Task.Run(async () =>
-                {
-                    try
-                    {
-                        // Initialize database
-                        System.Diagnostics.Debug.WriteLine("Initializing database...");
-                        await _databaseService.InitializeAsync();
+                // Initialize database
+                System.Diagnostics.Debug.WriteLine("Initializing database...");
+                await _databaseService.InitializeAsync();
 
-                        // Initialize user service
-                        System.Diagnostics.Debug.WriteLine("Initializing user service...");
-                        await _userService.InitializeAsync();
-
-                        System.Diagnostics.Debug.WriteLine("Core initialization completed");
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine(
-                            $"Error during core initialization: {ex.Message}");
-                        throw;
-                    }
-                });
+                // Initialize user service
+                System.Diagnostics.Debug.WriteLine("Initializing user service...");
+                await _userService.InitializeAsync();
 
                 _isInitialized = true;
                 System.Diagnostics.Debug.WriteLine("=== App initialization completed ===");
 
-                // Run backup check after initialization (also in background)
-                _ = CheckAutoBackupAsync();
+                // Auto-backup check
+                await CheckAutoBackupAsync();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine(
-                    $"Fatal error during app initialization: {ex.Message}");
-
-                // Optionally show error to user on main thread
+                System.Diagnostics.Debug.WriteLine($"Fatal error during app initialization: {ex.Message}");
                 await MainThread.InvokeOnMainThreadAsync(async () =>
                 {
                     await PageHelper.DisplayAlertAsync(
@@ -84,6 +66,7 @@ namespace KusinaPOS
                 });
             }
         }
+
 
         /// <summary>
         /// Checks if last backup was more than 24 hours ago.

@@ -6,6 +6,7 @@ using KusinaPOS.Services;
 using KusinaPOS.Views;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace KusinaPOS.ViewModel
 {
@@ -510,6 +511,7 @@ namespace KusinaPOS.ViewModel
                     .GetTransactionsByInventoryItemAsync(item.Id);
 
                 this.TransactionLogs = new ObservableCollection<InventoryTransaction>(transactions);
+                
             }
             catch (Exception ex)
             {
@@ -517,7 +519,6 @@ namespace KusinaPOS.ViewModel
                 await PageHelper.DisplayAlertAsync("Error", "Failed to load transaction logs.", "OK");
             }
         }
-
         [RelayCommand]
         private void CloseTransactionPanel()
         {

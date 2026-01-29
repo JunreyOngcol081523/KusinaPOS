@@ -560,7 +560,7 @@
                                                             <chart:CategoryAxis.LabelStyle>
                                                                 <chart:ChartAxisLabelStyle TextColor="{StaticResource TextPrimary}" 
                                                                FontSize="14" 
-                                                               LabelFormat="N2"/>
+                                                               LabelFormat="C2"/>
                                                             </chart:CategoryAxis.LabelStyle>
                                                         </chart:CategoryAxis>
                                                     </chart:SfCartesianChart.XAxes>
@@ -569,14 +569,15 @@
                                                             <chart:NumericalAxis.LabelStyle>
                                                                 <chart:ChartAxisLabelStyle TextColor="{StaticResource TextSecondary}" 
                                                                FontSize="14"
-                                                               LabelFormat="N2"/>
+                                                               LabelFormat="C2"/>
                                                             </chart:NumericalAxis.LabelStyle>
                                                         </chart:NumericalAxis>
                                                     </chart:SfCartesianChart.YAxes>
                                                     <chart:ColumnSeries XBindingPath="MenuItemName"
                                                                         ItemsSource="{Binding Top5MenuItems}"
                                                                         YBindingPath="TotalSales"
-                                                                        ShowDataLabels="True"/>
+                                                                        ShowDataLabels="True"
+                                                                        />
                                                 </chart:SfCartesianChart>
                                             </tabView:SfTabItem.Content>
                                         </tabView:SfTabItem>
@@ -613,10 +614,10 @@
                                                     </chart:SfCartesianChart.YAxes>
                                                     <!-- ColumnSeries -->
                                                     <chart:ColumnSeries ItemsSource="{Binding AllMenuItemsByCategory}"
-                                            XBindingPath="MenuItemName"
-                                            YBindingPath="QuantitySold"
-                                            ShowDataLabels="True"
-                                            LabelTemplate="{StaticResource labelTemplate}">
+                                                                        XBindingPath="MenuItemName"
+                                                                        YBindingPath="QuantitySold"
+                                                                        ShowDataLabels="True"
+                                                                        >
                                                         <chart:ColumnSeries.DataLabelSettings>
                                                             <!-- Show numeric label outside the bar -->
                                                             <chart:CartesianDataLabelSettings LabelPlacement="Outer"
@@ -654,7 +655,7 @@
                                                             <syncfusion:DataGridTextColumn
                                                                         MappingName="TotalSales"
                                                                         HeaderText="Total Sales"
-                                                                        Format="₱{0:N2}"/>
+                                                                        Format="C2"/>
                                                         </syncfusion:SfDataGrid.Columns>
                                                     </syncfusion:SfDataGrid>
                                                     <pager:SfDataPager Grid.Row="1"

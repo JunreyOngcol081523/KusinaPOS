@@ -152,7 +152,7 @@
                                                 <Label.FormattedText>
                                                     <FormattedString>
                                                         <Span Text="Price: "/>
-                                                        <Span Text="{Binding Price, StringFormat='${0:F2}'}"
+                                                        <Span Text="{Binding Price, StringFormat='{0:C2}'}"
                                                                   TextColor="{StaticResource Primary}"
                                                                   FontAttributes="Bold"/>
                                                     </FormattedString>

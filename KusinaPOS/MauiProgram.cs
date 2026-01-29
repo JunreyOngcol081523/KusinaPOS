@@ -44,6 +44,7 @@ namespace KusinaPOS
             builder.Services.AddSingleton<ReportService>();
             builder.Services.AddSingleton<ExcelExportService>();
             builder.Services.AddSingleton<MenuReportService>();
+            builder.Services.AddSingleton<SaveService>();
 
             //viewmodels and pages
             builder.Services.AddTransient<MainPage>();

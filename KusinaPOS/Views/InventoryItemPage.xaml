@@ -8,6 +8,7 @@
              xmlns:sfdatagrid="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
              xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
              xmlns:pager="clr-namespace:Syncfusion.Maui.DataGrid.DataPager;assembly=Syncfusion.Maui.DataGrid"
+             xmlns:converters="clr-namespace:KusinaPOS.Converters"
              BackgroundColor="{StaticResource BackgroundDark}">
 
     <Grid Padding="20"
@@ -117,19 +118,19 @@
                 <Border Grid.Row="2" Style="{StaticResource CardBorder}">
                     <Grid RowDefinitions="*,Auto" Padding="0">
                         <!-- DataGrid -->
-                        <sfdatagrid:SfDataGrid Grid.Row="0"
+                        <sfdatagrid:SfDataGrid 
+                                Grid.Row="0"
                                x:Name="inventoryDataGrid"
+                            ScrollingMode="Line"
+                            HorizontalScrollBarVisibility="Always"
                                AutoGenerateColumnsMode="None"
                                ItemsSource="{Binding Source={x:Reference inventoryPager}, Path=PagedSource}"
-                               SelectionMode="Single"
+                               SelectionMode="None"
                                SelectedRow="{Binding SelectedItem, Mode=TwoWay}"
                                ColumnWidthMode="Fill"
                                RowHeight="50"
-                               HeaderRowHeight="40"      
+                               HeaderRowHeight="40"                               
                                SortingMode="Single">
-                            <sfdatagrid:SfDataGrid.GroupColumnDescriptions>
-                                <sfdatagrid:GroupColumnDescription ColumnName="IsLowStock"/>
-                            </sfdatagrid:SfDataGrid.GroupColumnDescriptions>
                             <sfdatagrid:SfDataGrid.Columns>
                                 <!-- Name Column -->
                                 <sfdatagrid:DataGridTextColumn MappingName="Name"
@@ -145,18 +146,22 @@
                                 <!-- Unit Column -->
                                 <sfdatagrid:DataGridTextColumn MappingName="Unit"
                                                HeaderText="Unit" Width="80"/>
-
+                                <!-- low stock Column -->
+                                <sfdatagrid:DataGridTextColumn MappingName="IsLowStock" Visible="False"
+                                               HeaderText="Low Stock" Width="60"/>
+                                
                                 <!-- Active Column (Switch) -->
-                                <sfdatagrid:DataGridTemplateColumn MappingName="IsActive"
-                                                   HeaderText="Active"
-                                                   >
+                                <sfdatagrid:DataGridTemplateColumn MappingName="IsActive" 
+                                                                   Width="80"
+                                                                   ColumnWidthMode="LastColumnFill"
+                                                                   HeaderText="Active">
                                     <sfdatagrid:DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Switch IsToggled="{Binding IsActive}"
                                                     OnColor="{StaticResource Primary}"
                                                     ThumbColor="{StaticResource White}"
                                                     VerticalOptions="Center"
-                                                    HorizontalOptions="End"
+                                                    HorizontalOptions="Center"
                                                     Margin="0,0,10,0"/>
                                         </DataTemplate>
                                     </sfdatagrid:DataGridTemplateColumn.CellTemplate>
@@ -189,7 +194,6 @@
                                     </sfdatagrid:DataGridTemplateColumn.CellTemplate>
                                 </sfdatagrid:DataGridTemplateColumn>
                             </sfdatagrid:SfDataGrid.Columns>
-
 
                         </sfdatagrid:SfDataGrid>
 
@@ -319,7 +323,11 @@
             <Grid RowDefinitions="Auto,*,Auto">
 
                 <!-- Header -->
-                <Label Grid.Row="0" Text="{Binding TransactionLogPanelTitle}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" Margin="0,0,0,20"/>
+                <Label Grid.Row="0" 
+                       Text="{Binding TransactionLogPanelTitle, Mode=OneWay}" 
+                       FontSize="16" 
+                       FontAttributes="Bold" 
+                       TextColor="{StaticResource TextPrimary}" Margin="0,0,0,20"/>
 
                 <!-- Table -->
 
@@ -327,7 +335,8 @@
                 
 
                 <!-- Update your Grid to include a row for the pager -->
-                <Grid RowDefinitions="*,Auto">
+                <Grid Grid.Row="1" 
+                      RowDefinitions="*,Auto">
 
                     <!-- DataGrid -->
                     <sfdatagrid:SfDataGrid Grid.Row="0"
