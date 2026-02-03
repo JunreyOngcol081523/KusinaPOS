@@ -180,7 +180,10 @@ namespace KusinaPOS.Services
         {
             try
             {
-                return await _db.Table<Sale>().Where(s => s.ReceiptNo == receiptNo).FirstOrDefaultAsync();
+                // Added the condition: && s.Status == "Completed"
+                return await _db.Table<Sale>()
+                                .Where(s => s.ReceiptNo == receiptNo)
+                                .FirstOrDefaultAsync();
             }
             catch (Exception ex)
             {
@@ -446,5 +449,146 @@ namespace KusinaPOS.Services
                 return $"RCPT-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 4).ToUpper()}";
             }
         }
+
+        #region VOID / REFUND LOGIC
+
+        /// <summary>
+        /// Process a VOID: Reverses the sale, creates a negative record, and RESTORES inventory.
+        /// Use this when the order was cancelled BEFORE the food was cooked/consumed.
+        /// </summary>
+        public async Task<bool> VoidSaleAsync(Sale originalSale, string reason, string authorizedBy)
+        {
+            if (originalSale == null) throw new ArgumentNullException(nameof(originalSale));
+
+            try
+            {
+                await _db.RunInTransactionAsync(tran =>
+                {
+                    // 1️⃣ Create the Negative "Void" Transaction
+                    var voidSale = new Sale
+                    {
+                        ReceiptNo = $"VOID-{originalSale.ReceiptNo}",
+                        ReferenceReceiptNo = originalSale.ReceiptNo,
+
+                        // Dates
+                        SaleDate = DateTime.Now,       // The date of this negative transaction
+                        ActionDate = DateTime.Now,     // Audit: When the void actually happened
+
+                        // Money
+                        TotalAmount = -originalSale.TotalAmount,
+
+                        // Status & Audit
+                        Status = "Voided",
+                        AuthorizedBy = authorizedBy,
+                        Reason = reason
+
+                        // Removed PaymentMethod (not in your model)
+                    };
+                    tran.Insert(voidSale);
+
+                    // 2️⃣ Update Original Sale
+                    originalSale.Status = "Voided";
+                    originalSale.ActionDate = DateTime.Now; // Optional: Mark when the original was cancelled
+                    tran.Update(originalSale);
+
+                    // 3️⃣ Restore Inventory
+                    var originalItems = tran.Table<SaleItem>()
+                                            .Where(i => i.SaleId == originalSale.Id)
+                                            .ToList();
+
+                    foreach (var saleItem in originalItems)
+                    {
+                        var ingredients = tran.Table<MenuItemIngredient>()
+                                              .Where(mi => mi.MenuItemId == saleItem.MenuItemId)
+                                              .ToList();
+
+                        foreach (var ingredient in ingredients)
+                        {
+                            decimal quantityToRestore = ingredient.QuantityPerMenu * saleItem.Quantity;
+
+                            var inventoryItem = tran.Find<InventoryItem>(ingredient.InventoryItemId);
+                            if (inventoryItem != null)
+                            {
+                                inventoryItem.QuantityOnHand += quantityToRestore;
+                                tran.Update(inventoryItem);
+
+                                tran.Insert(new InventoryTransaction
+                                {
+                                    InventoryItemId = inventoryItem.Id,
+                                    SaleId = originalSale.Id,
+                                    QuantityChange = quantityToRestore,
+                                    Reason = "VOID",
+                                    Remarks = $"Restocked from Voided Receipt: {originalSale.ReceiptNo}",
+                                    TransactionDate = DateTime.Now
+                                });
+                            }
+                        }
+                    }
+                });
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[VOID SALE ERROR] {ex}");
+                return false;
+            }
+        }
+        public async Task<bool> RefundSaleAsync(Sale originalSale, decimal refundAmount, string customerName, string customerContact, string reason, string authorizedBy)
+        {
+            try
+            {
+                // 1. Safety Checks
+                if (originalSale == null || refundAmount <= 0)
+                    return false;
+
+                // 2. Create the "Negative" Sale Transaction
+                var refundTransaction = new Sale
+                {
+                    // Generate a unique Refund Receipt No
+                    ReceiptNo = $"REF-{DateTime.Now:yyyyMMdd-HHmmss}",
+
+                    SaleDate = DateTime.Now,
+
+                    // --- FINANCIALS ---
+                    // Key Concept: Negative values reduce your Daily Sales Total automatically.
+                    // We apply the whole refund to SubTotal for simplicity (flat adjustment).
+                    SubTotal = -refundAmount,
+                    Tax = 0,
+                    Discount = 0,
+                    TotalAmount = -refundAmount,
+
+                    // AmountPaid is negative because money is LEAVING the cash drawer
+                    AmountPaid = -refundAmount,
+                    ChangeAmount = 0,
+
+                    // --- STATUS & AUDIT ---
+                    Status = "Refunded",
+                    ActionDate = DateTime.Now, // When the refund happened
+
+                    // Fill in the Audit fields from your UI
+                    Reason = reason,
+                    AuthorizedBy = authorizedBy,
+                    CustomerName = customerName,
+                    CustomerContact = customerContact,
+
+                    // --- LINKING ---
+                    // This connects this negative row to the original positive row
+                    ReferenceReceiptNo = originalSale.ReceiptNo
+                };
+
+                // 3. Save to Database
+                await _db.InsertAsync(refundTransaction);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log error here if you have a logger
+                System.Diagnostics.Debug.WriteLine($"Refund Error: {ex.Message}");
+                return false;
+            }
+        }
+        #endregion
     }
 }

@@ -42,40 +42,53 @@ namespace KusinaPOS.Services
             await _database.CreateTableAsync<SaleItem>();
             await _database.CreateTableAsync<InventoryTransaction>();
             await _database.CreateTableAsync<Category>();
-            await _database.ExecuteAsync(@"
-            CREATE VIEW IF NOT EXISTS View_SaleItemsWithMenuName AS
-            SELECT
-                si.Id,
-                si.SaleId,
-                si.MenuItemId,
-                mi.Name AS MenuItemName,
-                si.Quantity,
-                si.UnitPrice,
-                (si.Quantity * si.UnitPrice) AS LineTotal
-            FROM SaleItem si
-            INNER JOIN MenuItem mi ON mi.Id = si.MenuItemId;
-        ");
-            await _database.ExecuteAsync(@"
-            CREATE VIEW IF NOT EXISTS vwSaleItemsWithDateMenuItem AS
-            SELECT
-                si.Id AS SaleItemId,
-                si.SaleId,
-                s.ReceiptNo,
-                s.SaleDate,
-                si.MenuItemId,
-                m.Name AS MenuItemName,
-                m.Category,
-                m.ImagePath,
-                si.Quantity,
-                si.UnitPrice,
-                (si.Quantity * si.UnitPrice) AS LineTotal
-            FROM SaleItem si
-            INNER JOIN Sale s
-                ON si.SaleId = s.Id
-            INNER JOIN MenuItem m
-                ON si.MenuItemId = m.Id;
+            // =========================================================
+            // VIEW 1: Basic Item Details
+            // =========================================================
+            // 1. Drop old to ensure clean recreation
+            await _database.ExecuteAsync("DROP VIEW IF EXISTS View_SaleItemsWithMenuName");
 
-            ");
+            // 2. Create without status filter
+            await _database.ExecuteAsync(@"
+                    CREATE VIEW View_SaleItemsWithMenuName AS
+                    SELECT 
+                        si.Id,
+                        si.SaleId, 
+                        si.MenuItemId, 
+                        mi.Name AS MenuItemName, 
+                        si.Quantity, 
+                        si.UnitPrice, 
+                        (si.Quantity * si.UnitPrice) AS LineTotal
+                    FROM SaleItem si
+                    INNER JOIN MenuItem mi ON mi.Id = si.MenuItemId
+                    INNER JOIN Sale s ON s.Id = si.SaleId; 
+                ");
+
+            // =========================================================
+            // VIEW 2: Detailed Reporting View
+            // =========================================================
+            // 1. Drop the old view
+            await _database.ExecuteAsync("DROP VIEW IF EXISTS vwSaleItemsWithDateMenuItem");
+
+            // 2. Create without status filter
+            await _database.ExecuteAsync(@"
+                    CREATE VIEW vwSaleItemsWithDateMenuItem AS
+                    SELECT 
+                        si.Id AS SaleItemId, 
+                        si.SaleId, 
+                        s.ReceiptNo, 
+                        s.SaleDate, 
+                        si.MenuItemId, 
+                        m.Name AS MenuItemName, 
+                        m.Category, 
+                        m.ImagePath, 
+                        si.Quantity, 
+                        si.UnitPrice, 
+                        (si.Quantity * si.UnitPrice) AS LineTotal
+                    FROM SaleItem si
+                    INNER JOIN Sale s ON si.SaleId = s.Id
+                    INNER JOIN MenuItem m ON si.MenuItemId = m.Id;
+                ");
         }
     }
 

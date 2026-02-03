@@ -901,7 +901,7 @@
                                             <Image
                                                 Grid.Column="0"
                                                 HeightRequest="24"
-                                                Source="void.png"
+                                                Source="sales.png"
                                                 VerticalOptions="Center"
                                                 WidthRequest="24" />
                                             <!--  Header Text  -->
@@ -910,7 +910,7 @@
                                                 CharacterSpacing="0.25"
                                                 FontAttributes="Bold"
                                                 FontSize="16"
-                                                Text="Void Sale"
+                                                Text="Sale Settings"
                                                 TextColor="{StaticResource TextPrimary}"
                                                 VerticalOptions="Center" />
                                         </Grid>
@@ -938,62 +938,71 @@
                                                         Stroke="{StaticResource TextSecondary}"
                                                         StrokeShape="RoundRectangle 8"
                                                         StrokeThickness="1">
-                                                        <VerticalStackLayout Spacing="12">
-                                                            <!--  Refund / Void Selection  -->
+                                                        <Grid
+                                                            ColumnDefinitions="180, *, 160"
+                                                            ColumnSpacing="15"
+                                                            RowDefinitions="Auto">
 
-                                                            <buttons:SfRadioGroup x:Name="radioGroup">
-                                                                <buttons:SfRadioButton
-                                                                    x:Name="Void"
-                                                                    CheckedColor="{StaticResource Primary}"
-                                                                    IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToStringConverter}, ConverterParameter=Voided}"
-                                                                    Text="Void"
+                                                            <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                                                                <Label
+                                                                    FontAttributes="Bold"
+                                                                    FontSize="12"
+                                                                    Text="Select Mode"
                                                                     TextColor="{StaticResource TextPrimary}" />
-                                                                <buttons:SfRadioButton
-                                                                    x:Name="Refund"
-                                                                    CheckedColor="{StaticResource Primary}"
-                                                                    IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToStringConverter}, ConverterParameter=Refunded}"
-                                                                    Text="Refund"
+
+                                                                <buttons:SfRadioGroup x:Name="radioGroup" Orientation="Horizontal">
+                                                                    <buttons:SfRadioButton
+                                                                        x:Name="Void"
+                                                                        CheckedColor="{StaticResource Primary}"
+                                                                        IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToStringConverter}, ConverterParameter=Voided}"
+                                                                        Text="Void"
+                                                                        TextColor="{StaticResource TextPrimary}" />
+                                                                    <buttons:SfRadioButton
+                                                                        x:Name="Refund"
+                                                                        CheckedColor="{StaticResource Primary}"
+                                                                        IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToStringConverter}, ConverterParameter=Refunded}"
+                                                                        Text="Refund"
+                                                                        TextColor="{StaticResource TextPrimary}" />
+                                                                </buttons:SfRadioGroup>
+                                                            </VerticalStackLayout>
+
+                                                            <VerticalStackLayout
+                                                                Grid.Column="1"
+                                                                Spacing="2"
+                                                                VerticalOptions="End">
+                                                                <Label
+                                                                    FontAttributes="Bold"
+                                                                    FontSize="12"
+                                                                    Text="Search Sale Transaction"
                                                                     TextColor="{StaticResource TextPrimary}" />
-                                                            </buttons:SfRadioGroup>
-                                                            <!--  Section Header  -->
 
+                                                                <Border
+                                                                    Padding="2"
+                                                                    Stroke="{StaticResource TextSecondary}"
+                                                                    StrokeShape="RoundRectangle 6"
+                                                                    StrokeThickness="1">
+                                                                    <Entry
+                                                                        BackgroundColor="Transparent"
+                                                                        Placeholder="Enter Receipt No"
+                                                                        PlaceholderColor="{StaticResource TextSecondary}"
+                                                                        Text="{Binding SearchReceiptNo, Mode=TwoWay}"
+                                                                        TextColor="{StaticResource TextPrimary}" />
+                                                                </Border>
+                                                            </VerticalStackLayout>
 
-                                                            <BoxView
-                                                                Margin="0,5,0,10"
-                                                                HeightRequest="1"
-                                                                Opacity="0.3"
-                                                                Color="{StaticResource TextSecondary}" />
-
-                                                            <!--  Sale ID Entry  -->
-                                                            <Label
-                                                                FontAttributes="Bold"
-                                                                FontSize="12"
-                                                                Text=" Search Sale Transaction"
-                                                                TextColor="{StaticResource TextPrimary}" />
-
-                                                            <Border
-                                                                Padding="2"
-                                                                Stroke="{StaticResource TextSecondary}"
-                                                                StrokeShape="RoundRectangle 6"
-                                                                StrokeThickness="1">
-                                                                <Entry
-                                                                    BackgroundColor="Transparent"
-                                                                    Placeholder="Enter Receipt No"
-                                                                    PlaceholderColor="{StaticResource TextSecondary}"
-                                                                    Text="{Binding SearchReceiptNo, Mode=TwoWay}"
-                                                                    TextColor="{StaticResource TextPrimary}" />
-                                                            </Border>
-
-                                                            <!--  Find Button  -->
                                                             <Button
-                                                                Margin="0,8,0,0"
+                                                                Grid.Column="2"
+                                                                Margin="0,0,0,1"
                                                                 BackgroundColor="{StaticResource Primary}"
                                                                 Command="{Binding FindSaleCommand}"
                                                                 CornerRadius="6"
                                                                 HeightRequest="44"
                                                                 Text="🔍 Find Transaction"
-                                                                TextColor="White" />
-                                                        </VerticalStackLayout>
+                                                                TextColor="White"
+                                                                VerticalOptions="End"
+                                                                WidthRequest="160" />
+
+                                                        </Grid>
                                                     </Border>
 
                                                     <!--  Sale Details Section  -->
@@ -1025,13 +1034,12 @@
                                                                 Opacity="0.3"
                                                                 Color="{StaticResource TextSecondary}" />
 
-                                                            <!--  Sale Info Grid  -->
                                                             <Grid
                                                                 ColumnDefinitions="Auto,*"
                                                                 ColumnSpacing="10"
-                                                                RowDefinitions="Auto,Auto,Auto"
+                                                                RowDefinitions="Auto,Auto,Auto,Auto,Auto"
                                                                 RowSpacing="10">
-                                                                <!--  Sale ID  -->
+
                                                                 <Label
                                                                     Grid.Row="0"
                                                                     Grid.Column="0"
@@ -1046,7 +1054,6 @@
                                                                     Text="{Binding SelectedSaleTransaction.ReceiptNo}"
                                                                     TextColor="{StaticResource TextPrimary}" />
 
-                                                                <!--  Date Transacted  -->
                                                                 <Label
                                                                     Grid.Row="1"
                                                                     Grid.Column="0"
@@ -1061,7 +1068,6 @@
                                                                     Text="{Binding SelectedSaleTransaction.SaleDate, StringFormat='{0:MMM dd, yyyy hh:mm tt}'}"
                                                                     TextColor="{StaticResource TextPrimary}" />
 
-                                                                <!--  Total Amount  -->
                                                                 <Label
                                                                     Grid.Row="2"
                                                                     Grid.Column="0"
@@ -1076,6 +1082,36 @@
                                                                     FontSize="12"
                                                                     Text="{Binding SelectedSaleTransaction.TotalAmount, StringFormat='₱{0:N2}'}"
                                                                     TextColor="{StaticResource Primary}" />
+
+                                                                <Label
+                                                                    Grid.Row="3"
+                                                                    Grid.Column="0"
+                                                                    FontAttributes="Bold"
+                                                                    FontSize="12"
+                                                                    Text="Status:"
+                                                                    TextColor="{StaticResource TextSecondary}" />
+                                                                <Label
+                                                                    Grid.Row="3"
+                                                                    Grid.Column="1"
+                                                                    FontAttributes="Bold"
+                                                                    FontSize="12"
+                                                                    Text="{Binding SelectedSaleTransaction.Status}"
+                                                                    TextColor="{StaticResource TextPrimary}" />
+
+                                                                <Label
+                                                                    Grid.Row="4"
+                                                                    Grid.Column="0"
+                                                                    FontAttributes="Bold"
+                                                                    FontSize="12"
+                                                                    Text="Action Date:"
+                                                                    TextColor="{StaticResource TextSecondary}" />
+                                                                <Label
+                                                                    Grid.Row="4"
+                                                                    Grid.Column="1"
+                                                                    FontSize="12"
+                                                                    Text="{Binding SelectedSaleTransaction.ActionDate, StringFormat='{0:MMM dd, yyyy hh:mm tt}', TargetNullValue='-'}"
+                                                                    TextColor="{StaticResource TextPrimary}" />
+
                                                             </Grid>
 
                                                             <!--  Sale Items List  -->
@@ -1087,7 +1123,6 @@
                                                                 TextColor="{StaticResource TextPrimary}" />
 
                                                             <syncfusion:SfListView
-                                                                HeightRequest="220"
                                                                 ItemSize="55"
                                                                 ItemsSource="{Binding SaleItems}"
                                                                 SelectionBackground="Transparent">
@@ -1144,7 +1179,6 @@
                                                     Grid.Column="1"
                                                     Spacing="20">
 
-                                                    <!--  Void Authorization Section  -->
                                                     <Border
                                                         Padding="15"
                                                         BackgroundColor="{StaticResource CardBackground}"
@@ -1152,8 +1186,7 @@
                                                         StrokeShape="RoundRectangle 8"
                                                         StrokeThickness="1">
                                                         <VerticalStackLayout Spacing="12">
-                                                            <!--  Section Header  -->
-                                                            <VerticalStackLayout IsEnabled="{Binding IsRefundMode}">
+                                                            <VerticalStackLayout>
                                                                 <HorizontalStackLayout Spacing="8">
                                                                     <Label
                                                                         FontSize="18"
@@ -1173,28 +1206,20 @@
                                                                     Opacity="0.3"
                                                                     Color="{StaticResource TextSecondary}" />
 
-                                                                <!--  Admin Password  -->
                                                                 <Label
                                                                     FontAttributes="Bold"
                                                                     FontSize="12"
                                                                     Text="Admin Password"
                                                                     TextColor="{StaticResource TextPrimary}" />
 
-                                                                <Border
-                                                                    Padding="2"
-                                                                    Stroke="{StaticResource TextSecondary}"
-                                                                    StrokeShape="RoundRectangle 6"
-                                                                    StrokeThickness="1">
-                                                                    <Entry
-                                                                        BackgroundColor="Transparent"
-                                                                        IsPassword="True"
-                                                                        Placeholder="Enter admin password"
-                                                                        PlaceholderColor="{StaticResource TextSecondary}"
-                                                                        Text="{Binding AdminPassword, Mode=TwoWay}"
-                                                                        TextColor="{StaticResource TextPrimary}" />
-                                                                </Border>
+                                                                <Entry
+                                                                    BackgroundColor="Transparent"
+                                                                    IsPassword="True"
+                                                                    Placeholder="Enter admin password"
+                                                                    PlaceholderColor="{StaticResource TextSecondary}"
+                                                                    Text="{Binding AdminPassword, Mode=TwoWay}"
+                                                                    TextColor="{StaticResource TextPrimary}" />
 
-                                                                <!--  Void Reason  -->
                                                                 <Label
                                                                     Margin="0,8,0,0"
                                                                     FontAttributes="Bold"
@@ -1202,28 +1227,21 @@
                                                                     Text="Reason for Void"
                                                                     TextColor="{StaticResource TextPrimary}" />
 
-                                                                <Border
-                                                                    Padding="2"
-                                                                    Stroke="{StaticResource TextSecondary}"
-                                                                    StrokeShape="RoundRectangle 6"
-                                                                    StrokeThickness="1">
-                                                                    <Editor
-                                                                        BackgroundColor="Transparent"
-                                                                        HeightRequest="70"
-                                                                        Placeholder="Enter reason for voiding this sale"
-                                                                        PlaceholderColor="{StaticResource TextSecondary}"
-                                                                        Text="{Binding VoidReason, Mode=TwoWay}"
-                                                                        TextColor="{StaticResource TextPrimary}" />
-                                                                </Border>
+                                                                <Editor
+                                                                    BackgroundColor="Transparent"
+                                                                    HeightRequest="70"
+                                                                    Placeholder="Enter reason for voiding this sale"
+                                                                    PlaceholderColor="{StaticResource TextSecondary}"
+                                                                    Text="{Binding VoidReason, Mode=TwoWay}"
+                                                                    TextColor="{StaticResource TextPrimary}" />
 
-                                                                <!--  Customer Info Grid  -->
                                                                 <Grid
                                                                     Margin="0,8,0,0"
                                                                     ColumnDefinitions="*,*"
                                                                     ColumnSpacing="10"
                                                                     RowDefinitions="Auto,Auto,Auto,Auto"
                                                                     RowSpacing="8">
-                                                                    <!--  Customer Name Label  -->
+
                                                                     <Label
                                                                         Grid.Row="0"
                                                                         Grid.Column="0"
@@ -1232,7 +1250,6 @@
                                                                         Text="Customer Name"
                                                                         TextColor="{StaticResource TextPrimary}" />
 
-                                                                    <!--  Customer Contact Label  -->
                                                                     <Label
                                                                         Grid.Row="0"
                                                                         Grid.Column="1"
@@ -1241,40 +1258,27 @@
                                                                         Text="Customer Contact"
                                                                         TextColor="{StaticResource TextPrimary}" />
 
-                                                                    <!--  Customer Name Entry  -->
-                                                                    <Border
+                                                                    <Entry
                                                                         Grid.Row="1"
                                                                         Grid.Column="0"
-                                                                        Padding="2"
-                                                                        Stroke="{StaticResource TextSecondary}"
-                                                                        StrokeShape="RoundRectangle 6"
-                                                                        StrokeThickness="1">
-                                                                        <Entry
-                                                                            BackgroundColor="Transparent"
-                                                                            Placeholder="Customer name"
-                                                                            PlaceholderColor="{StaticResource TextSecondary}"
-                                                                            Text="{Binding CustomerName, Mode=TwoWay}"
-                                                                            TextColor="{StaticResource TextPrimary}" />
-                                                                    </Border>
+                                                                        BackgroundColor="Transparent"
+                                                                        IsEnabled="{Binding IsRefundMode}"
+                                                                        Placeholder="Customer name"
+                                                                        PlaceholderColor="{StaticResource TextSecondary}"
+                                                                        Text="{Binding CustomerName, Mode=TwoWay}"
+                                                                        TextColor="{StaticResource TextPrimary}" />
 
-                                                                    <!--  Customer Contact Entry  -->
-                                                                    <Border
+                                                                    <Entry
                                                                         Grid.Row="1"
                                                                         Grid.Column="1"
-                                                                        Padding="2"
-                                                                        Stroke="{StaticResource TextSecondary}"
-                                                                        StrokeShape="RoundRectangle 6"
-                                                                        StrokeThickness="1">
-                                                                        <Entry
-                                                                            BackgroundColor="Transparent"
-                                                                            Keyboard="Telephone"
-                                                                            Placeholder="Contact number"
-                                                                            PlaceholderColor="{StaticResource TextSecondary}"
-                                                                            Text="{Binding CustomerContact, Mode=TwoWay}"
-                                                                            TextColor="{StaticResource TextPrimary}" />
-                                                                    </Border>
+                                                                        BackgroundColor="Transparent"
+                                                                        IsEnabled="{Binding IsRefundMode}"
+                                                                        Keyboard="Telephone"
+                                                                        Placeholder="Contact number"
+                                                                        PlaceholderColor="{StaticResource TextSecondary}"
+                                                                        Text="{Binding CustomerContact, Mode=TwoWay}"
+                                                                        TextColor="{StaticResource TextPrimary}" />
 
-                                                                    <!--  Refunded Amount Label  -->
                                                                     <Label
                                                                         Grid.Row="2"
                                                                         Grid.Column="0"
@@ -1284,7 +1288,6 @@
                                                                         Text="Refunded Amount"
                                                                         TextColor="{StaticResource TextPrimary}" />
 
-                                                                    <!--  Authorized By Label  -->
                                                                     <Label
                                                                         Grid.Row="2"
                                                                         Grid.Column="1"
@@ -1294,41 +1297,27 @@
                                                                         Text="Authorized By"
                                                                         TextColor="{StaticResource TextPrimary}" />
 
-                                                                    <!--  Refunded Amount Entry  -->
-                                                                    <Border
+                                                                    <Entry
                                                                         Grid.Row="3"
                                                                         Grid.Column="0"
-                                                                        Padding="2"
-                                                                        Stroke="{StaticResource TextSecondary}"
-                                                                        StrokeShape="RoundRectangle 6"
-                                                                        StrokeThickness="1">
-                                                                        <Entry
-                                                                            BackgroundColor="Transparent"
-                                                                            Keyboard="Numeric"
-                                                                            Placeholder="Refund amount"
-                                                                            PlaceholderColor="{StaticResource TextSecondary}"
-                                                                            Text="{Binding RefundedAmount, Mode=TwoWay}"
-                                                                            TextColor="{StaticResource TextPrimary}" />
-                                                                    </Border>
+                                                                        BackgroundColor="Transparent"
+                                                                        IsEnabled="{Binding IsRefundMode}"
+                                                                        Keyboard="Numeric"
+                                                                        Placeholder="Refund amount"
+                                                                        PlaceholderColor="{StaticResource TextSecondary}"
+                                                                        Text="{Binding RefundedAmount, Mode=TwoWay}"
+                                                                        TextColor="{StaticResource TextPrimary}" />
 
-                                                                    <!--  Authorized By Entry  -->
-                                                                    <Border
+                                                                    <Entry
                                                                         Grid.Row="3"
                                                                         Grid.Column="1"
-                                                                        Padding="2"
-                                                                        Stroke="{StaticResource TextSecondary}"
-                                                                        StrokeShape="RoundRectangle 6"
-                                                                        StrokeThickness="1">
-                                                                        <Entry
-                                                                            BackgroundColor="Transparent"
-                                                                            Placeholder="Manager/Admin name"
-                                                                            PlaceholderColor="{StaticResource TextSecondary}"
-                                                                            Text="{Binding AuthorizedBy, Mode=TwoWay}"
-                                                                            TextColor="{StaticResource TextPrimary}" />
-                                                                    </Border>
+                                                                        BackgroundColor="Transparent"
+                                                                        Placeholder="Manager/Admin name"
+                                                                        PlaceholderColor="{StaticResource TextSecondary}"
+                                                                        Text="{Binding AuthorizedBy, Mode=TwoWay}"
+                                                                        TextColor="{StaticResource TextPrimary}" />
                                                                 </Grid>
 
-                                                                <!--  Max Amount Warning  -->
                                                                 <Label
                                                                     Margin="5,5,0,0"
                                                                     FontSize="11"
@@ -1336,7 +1325,6 @@
                                                                     TextColor="{StaticResource Secondary}" />
                                                             </VerticalStackLayout>
 
-                                                            <!--  Process Void Button  -->
                                                             <Button
                                                                 Margin="0,15,0,0"
                                                                 BackgroundColor="{Binding ButtonColor}"
