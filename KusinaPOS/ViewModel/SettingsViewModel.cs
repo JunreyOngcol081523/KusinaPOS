@@ -17,7 +17,7 @@ using System.Text;
 namespace KusinaPOS.ViewModel
 {
     public partial class SettingsViewModel : ObservableObject {
-
+        public RefundSaleViewModel RefundSaleVM { get; }
         private readonly SettingsService? _settingsService=null;
         private readonly IDateTimeService? _dateTimeService;
         private readonly CategoryService? _categoryService;
@@ -74,12 +74,15 @@ namespace KusinaPOS.ViewModel
                                 MenuItemService menuItemService,
                                 SaveService saveService,
                                 InventoryItemService inventoryItemService,
-                                InventoryTransactionService? inventoryTransactionService)
+                                InventoryTransactionService? inventoryTransactionService, 
+                                IServiceProvider serviceProvider)
+                                
         {
 
 
             try
             {
+                RefundSaleVM = serviceProvider.GetRequiredService<RefundSaleViewModel>();
                 _settingsService = settingsService;
                 _categoryService = categoryService;
                 _menuItemService = menuItemService;
@@ -853,18 +856,15 @@ namespace KusinaPOS.ViewModel
                 { DevicePlatform.WinUI, new[] { ".xlsx" } },
                 { DevicePlatform.MacCatalyst, new[] { "xlsx" } }
                     });
-
                 var result = await FilePicker.Default.PickAsync(new PickOptions
                 {
                     PickerTitle = "Select Inventory Import Template",
                     FileTypes = customFileType
                 });
-
                 if (result == null)
                     return; // User cancelled
 
                 var items = new List<InventoryItem>();
-
                 using var stream = await result.OpenReadAsync();
 
                 // --- 2. Read Excel with Syncfusion XlsIO ---
@@ -872,10 +872,8 @@ namespace KusinaPOS.ViewModel
                 {
                     var application = excelEngine.Excel;
                     application.DefaultVersion = ExcelVersion.Xlsx;
-
                     var workbook = application.Workbooks.Open(stream);
                     var worksheet = workbook.Worksheets[0];
-
                     int row = 2; // Start after header (row 1)
 
                     while (!string.IsNullOrEmpty(worksheet.Range[$"A{row}"].Text))
@@ -889,7 +887,6 @@ namespace KusinaPOS.ViewModel
                             ReOrderLevel = Convert.ToDecimal(worksheet.Range[$"E{row}"].Number),
                             IsActive = true
                         };
-
                         items.Add(item);
                         row++;
                     }
@@ -902,11 +899,29 @@ namespace KusinaPOS.ViewModel
                     return;
                 }
 
-                // --- 4. Insert each item via existing service ---
-                foreach (var item in items)
+                // --- 4. Get existing items from database ---
+                var existingItems = await _inventoryItemService.GetAllInventoryItemsAsync();
+                var existingNames = existingItems.Select(x => x.Name.Trim().ToLower()).ToHashSet();
+
+                // --- 5. Filter out items that already exist ---
+                var newItems = items.Where(item => !existingNames.Contains(item.Name.Trim().ToLower())).ToList();
+                var skippedCount = items.Count - newItems.Count;
+
+                if (!newItems.Any())
+                {
+                    await PageHelper.DisplayAlertAsync(
+                        "Import Complete",
+                        "All items already exist in the database. No new items were added.",
+                        "OK");
+                    return;
+                }
+
+                // --- 6. Insert only new items ---
+                foreach (var item in newItems)
                 {
                     await _inventoryItemService.AddInventoryItemAsync(item);
-                    var itemTransaction = new InventoryTransaction { 
+                    var itemTransaction = new InventoryTransaction
+                    {
                         InventoryItemId = item.Id,
                         QuantityChange = item.QuantityOnHand,
                         Reason = "Initial Stock Import",
@@ -916,10 +931,16 @@ namespace KusinaPOS.ViewModel
                     await _inventoryTransactionService.AddInventoryTransactionAsync(itemTransaction);
                 }
 
-                // --- 5. Success alert ---
+                // --- 7. Success alert with details ---
+                var message = $"{newItems.Count} new inventory items added.";
+                if (skippedCount > 0)
+                {
+                    message += $"\n{skippedCount} items skipped (already exists).";
+                }
+
                 await PageHelper.DisplayAlertAsync(
                     "Import Successful",
-                    $"{items.Count} inventory items added.",
+                    message,
                     "OK");
             }
             catch (Exception ex)

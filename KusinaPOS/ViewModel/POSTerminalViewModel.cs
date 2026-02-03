@@ -826,14 +826,15 @@ namespace KusinaPOS.ViewModel
                     try
                     {
                         decimal change = cashTendered - totalPayable;
-
+                        // Generate the new ID
+                        var newReceiptNo = await salesService.GenerateReceiptNoAsync();
                         // Calculate discount amount for saving to database
                         decimal discountAmountForDB = subtotal - discountValue;
 
                         var sale = new Sale
                         {
                             SaleDate = DateTime.Now,
-                            ReceiptNo = GenerateReceiptNo(),
+                            ReceiptNo = newReceiptNo,
                             SubTotal = subtotal,
                             Discount = discountAmountForDB,
                             Tax = vatValue,
@@ -894,10 +895,7 @@ namespace KusinaPOS.ViewModel
         }
 
 
-        private string GenerateReceiptNo()
-        {
-            return $"SALESID-{DateTime.Now:yyyyMMddHHmmssfff}";
-        }
+
 
         [RelayCommand]
         public async Task GoBackAsync()

@@ -175,7 +175,19 @@ namespace KusinaPOS.Services
                 return new List<SaleItemWithMenuName>();
             }
         }
-
+        //get sale by ReceiptNo
+        public async Task<Sale> GetSaleByReceiptNoAsync(string receiptNo)
+        {
+            try
+            {
+                return await _db.Table<Sale>().Where(s => s.ReceiptNo == receiptNo).FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[GET SALE BY RECEIPT NO ERROR] {ex}");
+                return null;
+            }
+        }
 
         #endregion
 
@@ -388,7 +400,51 @@ namespace KusinaPOS.Services
                 Debug.WriteLine($"[GET TOTAL TRANSACTIONS COUNT ERROR] {ex}");
                 return 0;
             }
-        }   
-
         }
+        /// <summary>
+        /// Generates a sequential receipt number (e.g., RCPT-20260001).
+        /// Resets the sequence to 0001 at the start of every new year.
+        /// </summary>
+        public async Task<string> GenerateReceiptNoAsync()
+        {
+            try
+            {
+                // 1. Define the prefix based on current year
+                string year = DateTime.Now.Year.ToString();
+                string prefix = $"RCPT-{year}"; // e.g., "RCPT-2026"
+
+                // 2. Find the last sale that starts with this prefix
+                // We order by ID descending to get the most recent one
+                var lastSale = await _db.Table<Sale>()
+                                        .Where(s => s.ReceiptNo.StartsWith(prefix))
+                                        .OrderByDescending(s => s.Id)
+                                        .FirstOrDefaultAsync();
+
+                int nextSequence = 1;
+
+                if (lastSale != null)
+                {
+                    // 3. Extract the numeric part
+                    // Format is prefix + number (RCPT-2026 + 0001)
+                    // Substring starts after the prefix length
+                    string numberPart = lastSale.ReceiptNo.Substring(prefix.Length);
+
+                    if (int.TryParse(numberPart, out int lastNumber))
+                    {
+                        nextSequence = lastNumber + 1;
+                    }
+                }
+
+                // 4. Return formatted string
+                // D4 pads with zeros: 1 -> 0001, 15 -> 0015
+                return $"{prefix}{nextSequence:D4}";
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[GENERATE RECEIPT ERROR] {ex}");
+                // Fallback safe receipt if DB fails, to prevent blocking sales
+                return $"RCPT-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 4).ToUpper()}";
+            }
+        }
+    }
 }

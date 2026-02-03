@@ -1,9 +1,10 @@
-﻿<?xml version = "1.0" encoding = "UTF-8" ?>
-<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:KusinaPOS"
-             xmlns:converters="clr-namespace:KusinaPOS.Converters"
-             x:Class="KusinaPOS.App">
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<Application
+    x:Class="KusinaPOS.App"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:converters="clr-namespace:KusinaPOS.Converters"
+    xmlns:local="clr-namespace:KusinaPOS">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -16,6 +17,7 @@
             <converters:UnitToBoolConverter x:Key="UnitToBoolConverter" />
             <converters:ImageSourceConverter x:Key="ImageSourceConverter" />
             <converters:StockColorConverter x:Key="StockColorConverter" />
+            <converters:EnumToStringConverter x:Key="EnumToStringConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

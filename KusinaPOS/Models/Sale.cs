@@ -29,9 +29,19 @@ namespace KusinaPOS.Models
 
         public decimal ChangeAmount { get; set; }
 
-        // Completed, Voided, Refunded
-        [NotNull]
+        // Status: "Completed", "Voided", "Refunded"
+        [NotNull, Indexed]
         public string Status { get; set; } = "Completed";
+
+        // --- Audit Fields for Voids/Refunds ---
+        public DateTime? ActionDate { get; set; } // When it was voided/refunded
+        public string? Reason { get; set; }       // Why? (e.g., "Customer changed mind")
+        public string? AuthorizedBy { get; set; } // Which manager approved it?
+        public string? CustomerName { get; set; } // Which manager approved it?
+        public string? CustomerContact{ get; set; } // Which manager approved it?
+
+        // For Refunds: Link to the original ReceiptNo if this is a partial refund
+        public string? ReferenceReceiptNo { get; set; }
     }
 
 

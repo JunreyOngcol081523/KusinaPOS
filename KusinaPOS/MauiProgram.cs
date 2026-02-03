@@ -65,8 +65,7 @@ namespace KusinaPOS
             builder.Services.AddTransient<SettingsViewModel>();
             builder.Services.AddTransient<ReportPage>();
             builder.Services.AddSingleton<ReportViewModel>();
-
-
+            builder.Services.AddSingleton<RefundSaleViewModel>();
             return builder.Build();
         }
     }

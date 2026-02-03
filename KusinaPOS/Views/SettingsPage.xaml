@@ -1,138 +1,156 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
+    x:Class="KusinaPOS.Views.SettingsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:badgeView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+    xmlns:syncfusionex="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
     xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
-    x:Class="KusinaPOS.Views.SettingsPage"
     xmlns:viewmodel="clr-namespace:KusinaPOS.ViewModel"
     xmlns:views="clr-namespace:KusinaPOS.Views"
-    xmlns:badgeView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
-    xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
-     xmlns:syncfusionex="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
-    BackgroundColor="{StaticResource CardBackground}" 
-    Title="Settings">
+    Title="Settings"
+    BackgroundColor="{StaticResource CardBackground}">
 
     <Grid Padding="16" RowDefinitions="Auto,*">
-        <!-- Top Header -->
-        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,0,0,8">
-            <ImageButton Grid.Column="0"
-                    Margin="0,0,15,0"
-                    WidthRequest="10"
-                    HeightRequest="10"
-                    Command="{Binding GoBackCommand}"
-                    Source="arrowback.png"
-                    BackgroundColor="Transparent">
-            </ImageButton>
-            <Label Grid.Column="1" 
-                   Text="{Binding StoreName, StringFormat='App Settings - {0}'}"
-                   FontSize="15" 
-                   FontAttributes="Bold"
-                   TextColor="{StaticResource TextPrimary}"
-                   VerticalOptions="Center" />
+        <!--  Top Header  -->
+        <Grid
+            Grid.Row="0"
+            Margin="0,0,0,8"
+            ColumnDefinitions="Auto,*,Auto,Auto">
+            <ImageButton
+                Grid.Column="0"
+                Margin="0,0,15,0"
+                BackgroundColor="Transparent"
+                Command="{Binding GoBackCommand}"
+                HeightRequest="10"
+                Source="arrowback.png"
+                WidthRequest="10" />
+            <Label
+                Grid.Column="1"
+                FontAttributes="Bold"
+                FontSize="15"
+                Text="{Binding StoreName, StringFormat='App Settings - {0}'}"
+                TextColor="{StaticResource TextPrimary}"
+                VerticalOptions="Center" />
 
-            <Label Grid.Column="2" 
-                   Text="{Binding CurrentDateTime}" 
-                   FontSize="12"
-                   TextColor="{StaticResource TextSecondary}"
-                   VerticalOptions="Center"
-                   Margin="0,0,15,0" />
+            <Label
+                Grid.Column="2"
+                Margin="0,0,15,0"
+                FontSize="12"
+                Text="{Binding CurrentDateTime}"
+                TextColor="{StaticResource TextSecondary}"
+                VerticalOptions="Center" />
 
-            <HorizontalStackLayout Grid.Column="3" Spacing="8" VerticalOptions="Center">
-                <Label Text="{Binding LoggedInUserName}" 
-                       FontSize="12"
-                       TextColor="{StaticResource TextSecondary}"
-                       VerticalOptions="Center" />
-                <Border StrokeShape="RoundRectangle 15"
-                        WidthRequest="30"
-                        HeightRequest="30"
-                        BackgroundColor="{StaticResource Primary}">
-                    <Label Text="⚙" 
-                           FontSize="16"
-                           HorizontalOptions="Center"
-                           VerticalOptions="Center"
-                           TextColor="White" />
+            <HorizontalStackLayout
+                Grid.Column="3"
+                Spacing="8"
+                VerticalOptions="Center">
+                <Label
+                    FontSize="12"
+                    Text="{Binding LoggedInUserName}"
+                    TextColor="{StaticResource TextSecondary}"
+                    VerticalOptions="Center" />
+                <Border
+                    BackgroundColor="{StaticResource Primary}"
+                    HeightRequest="30"
+                    StrokeShape="RoundRectangle 15"
+                    WidthRequest="30">
+                    <Label
+                        FontSize="16"
+                        HorizontalOptions="Center"
+                        Text="⚙"
+                        TextColor="White"
+                        VerticalOptions="Center" />
                 </Border>
             </HorizontalStackLayout>
         </Grid>
-        <tabView:SfTabView x:Name="settingTabView"
-                           TabBarPlacement="Bottom"
-                           TabBarCornerRadius="24"
-                           ContentTransitionDuration ="500"
-                           Grid.Row="1"
-                           
-                           >
+        <tabView:SfTabView
+            x:Name="settingTabView"
+            Grid.Row="1"
+            ContentTransitionDuration="500"
+            TabBarCornerRadius="24"
+            TabBarPlacement="Bottom">
 
             <tabView:SfTabView.Items>
 
-                <!--#region store settings -->
-                <!-- ================= STORE SETTINGS ================= -->
-                <tabView:SfTabItem Header="Store Settings"
-                                   ImageSource="settings.png"
-                                   BackgroundColor="{StaticResource CardBackground}" 
-                                    TextColor="{StaticResource TextPrimary}"
-                                    FontSize="12"
-                                    ImageSize="20"
-                                    ImagePosition="Left"
-                                   >
+                <!--#region store settings-->
+                <!--  ================= STORE SETTINGS =================  -->
+                <tabView:SfTabItem
+                    BackgroundColor="{StaticResource CardBackground}"
+                    FontSize="12"
+                    Header="Store Settings"
+                    ImagePosition="Left"
+                    ImageSize="20"
+                    ImageSource="settings.png"
+                    TextColor="{StaticResource TextPrimary}">
                     <ScrollView>
                         <VerticalStackLayout Padding="8" Spacing="5">
 
-                            <Label Text="Store Information"
-                                   FontSize="12"
-                                   TextColor="{StaticResource TextPrimary}"
-                                   FontAttributes="Bold" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="12"
+                                Text="Store Information"
+                                TextColor="{StaticResource TextPrimary}" />
 
-                            <Entry Placeholder="Store Name"
-                                   TextColor="{StaticResource TextPrimary}"
-                                    Text="{Binding StoreName}" />
+                            <Entry
+                                Placeholder="Store Name"
+                                Text="{Binding StoreName}"
+                                TextColor="{StaticResource TextPrimary}" />
 
-                            <Entry Placeholder="Store Address"
-                                   TextColor="{StaticResource TextPrimary}"
-                                    Text="{Binding StoreAddress}" />
+                            <Entry
+                                Placeholder="Store Address"
+                                Text="{Binding StoreAddress}"
+                                TextColor="{StaticResource TextPrimary}" />
 
-                            <Label Text="Store Logo"
-                                   TextColor="{StaticResource TextPrimary}"
-                                    FontAttributes="Bold" />
+                            <Label
+                                FontAttributes="Bold"
+                                Text="Store Logo"
+                                TextColor="{StaticResource TextPrimary}" />
 
-                            <VerticalStackLayout
-                                                     Spacing="8"
-                                                     HeightRequest="220">
+                            <VerticalStackLayout HeightRequest="220" Spacing="8">
 
-                                <Label Text="Item Image"
-                                           FontSize="13"
-                                           FontAttributes="Bold"
-                                           TextColor="{StaticResource TextSecondary}" />
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="13"
+                                    Text="Item Image"
+                                    TextColor="{StaticResource TextSecondary}" />
 
-                                <Grid ColumnDefinitions="120,*"
-                                        ColumnSpacing="15">
+                                <Grid ColumnDefinitions="120,*" ColumnSpacing="15">
 
-                                    <Border Style="{StaticResource CardBorder}"
-                                                Grid.Column="0"
-                                                WidthRequest="120"
-                                                HeightRequest="120"
-                                                BackgroundColor="{StaticResource BackgroundDarker}">
-                                        <Image Source="{Binding StoreImageSource}"
-                                                   WidthRequest="120"
-                                                   HeightRequest="120"
-                                                   Aspect="AspectFill" />
+                                    <Border
+                                        Grid.Column="0"
+                                        BackgroundColor="{StaticResource BackgroundDarker}"
+                                        HeightRequest="120"
+                                        Style="{StaticResource CardBorder}"
+                                        WidthRequest="120">
+                                        <Image
+                                            Aspect="AspectFill"
+                                            HeightRequest="120"
+                                            Source="{Binding StoreImageSource}"
+                                            WidthRequest="120" />
                                     </Border>
 
 
-                                    <Border Grid.Column="1" 
-                                            BackgroundColor="{StaticResource Gray200}"
-                                                Style="{StaticResource CardBorder}"
-                                                Stroke="{StaticResource Primary}"
-                                                StrokeThickness="2"
-                                                StrokeDashArray="5,5"
-                                                Padding="15">
+                                    <Border
+                                        Grid.Column="1"
+                                        Padding="15"
+                                        BackgroundColor="{StaticResource Gray200}"
+                                        Stroke="{StaticResource Primary}"
+                                        StrokeDashArray="5,5"
+                                        StrokeThickness="2"
+                                        Style="{StaticResource CardBorder}">
                                         <VerticalStackLayout HorizontalOptions="Center">
-                                            <Label Text="📁" FontSize="32" />
-                                            <Label Text="{Binding ImageLabel}"
-                                                   TextColor="{StaticResource TextPrimary}"
-                                                        FontAttributes="Bold" />
-                                            <Label Text="PNG, JPG (max. 5MB)"
-                                                       FontSize="11"
-                                                       TextColor="{StaticResource Gray500}" />
+                                            <Label FontSize="32" Text="📁" />
+                                            <Label
+                                                FontAttributes="Bold"
+                                                Text="{Binding ImageLabel}"
+                                                TextColor="{StaticResource TextPrimary}" />
+                                            <Label
+                                                FontSize="11"
+                                                Text="PNG, JPG (max. 5MB)"
+                                                TextColor="{StaticResource Gray500}" />
                                         </VerticalStackLayout>
                                         <Border.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding UploadImageCommand}" />
@@ -142,165 +160,177 @@
                                 </Grid>
                             </VerticalStackLayout>
 
-                            <Button Text="Save Store Settings"
-                                    Command="{Binding SaveStoreSettingsCommand}"
-                                    TextColor="White" />
+                            <Button
+                                Command="{Binding SaveStoreSettingsCommand}"
+                                Text="Save Store Settings"
+                                TextColor="White" />
 
                         </VerticalStackLayout>
                     </ScrollView>
                 </tabView:SfTabItem>
                 <!--#endregion-->
 
-                <!--#region database settings -->
-                <!-- ================= DATABASE SETTINGS ================= -->
-                <tabView:SfTabItem Header="Database Settings"
-                   ImageSource="database.png"
-                   BackgroundColor="{StaticResource CardBackground}"
-                   TextColor="{StaticResource TextPrimary}"
-                                    FontSize="12"
-                                    ImageSize="20"
-                   ImagePosition="Left">
+                <!--#region database settings-->
+                <!--  ================= DATABASE SETTINGS =================  -->
+                <tabView:SfTabItem
+                    BackgroundColor="{StaticResource CardBackground}"
+                    FontSize="12"
+                    Header="Database Settings"
+                    ImagePosition="Left"
+                    ImageSize="20"
+                    ImageSource="database.png"
+                    TextColor="{StaticResource TextPrimary}">
 
                     <Grid Padding="8" RowDefinitions="Auto,Auto,Auto,*">
 
-                        <!-- Loading Overlay -->
+                        <!--  Loading Overlay  -->
                         <ActivityIndicator
                             Grid.RowSpan="4"
+                            HeightRequest="50"
+                            HorizontalOptions="Center"
                             IsRunning="{Binding IsBusy}"
                             IsVisible="{Binding IsBusy}"
-                            Color="{StaticResource Primary}"
-                            HeightRequest="50"
-                            WidthRequest="50"
-                            HorizontalOptions="Center"
                             VerticalOptions="Center"
-                            ZIndex="1" />
+                            WidthRequest="50"
+                            ZIndex="1"
+                            Color="{StaticResource Primary}" />
 
-                        <!-- Header -->
-                        <Label Grid.Row="0"
-                               Text="Database Backup"
-                               TextColor="{StaticResource TextPrimary}"
-                               FontSize="12"
-                               FontAttributes="Bold"
-                               Margin="0,0,0,10" />
+                        <!--  Header  -->
+                        <Label
+                            Grid.Row="0"
+                            Margin="0,0,0,10"
+                            FontAttributes="Bold"
+                            FontSize="12"
+                            Text="Database Backup"
+                            TextColor="{StaticResource TextPrimary}" />
 
-                        <!-- Backup Button -->
-                        <Button Grid.Row="1"
-                                Text="Create New Backup"
-                                Command="{Binding BackupDatabaseCommand}"
-                                TextColor="White"
-                                CornerRadius="8"
-                                IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                        <!--  Backup Button  -->
+                        <Button
+                            Grid.Row="1"
+                            Command="{Binding BackupDatabaseCommand}"
+                            CornerRadius="8"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                            Text="Create New Backup"
+                            TextColor="White" />
 
-                        <!-- Backup List Header -->
-                        <HorizontalStackLayout Grid.Row="2"
-                                               HorizontalOptions="Fill"
-                                               Spacing="5"
-                                               Margin="0,8,0,5">
+                        <!--  Backup List Header  -->
+                        <HorizontalStackLayout
+                            Grid.Row="2"
+                            Margin="0,8,0,5"
+                            HorizontalOptions="Fill"
+                            Spacing="5">
                             <badgeView:SfBadgeView BadgeText="{Binding Backups.Count}">
                                 <badgeView:SfBadgeView.Content>
-                                    <Button Text="Backups" Command="{Binding RefreshBackupsCommand}"/>
+                                    <Button Command="{Binding RefreshBackupsCommand}" Text="Backups" />
                                 </badgeView:SfBadgeView.Content>
                             </badgeView:SfBadgeView>
 
                         </HorizontalStackLayout>
 
-                        <!-- Backups List -->
-                        <RefreshView Grid.Row="3"
-                                     IsRefreshing="{Binding IsRefreshing}"
-                                     Command="{Binding RefreshBackupsCommand}"
-                                     RefreshColor="{StaticResource Primary}">
+                        <!--  Backups List  -->
+                        <RefreshView
+                            Grid.Row="3"
+                            Command="{Binding RefreshBackupsCommand}"
+                            IsRefreshing="{Binding IsRefreshing}"
+                            RefreshColor="{StaticResource Primary}">
 
-                            <CollectionView ItemsSource="{Binding Backups}"
-                                            VerticalOptions="Fill">
+                            <CollectionView ItemsSource="{Binding Backups}" VerticalOptions="Fill">
 
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Style="{StaticResource CardBorder}"
-                                                Padding="12"
-                                                Margin="0,10,0,0">
+                                        <Border
+                                            Margin="0,10,0,0"
+                                            Padding="12"
+                                            Style="{StaticResource CardBorder}">
 
-                                            <Grid RowDefinitions="Auto,Auto,Auto"
-                                                  ColumnDefinitions="*,Auto"
-                                                  RowSpacing="12">
+                                            <Grid
+                                                ColumnDefinitions="*,Auto"
+                                                RowDefinitions="Auto,Auto,Auto"
+                                                RowSpacing="12">
 
-                                                <Label Grid.Row="0"
-                                                       Text="{Binding FileName}"
-                                                       TextColor="{StaticResource TextPrimary}"
-                                                       FontAttributes="Bold"
-                                                       FontSize="16" />
+                                                <Label
+                                                    Grid.Row="0"
+                                                    FontAttributes="Bold"
+                                                    FontSize="16"
+                                                    Text="{Binding FileName}"
+                                                    TextColor="{StaticResource TextPrimary}" />
 
                                                 <HorizontalStackLayout Grid.Row="1" Spacing="15">
-                                                    <Label Text="{Binding FormattedDate}" TextColor="{StaticResource TextSecondary}"/>
-                                                    <Label Text="{Binding FormattedTime}" TextColor="{StaticResource TextSecondary}"/>
+                                                    <Label Text="{Binding FormattedDate}" TextColor="{StaticResource TextSecondary}" />
+                                                    <Label Text="{Binding FormattedTime}" TextColor="{StaticResource TextSecondary}" />
                                                 </HorizontalStackLayout>
 
-                                                <Label Grid.Row="2"
-                                                       Text="{Binding FileSizeFormatted}"
-                                                       FontSize="13"
-                                                       TextColor="{StaticResource TextSecondary}"/>
-                                                <!-- Action Buttons -->
-                                                <HorizontalStackLayout Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
-                                                              Spacing="12"
-                                                              VerticalOptions="Center">
+                                                <Label
+                                                    Grid.Row="2"
+                                                    FontSize="13"
+                                                    Text="{Binding FileSizeFormatted}"
+                                                    TextColor="{StaticResource TextSecondary}" />
+                                                <!--  Action Buttons  -->
+                                                <HorizontalStackLayout
+                                                    Grid.Row="0"
+                                                    Grid.RowSpan="3"
+                                                    Grid.Column="1"
+                                                    Spacing="12"
+                                                    VerticalOptions="Center">
 
-                                                    <!-- Share Button -->
-                                                    <Border StrokeShape="RoundRectangle 8"
-                                                   Stroke="#007AFF"
-                                                   StrokeThickness="1"
-                                                   BackgroundColor="Transparent"
-                                                   Padding="12"
-                                                   HeightRequest="50"
-                                                   WidthRequest="50">
+                                                    <!--  Share Button  -->
+                                                    <Border
+                                                        Padding="12"
+                                                        BackgroundColor="Transparent"
+                                                        HeightRequest="50"
+                                                        Stroke="#007AFF"
+                                                        StrokeShape="RoundRectangle 8"
+                                                        StrokeThickness="1"
+                                                        WidthRequest="50">
                                                         <Border.GestureRecognizers>
-                                                            <TapGestureRecognizer 
-                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ShareBackupCommand}"
-                                                        CommandParameter="{Binding .}" />
+                                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ShareBackupCommand}" CommandParameter="{Binding .}" />
                                                         </Border.GestureRecognizers>
-                                                        <Image Source="share.png"
-                                                       HeightRequest="24"
-                                                       WidthRequest="24"
-                                                       VerticalOptions="Center"
-                                                       HorizontalOptions="Center" />
+                                                        <Image
+                                                            HeightRequest="24"
+                                                            HorizontalOptions="Center"
+                                                            Source="share.png"
+                                                            VerticalOptions="Center"
+                                                            WidthRequest="24" />
                                                     </Border>
 
-                                                    <!-- Restore Button -->
-                                                    <Border StrokeShape="RoundRectangle 8"
-                                                   Stroke="#34C759"
-                                                   StrokeThickness="1"
-                                                   BackgroundColor="Transparent"
-                                                   Padding="12"
-                                                   HeightRequest="50"
-                                                   WidthRequest="50">
+                                                    <!--  Restore Button  -->
+                                                    <Border
+                                                        Padding="12"
+                                                        BackgroundColor="Transparent"
+                                                        HeightRequest="50"
+                                                        Stroke="#34C759"
+                                                        StrokeShape="RoundRectangle 8"
+                                                        StrokeThickness="1"
+                                                        WidthRequest="50">
                                                         <Border.GestureRecognizers>
-                                                            <TapGestureRecognizer 
-                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RestoreBackupCommand}"
-                                                        CommandParameter="{Binding .}" />
+                                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RestoreBackupCommand}" CommandParameter="{Binding .}" />
                                                         </Border.GestureRecognizers>
-                                                        <Image Source="restore.png"
-                                                       HeightRequest="24"
-                                                       WidthRequest="24"
-                                                       VerticalOptions="Center"
-                                                       HorizontalOptions="Center" />
+                                                        <Image
+                                                            HeightRequest="24"
+                                                            HorizontalOptions="Center"
+                                                            Source="restore.png"
+                                                            VerticalOptions="Center"
+                                                            WidthRequest="24" />
                                                     </Border>
 
-                                                    <!-- Delete Button -->
-                                                    <Border StrokeShape="RoundRectangle 8"
-                                                   Stroke="#FF3B30"
-                                                   StrokeThickness="1"
-                                                   BackgroundColor="Transparent"
-                                                   Padding="12"
-                                                   HeightRequest="50"
-                                                   WidthRequest="50">
+                                                    <!--  Delete Button  -->
+                                                    <Border
+                                                        Padding="12"
+                                                        BackgroundColor="Transparent"
+                                                        HeightRequest="50"
+                                                        Stroke="#FF3B30"
+                                                        StrokeShape="RoundRectangle 8"
+                                                        StrokeThickness="1"
+                                                        WidthRequest="50">
                                                         <Border.GestureRecognizers>
-                                                            <TapGestureRecognizer 
-                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteBackupCommand}"
-                                                        CommandParameter="{Binding .}" />
+                                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteBackupCommand}" CommandParameter="{Binding .}" />
                                                         </Border.GestureRecognizers>
-                                                        <Image Source="delete.png"
-                                                       HeightRequest="24"
-                                                       WidthRequest="24"
-                                                       VerticalOptions="Center"
-                                                       HorizontalOptions="Center" />
+                                                        <Image
+                                                            HeightRequest="24"
+                                                            HorizontalOptions="Center"
+                                                            Source="delete.png"
+                                                            VerticalOptions="Center"
+                                                            WidthRequest="24" />
                                                     </Border>
 
                                                 </HorizontalStackLayout>
@@ -310,13 +340,15 @@
                                 </CollectionView.ItemTemplate>
 
                                 <CollectionView.EmptyView>
-                                    <VerticalStackLayout Padding="40"
-                                         HorizontalOptions="Center"
-                                         VerticalOptions="Center">
-                                        <Label Text="No backups found"
-                                               FontSize="18"
-                                               FontAttributes="Bold"
-                                               TextColor="#999999" />
+                                    <VerticalStackLayout
+                                        Padding="40"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center">
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="18"
+                                            Text="No backups found"
+                                            TextColor="#999999" />
                                     </VerticalStackLayout>
                                 </CollectionView.EmptyView>
 
@@ -327,104 +359,113 @@
                     </Grid>
                 </tabView:SfTabItem>
                 <!--#endregion-->
-                <!--#region POS and categories settings -->
-                <!--===================PRODUCT SETTINGS===============-->
-                <tabView:SfTabItem Header="Items and Categories Settings"
-                                   ImageSource="inventory.png"
-                                   BackgroundColor="{StaticResource CardBackground}"
-                                   TextColor="{StaticResource TextPrimary}"
-                                    FontSize="12"
-                                    ImageSize="20"
-                                    ImagePosition="Left">
+                <!--#region POS and categories settings-->
+                <!--  ===================PRODUCT SETTINGS===============  -->
+                <tabView:SfTabItem
+                    BackgroundColor="{StaticResource CardBackground}"
+                    FontSize="12"
+                    Header="Items and Categories Settings"
+                    ImagePosition="Left"
+                    ImageSize="20"
+                    ImageSource="inventory.png"
+                    TextColor="{StaticResource TextPrimary}">
                     <ScrollView>
                         <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
-                            <!--#region category settings -->
+                            <!--#region category settings-->
                             <Border Grid.Row="0" Style="{StaticResource CardBorder}">
                                 <syncfusionex:SfExpander AnimationDuration="200" IsExpanded="False">
                                     <syncfusionex:SfExpander.Header>
                                         <Grid Padding="10,0">
                                             <Grid.RowDefinitions>
-                                                <RowDefinition Height="48"/>
+                                                <RowDefinition Height="48" />
                                             </Grid.RowDefinitions>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40"/>
-                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="40" />
+                                                <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <!-- Icon -->
-                                            <Image Source="category.png" 
-                               Grid.Column="0"
-                               HeightRequest="24"
-                               WidthRequest="24"
-                               VerticalOptions="Center"/>
-                                            <!-- Header Text -->
-                                            <Label Text="Category Settings"
-                               CharacterSpacing="0.25"
-                               FontSize="16" 
-                               FontAttributes="Bold"
-                               Grid.Column="1" 
-                               VerticalOptions="Center"
-                               TextColor="{StaticResource TextPrimary}"/>
+                                            <!--  Icon  -->
+                                            <Image
+                                                Grid.Column="0"
+                                                HeightRequest="24"
+                                                Source="category.png"
+                                                VerticalOptions="Center"
+                                                WidthRequest="24" />
+                                            <!--  Header Text  -->
+                                            <Label
+                                                Grid.Column="1"
+                                                CharacterSpacing="0.25"
+                                                FontAttributes="Bold"
+                                                FontSize="16"
+                                                Text="Category Settings"
+                                                TextColor="{StaticResource TextPrimary}"
+                                                VerticalOptions="Center" />
                                         </Grid>
                                     </syncfusionex:SfExpander.Header>
 
                                     <syncfusionex:SfExpander.Content>
                                         <ScrollView Padding="20,15,20,20">
                                             <VerticalStackLayout Spacing="15">
-                                                <!-- Add New Category Section -->
-                                                <Label Text="Add New Category"
-                                   TextColor="{StaticResource TextPrimary}"
-                                   FontSize="12"
-                                   FontAttributes="Bold"
-                                   Margin="0,0,0,5"/>
+                                                <!--  Add New Category Section  -->
+                                                <Label
+                                                    Margin="0,0,0,5"
+                                                    FontAttributes="Bold"
+                                                    FontSize="12"
+                                                    Text="Add New Category"
+                                                    TextColor="{StaticResource TextPrimary}" />
 
-                                                <Entry Placeholder="Enter New Category Name"
-                                   PlaceholderColor="{StaticResource TextSecondary}"
-                                   HorizontalOptions="Fill"
-                                   Text="{Binding NewCategoryName}"
-                                   TextColor="{StaticResource TextPrimary}"
-                                   Margin="0,0,0,10"/>
+                                                <Entry
+                                                    Margin="0,0,0,10"
+                                                    HorizontalOptions="Fill"
+                                                    Placeholder="Enter New Category Name"
+                                                    PlaceholderColor="{StaticResource TextSecondary}"
+                                                    Text="{Binding NewCategoryName}"
+                                                    TextColor="{StaticResource TextPrimary}" />
 
-                                                <Button Text="Save"
-                                    BackgroundColor="{StaticResource Primary}"
-                                    Command="{Binding AddCategoryCommand}"
-                                    Margin="0,0,0,15"/>
+                                                <Button
+                                                    Margin="0,0,0,15"
+                                                    BackgroundColor="{StaticResource Primary}"
+                                                    Command="{Binding AddCategoryCommand}"
+                                                    Text="Save" />
 
-                                                <!-- Categories List -->
-                                                <syncfusion:SfListView x:Name="listViewcategories" 
-                                               ItemsSource="{Binding Categories}"
-                                               SelectionBackground="Transparent"
-                                               ItemSize="100">
+                                                <!--  Categories List  -->
+                                                <syncfusion:SfListView
+                                                    x:Name="listViewcategories"
+                                                    ItemSize="100"
+                                                    ItemsSource="{Binding Categories}"
+                                                    SelectionBackground="Transparent">
                                                     <syncfusion:SfListView.ItemTemplate>
                                                         <DataTemplate>
                                                             <Grid Padding="10">
-                                                                <badgeView:SfBadgeView HorizontalOptions="Fill" 
-                                                                   VerticalOptions="Fill"
-                                                                   BadgeText="{Binding NumberOfMenuUnderThisCategory}">
+                                                                <badgeView:SfBadgeView
+                                                                    BadgeText="{Binding NumberOfMenuUnderThisCategory}"
+                                                                    HorizontalOptions="Fill"
+                                                                    VerticalOptions="Fill">
                                                                     <badgeView:SfBadgeView.Content>
-                                                                        <Border StrokeShape="RoundRectangle 4,4,4,4"
-                                                            Stroke="#CAC4D0"
-                                                            StrokeThickness="1"
-                                                            BackgroundColor="{StaticResource CardBackground}">
-                                                                            <Grid Padding="10" 
-                                                              ColumnDefinitions="*,Auto" 
-                                                              RowDefinitions="Auto">
-                                                                                <!-- Category Name -->
-                                                                                <Label Text="{Binding Name}" 
-                                                                   FontSize="14"
-                                                                   VerticalOptions="Center"
-                                                                   TextColor="{StaticResource TextPrimary}" />
-                                                                                <!-- Delete Icon -->
-                                                                                <Image Source="delete.png"
-                                                                   HeightRequest="20"
-                                                                   WidthRequest="20"
-                                                                   VerticalOptions="Center"
-                                                                   Margin="5,0"
-                                                                   Grid.Column="1">
+                                                                        <Border
+                                                                            BackgroundColor="{StaticResource CardBackground}"
+                                                                            Stroke="#CAC4D0"
+                                                                            StrokeShape="RoundRectangle 4,4,4,4"
+                                                                            StrokeThickness="1">
+                                                                            <Grid
+                                                                                Padding="10"
+                                                                                ColumnDefinitions="*,Auto"
+                                                                                RowDefinitions="Auto">
+                                                                                <!--  Category Name  -->
+                                                                                <Label
+                                                                                    FontSize="14"
+                                                                                    Text="{Binding Name}"
+                                                                                    TextColor="{StaticResource TextPrimary}"
+                                                                                    VerticalOptions="Center" />
+                                                                                <!--  Delete Icon  -->
+                                                                                <Image
+                                                                                    Grid.Column="1"
+                                                                                    Margin="5,0"
+                                                                                    HeightRequest="20"
+                                                                                    Source="delete.png"
+                                                                                    VerticalOptions="Center"
+                                                                                    WidthRequest="20">
                                                                                     <Image.GestureRecognizers>
-                                                                                        <TapGestureRecognizer 
-                                                                        Command="{Binding Source={x:Reference listViewcategories}, 
-                                                                        Path=BindingContext.DeleteCategoryCommand}" 
-                                                                        CommandParameter="{Binding .}" />
+                                                                                        <TapGestureRecognizer Command="{Binding Source={x:Reference listViewcategories}, Path=BindingContext.DeleteCategoryCommand}" CommandParameter="{Binding .}" />
                                                                                     </Image.GestureRecognizers>
                                                                                 </Image>
                                                                             </Grid>
@@ -445,32 +486,34 @@
                             </Border>
                             <!--#endregion-->
 
-                            <!--#region POS settings -->
+                            <!--#region POS settings-->
                             <Border Grid.Row="1" Style="{StaticResource CardBorder}">
                                 <syncfusionex:SfExpander AnimationDuration="200" IsExpanded="False">
                                     <syncfusionex:SfExpander.Header>
                                         <Grid Padding="10,0">
                                             <Grid.RowDefinitions>
-                                                <RowDefinition Height="48"/>
+                                                <RowDefinition Height="48" />
                                             </Grid.RowDefinitions>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40"/>
-                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="40" />
+                                                <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <!-- Icon -->
-                                            <Image Source="pos.png" 
-                               Grid.Column="0"
-                               HeightRequest="24"
-                               WidthRequest="24"
-                               VerticalOptions="Center"/>
-                                            <!-- Header Text -->
-                                            <Label Text="POS Settings"
-                               CharacterSpacing="0.25"
-                               FontSize="16" 
-                               FontAttributes="Bold"
-                               Grid.Column="1" 
-                               VerticalOptions="Center"
-                               TextColor="{StaticResource TextPrimary}"/>
+                                            <!--  Icon  -->
+                                            <Image
+                                                Grid.Column="0"
+                                                HeightRequest="24"
+                                                Source="pos.png"
+                                                VerticalOptions="Center"
+                                                WidthRequest="24" />
+                                            <!--  Header Text  -->
+                                            <Label
+                                                Grid.Column="1"
+                                                CharacterSpacing="0.25"
+                                                FontAttributes="Bold"
+                                                FontSize="16"
+                                                Text="POS Settings"
+                                                TextColor="{StaticResource TextPrimary}"
+                                                VerticalOptions="Center" />
                                         </Grid>
                                     </syncfusionex:SfExpander.Header>
 
@@ -478,249 +521,289 @@
                                         <ScrollView Padding="20,15,20,20">
                                             <VerticalStackLayout Spacing="25">
 
-                                                <!-- Discount Settings Section -->
-                                                <Border StrokeShape="RoundRectangle 8"
-                                    Stroke="{StaticResource TextSecondary}"
-                                    StrokeThickness="1"
-                                    Padding="15"
-                                    BackgroundColor="{StaticResource CardBackground}">
+                                                <!--  Discount Settings Section  -->
+                                                <Border
+                                                    Padding="15"
+                                                    BackgroundColor="{StaticResource CardBackground}"
+                                                    Stroke="{StaticResource TextSecondary}"
+                                                    StrokeShape="RoundRectangle 8"
+                                                    StrokeThickness="1">
                                                     <VerticalStackLayout Spacing="12">
-                                                        <!-- Section Header with Icon -->
+                                                        <!--  Section Header with Icon  -->
                                                         <HorizontalStackLayout Spacing="8">
-                                                            <Label Text="💰"
-                                               FontSize="18"
-                                               VerticalOptions="Center"/>
-                                                            <Label Text="Discount Settings"
-                                               FontSize="14"
-                                               FontAttributes="Bold"
-                                               VerticalOptions="Center"
-                                               TextColor="{StaticResource TextPrimary}"/>
+                                                            <Label
+                                                                FontSize="18"
+                                                                Text="💰"
+                                                                VerticalOptions="Center" />
+                                                            <Label
+                                                                FontAttributes="Bold"
+                                                                FontSize="14"
+                                                                Text="Discount Settings"
+                                                                TextColor="{StaticResource TextPrimary}"
+                                                                VerticalOptions="Center" />
                                                         </HorizontalStackLayout>
 
-                                                        <BoxView HeightRequest="1" 
-                                             Color="{StaticResource TextSecondary}" 
-                                             Opacity="0.3"
-                                             Margin="0,5,0,10"/>
+                                                        <BoxView
+                                                            Margin="0,5,0,10"
+                                                            HeightRequest="1"
+                                                            Opacity="0.3"
+                                                            Color="{StaticResource TextSecondary}" />
 
-                                                        <!-- Enable/Disable Toggle -->
-                                                        <Border StrokeShape="RoundRectangle 6"
-                                            BackgroundColor="{StaticResource CardBackground}"
-                                            Padding="12">
+                                                        <!--  Enable/Disable Toggle  -->
+                                                        <Border
+                                                            Padding="12"
+                                                            BackgroundColor="{StaticResource CardBackground}"
+                                                            StrokeShape="RoundRectangle 6">
                                                             <Grid ColumnDefinitions="*,Auto">
-                                                                <Label Text="Enable Discount"
-                                                   FontSize="13"
-                                                   VerticalOptions="Center"
-                                                   TextColor="{StaticResource TextPrimary}"/>
-                                                                <Switch Grid.Column="1"
-                                                    IsToggled="{Binding AllowDiscount, Mode=TwoWay}"
-                                                    VerticalOptions="Center"/>
+                                                                <Label
+                                                                    FontSize="13"
+                                                                    Text="Enable Discount"
+                                                                    TextColor="{StaticResource TextPrimary}"
+                                                                    VerticalOptions="Center" />
+                                                                <Switch
+                                                                    Grid.Column="1"
+                                                                    IsToggled="{Binding AllowDiscount, Mode=TwoWay}"
+                                                                    VerticalOptions="Center" />
                                                             </Grid>
                                                         </Border>
 
-                                                        <!-- Discount Type Selection -->
-                                                        <Label Text="Discount Type"
-                                        FontSize="12"
-                                        FontAttributes="Bold"
-                                        TextColor="{StaticResource TextPrimary}"
-                                        Margin="0,8,0,5"/>
+                                                        <!--  Discount Type Selection  -->
+                                                        <Label
+                                                            Margin="0,8,0,5"
+                                                            FontAttributes="Bold"
+                                                            FontSize="12"
+                                                            Text="Discount Type"
+                                                            TextColor="{StaticResource TextPrimary}" />
 
                                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                                                            <Border Grid.Column="0"
-                                                StrokeShape="RoundRectangle 6"
-                                                Stroke="{StaticResource TextSecondary}"
-                                                StrokeThickness="1"
-                                                Padding="10,8"
-                                                BackgroundColor="{StaticResource CardBackground}">
-                                                                <RadioButton Content="Fixed Amount"
-                                                         IsChecked="{Binding IsDiscountFixedAmount, Mode=TwoWay}"
-                                                         TextColor="{StaticResource TextPrimary}"
-                                                         FontSize="12"/>
+                                                            <Border
+                                                                Grid.Column="0"
+                                                                Padding="10,8"
+                                                                BackgroundColor="{StaticResource CardBackground}"
+                                                                Stroke="{StaticResource TextSecondary}"
+                                                                StrokeShape="RoundRectangle 6"
+                                                                StrokeThickness="1">
+                                                                <RadioButton
+                                                                    Content="Fixed Amount"
+                                                                    FontSize="12"
+                                                                    IsChecked="{Binding IsDiscountFixedAmount, Mode=TwoWay}"
+                                                                    TextColor="{StaticResource TextPrimary}" />
                                                             </Border>
 
-                                                            <Border Grid.Column="1"
-                                                StrokeShape="RoundRectangle 6"
-                                                Stroke="{StaticResource TextSecondary}"
-                                                StrokeThickness="1"
-                                                Padding="10,8"
-                                                BackgroundColor="{StaticResource CardBackground}">
-                                                                <RadioButton Content="Percentage"
-                                                         IsChecked="{Binding IsDiscountPercentage, Mode=TwoWay}"
-                                                         TextColor="{StaticResource TextPrimary}"
-                                                         FontSize="12"/>
+                                                            <Border
+                                                                Grid.Column="1"
+                                                                Padding="10,8"
+                                                                BackgroundColor="{StaticResource CardBackground}"
+                                                                Stroke="{StaticResource TextSecondary}"
+                                                                StrokeShape="RoundRectangle 6"
+                                                                StrokeThickness="1">
+                                                                <RadioButton
+                                                                    Content="Percentage"
+                                                                    FontSize="12"
+                                                                    IsChecked="{Binding IsDiscountPercentage, Mode=TwoWay}"
+                                                                    TextColor="{StaticResource TextPrimary}" />
                                                             </Border>
                                                         </Grid>
 
-                                                        <!-- Discount Value Input -->
-                                                        <Label Text="Discount Value"
-                                           FontSize="12"
-                                           FontAttributes="Bold"
-                                           TextColor="{StaticResource TextPrimary}"
-                                           Margin="0,8,0,5"/>
+                                                        <!--  Discount Value Input  -->
+                                                        <Label
+                                                            Margin="0,8,0,5"
+                                                            FontAttributes="Bold"
+                                                            FontSize="12"
+                                                            Text="Discount Value"
+                                                            TextColor="{StaticResource TextPrimary}" />
 
-                                                        <Border StrokeShape="RoundRectangle 6"
-                                            Stroke="{StaticResource TextSecondary}"
-                                            StrokeThickness="1"
-                                            Padding="2">
-                                                            <Entry Placeholder="Enter amount or percentage"
-                                               PlaceholderColor="{StaticResource TextSecondary}"
-                                               Text="{Binding DiscountValue, Mode=TwoWay}"
-                                               Keyboard="Numeric"
-                                               TextColor="{StaticResource TextPrimary}"
-                                               BackgroundColor="Transparent"/>
+                                                        <Border
+                                                            Padding="2"
+                                                            Stroke="{StaticResource TextSecondary}"
+                                                            StrokeShape="RoundRectangle 6"
+                                                            StrokeThickness="1">
+                                                            <Entry
+                                                                BackgroundColor="Transparent"
+                                                                Keyboard="Numeric"
+                                                                Placeholder="Enter amount or percentage"
+                                                                PlaceholderColor="{StaticResource TextSecondary}"
+                                                                Text="{Binding DiscountValue, Mode=TwoWay}"
+                                                                TextColor="{StaticResource TextPrimary}" />
                                                         </Border>
                                                     </VerticalStackLayout>
                                                 </Border>
 
-                                                <!-- VAT Settings Section -->
-                                                <Border StrokeShape="RoundRectangle 8"
-                                    Stroke="{StaticResource TextSecondary}"
-                                    StrokeThickness="1"
-                                    Padding="15"
-                                    BackgroundColor="{StaticResource CardBackground}">
+                                                <!--  VAT Settings Section  -->
+                                                <Border
+                                                    Padding="15"
+                                                    BackgroundColor="{StaticResource CardBackground}"
+                                                    Stroke="{StaticResource TextSecondary}"
+                                                    StrokeShape="RoundRectangle 8"
+                                                    StrokeThickness="1">
                                                     <VerticalStackLayout Spacing="12">
-                                                        <!-- Section Header with Icon -->
+                                                        <!--  Section Header with Icon  -->
                                                         <HorizontalStackLayout Spacing="8">
-                                                            <Label Text="📊"
-                                               FontSize="18"
-                                               VerticalOptions="Center"/>
-                                                            <Label Text="VAT Settings"
-                                               FontSize="14"
-                                               FontAttributes="Bold"
-                                               VerticalOptions="Center"
-                                               TextColor="{StaticResource TextPrimary}"/>
+                                                            <Label
+                                                                FontSize="18"
+                                                                Text="📊"
+                                                                VerticalOptions="Center" />
+                                                            <Label
+                                                                FontAttributes="Bold"
+                                                                FontSize="14"
+                                                                Text="VAT Settings"
+                                                                TextColor="{StaticResource TextPrimary}"
+                                                                VerticalOptions="Center" />
                                                         </HorizontalStackLayout>
 
-                                                        <BoxView HeightRequest="1" 
-                                             Color="{StaticResource TextSecondary}" 
-                                             Opacity="0.3"
-                                             Margin="0,5,0,10"/>
+                                                        <BoxView
+                                                            Margin="0,5,0,10"
+                                                            HeightRequest="1"
+                                                            Opacity="0.3"
+                                                            Color="{StaticResource TextSecondary}" />
 
-                                                        <!-- Enable/Disable Toggle -->
-                                                        <Border StrokeShape="RoundRectangle 6"
-                                            BackgroundColor="{StaticResource CardBackground}"
-                                            Padding="12">
+                                                        <!--  Enable/Disable Toggle  -->
+                                                        <Border
+                                                            Padding="12"
+                                                            BackgroundColor="{StaticResource CardBackground}"
+                                                            StrokeShape="RoundRectangle 6">
                                                             <Grid ColumnDefinitions="*,Auto">
-                                                                <Label Text="Enable VAT"
-                                                   FontSize="13"
-                                                   VerticalOptions="Center"
-                                                   TextColor="{StaticResource TextPrimary}"/>
-                                                                <Switch Grid.Column="1"
-                                                    IsToggled="{Binding AllowVAT, Mode=TwoWay}"
-                                                    VerticalOptions="Center"/>
+                                                                <Label
+                                                                    FontSize="13"
+                                                                    Text="Enable VAT"
+                                                                    TextColor="{StaticResource TextPrimary}"
+                                                                    VerticalOptions="Center" />
+                                                                <Switch
+                                                                    Grid.Column="1"
+                                                                    IsToggled="{Binding AllowVAT, Mode=TwoWay}"
+                                                                    VerticalOptions="Center" />
                                                             </Grid>
                                                         </Border>
 
-                                                        <!-- VAT Value Input -->
-                                                        <Label Text="VAT %"
-                                           FontSize="12"
-                                           FontAttributes="Bold"
-                                           TextColor="{StaticResource TextPrimary}"
-                                           Margin="0,8,0,5"/>
+                                                        <!--  VAT Value Input  -->
+                                                        <Label
+                                                            Margin="0,8,0,5"
+                                                            FontAttributes="Bold"
+                                                            FontSize="12"
+                                                            Text="VAT %"
+                                                            TextColor="{StaticResource TextPrimary}" />
 
-                                                        <Border StrokeShape="RoundRectangle 6"
-                                            Stroke="{StaticResource TextSecondary}"
-                                            StrokeThickness="1"
-                                            Padding="2">
-                                                            <Entry Placeholder="Enter VAT percentage"
-                                               PlaceholderColor="{StaticResource TextSecondary}"
-                                               Text="{Binding VatValue, Mode=TwoWay}"
-                                               Keyboard="Numeric"
-                                               TextColor="{StaticResource TextPrimary}"
-                                               BackgroundColor="Transparent"/>
+                                                        <Border
+                                                            Padding="2"
+                                                            Stroke="{StaticResource TextSecondary}"
+                                                            StrokeShape="RoundRectangle 6"
+                                                            StrokeThickness="1">
+                                                            <Entry
+                                                                BackgroundColor="Transparent"
+                                                                Keyboard="Numeric"
+                                                                Placeholder="Enter VAT percentage"
+                                                                PlaceholderColor="{StaticResource TextSecondary}"
+                                                                Text="{Binding VatValue, Mode=TwoWay}"
+                                                                TextColor="{StaticResource TextPrimary}" />
                                                         </Border>
                                                     </VerticalStackLayout>
                                                 </Border>
 
-                                                <!-- Printer Settings Section -->
-                                                <Border StrokeShape="RoundRectangle 8"
-                                    Stroke="{StaticResource TextSecondary}"
-                                    StrokeThickness="1"
-                                    Padding="15"
-                                    BackgroundColor="{StaticResource CardBackground}">
+                                                <!--  Printer Settings Section  -->
+                                                <Border
+                                                    Padding="15"
+                                                    BackgroundColor="{StaticResource CardBackground}"
+                                                    Stroke="{StaticResource TextSecondary}"
+                                                    StrokeShape="RoundRectangle 8"
+                                                    StrokeThickness="1">
                                                     <VerticalStackLayout Spacing="12">
-                                                        <!-- Section Header with Icon -->
+                                                        <!--  Section Header with Icon  -->
                                                         <HorizontalStackLayout Spacing="8">
-                                                            <Label Text="🖨️"
-                                               FontSize="18"
-                                               VerticalOptions="Center"/>
-                                                            <Label Text="Printer Settings"
-                                                FontSize="14"
-                                                FontAttributes="Bold"
-                                                VerticalOptions="Center"
-                                                TextColor="{StaticResource TextPrimary}"/>
+                                                            <Label
+                                                                FontSize="18"
+                                                                Text="🖨️"
+                                                                VerticalOptions="Center" />
+                                                            <Label
+                                                                FontAttributes="Bold"
+                                                                FontSize="14"
+                                                                Text="Printer Settings"
+                                                                TextColor="{StaticResource TextPrimary}"
+                                                                VerticalOptions="Center" />
                                                         </HorizontalStackLayout>
 
-                                                        <BoxView HeightRequest="1" 
-                                             Color="{StaticResource TextSecondary}" 
-                                             Opacity="0.3"
-                                             Margin="0,5,0,10"/>
+                                                        <BoxView
+                                                            Margin="0,5,0,10"
+                                                            HeightRequest="1"
+                                                            Opacity="0.3"
+                                                            Color="{StaticResource TextSecondary}" />
 
-                                                        <!-- Enable/Disable Toggle -->
-                                                        <Border StrokeShape="RoundRectangle 6"
-                                            BackgroundColor="{StaticResource CardBackground}"
-                                            Padding="12">
+                                                        <!--  Enable/Disable Toggle  -->
+                                                        <Border
+                                                            Padding="12"
+                                                            BackgroundColor="{StaticResource CardBackground}"
+                                                            StrokeShape="RoundRectangle 6">
                                                             <Grid ColumnDefinitions="*,Auto">
-                                                                <Label Text="Enable Printing"
-                                                   FontSize="13"
-                                                   VerticalOptions="Center"
-                                                   TextColor="{StaticResource TextPrimary}"/>
-                                                                <Switch Grid.Column="1"
-                                                    IsToggled="{Binding AllowPrint, Mode=TwoWay}"
-                                                    VerticalOptions="Center"/>
+                                                                <Label
+                                                                    FontSize="13"
+                                                                    Text="Enable Printing"
+                                                                    TextColor="{StaticResource TextPrimary}"
+                                                                    VerticalOptions="Center" />
+                                                                <Switch
+                                                                    Grid.Column="1"
+                                                                    IsToggled="{Binding AllowPrint, Mode=TwoWay}"
+                                                                    VerticalOptions="Center" />
                                                             </Grid>
                                                         </Border>
 
-                                                        <!-- Printer Discovery -->
-                                                        <Label Text="Discover Printers"
-                                           FontSize="12"
-                                           FontAttributes="Bold"
-                                           TextColor="{StaticResource TextPrimary}"
-                                           Margin="0,8,0,5"/>
+                                                        <!--  Printer Discovery  -->
+                                                        <Label
+                                                            Margin="0,8,0,5"
+                                                            FontAttributes="Bold"
+                                                            FontSize="12"
+                                                            Text="Discover Printers"
+                                                            TextColor="{StaticResource TextPrimary}" />
 
-                                                        <Button Text="🔍 Find Bluetooth Printers"
-                                            Command="{Binding FindPrinterCommand}"
-                                            BackgroundColor="{StaticResource Primary}"
-                                            TextColor="White"
-                                            CornerRadius="6"
-                                            HeightRequest="44"/>
+                                                        <Button
+                                                            BackgroundColor="{StaticResource Primary}"
+                                                            Command="{Binding FindPrinterCommand}"
+                                                            CornerRadius="6"
+                                                            HeightRequest="44"
+                                                            Text="🔍 Find Bluetooth Printers"
+                                                            TextColor="White" />
 
-                                                        <!-- Printer Selection -->
-                                                        <Label Text="Select Printer"
-                                           FontSize="12"
-                                           FontAttributes="Bold"
-                                           TextColor="{StaticResource TextPrimary}"
-                                           Margin="0,8,0,5"/>
+                                                        <!--  Printer Selection  -->
+                                                        <Label
+                                                            Margin="0,8,0,5"
+                                                            FontAttributes="Bold"
+                                                            FontSize="12"
+                                                            Text="Select Printer"
+                                                            TextColor="{StaticResource TextPrimary}" />
 
-                                                        <Border StrokeShape="RoundRectangle 6"
-                                            Stroke="{StaticResource TextSecondary}"
-                                            StrokeThickness="1"
-                                            Padding="2">
-                                                            <Picker ItemsSource="{Binding AvailablePrinters}"
-                                                SelectedItem="{Binding SelectedPrinter}"
-                                                Title="Choose a printer"
-                                                TextColor="{StaticResource TextPrimary}"
-                                                BackgroundColor="Transparent"/>
+                                                        <Border
+                                                            Padding="2"
+                                                            Stroke="{StaticResource TextSecondary}"
+                                                            StrokeShape="RoundRectangle 6"
+                                                            StrokeThickness="1">
+                                                            <Picker
+                                                                Title="Choose a printer"
+                                                                BackgroundColor="Transparent"
+                                                                ItemsSource="{Binding AvailablePrinters}"
+                                                                SelectedItem="{Binding SelectedPrinter}"
+                                                                TextColor="{StaticResource TextPrimary}" />
                                                         </Border>
 
-                                                        <!-- Connect Button -->
-                                                        <Button Text="🔗 Connect to Printer"
-                                            Command="{Binding ConnectPrinterCommand}"
-                                            BackgroundColor="{StaticResource Primary}"
-                                            TextColor="White"
-                                            CornerRadius="6"
-                                            HeightRequest="44"
-                                            Margin="0,8,0,0"/>
+                                                        <!--  Connect Button  -->
+                                                        <Button
+                                                            Margin="0,8,0,0"
+                                                            BackgroundColor="{StaticResource Primary}"
+                                                            Command="{Binding ConnectPrinterCommand}"
+                                                            CornerRadius="6"
+                                                            HeightRequest="44"
+                                                            Text="🔗 Connect to Printer"
+                                                            TextColor="White" />
 
-                                                        <!-- Connection Status -->
-                                                        <Border StrokeShape="RoundRectangle 6"
-                                            Padding="12"
-                                            BackgroundColor="{StaticResource CardBackground}"
-                                            Margin="0,5,0,0">
-                                                            <Label Text="{Binding PrinterConnectionStatus}"
-                                               FontSize="12"
-                                               HorizontalOptions="Center"
-                                               HorizontalTextAlignment="Center"
-                                               TextColor="{Binding PrinterConnectionStatusColor}"/>
+                                                        <!--  Connection Status  -->
+                                                        <Border
+                                                            Margin="0,5,0,0"
+                                                            Padding="12"
+                                                            BackgroundColor="{StaticResource CardBackground}"
+                                                            StrokeShape="RoundRectangle 6">
+                                                            <Label
+                                                                FontSize="12"
+                                                                HorizontalOptions="Center"
+                                                                HorizontalTextAlignment="Center"
+                                                                Text="{Binding PrinterConnectionStatus}"
+                                                                TextColor="{Binding PrinterConnectionStatusColor}" />
                                                         </Border>
                                                     </VerticalStackLayout>
                                                 </Border>
@@ -732,65 +815,542 @@
                             </Border>
                             <!--#endregion-->
 
-                            <!--#region inventory settings -->
+                            <!--#region inventory settings-->
                             <Border Grid.Row="2" Style="{StaticResource CardBorder}">
                                 <syncfusionex:SfExpander AnimationDuration="200" IsExpanded="False">
                                     <syncfusionex:SfExpander.Header>
                                         <Grid Padding="10,0">
                                             <Grid.RowDefinitions>
-                                                <RowDefinition Height="48"/>
+                                                <RowDefinition Height="48" />
                                             </Grid.RowDefinitions>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40"/>
-                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="40" />
+                                                <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <!-- Icon -->
-                                            <Image Source="shelves.png" 
-                               Grid.Column="0"
-                               HeightRequest="24"
-                               WidthRequest="24"
-                               VerticalOptions="Center"/>
-                                            <!-- Header Text -->
-                                            <Label Text="Inventory Items"
-                               CharacterSpacing="0.25"
-                               FontSize="16" 
-                               FontAttributes="Bold"
-                               Grid.Column="1" 
-                               VerticalOptions="Center"
-                               TextColor="{StaticResource TextPrimary}"/>
+                                            <!--  Icon  -->
+                                            <Image
+                                                Grid.Column="0"
+                                                HeightRequest="24"
+                                                Source="shelves.png"
+                                                VerticalOptions="Center"
+                                                WidthRequest="24" />
+                                            <!--  Header Text  -->
+                                            <Label
+                                                Grid.Column="1"
+                                                CharacterSpacing="0.25"
+                                                FontAttributes="Bold"
+                                                FontSize="16"
+                                                Text="Inventory Items"
+                                                TextColor="{StaticResource TextPrimary}"
+                                                VerticalOptions="Center" />
                                         </Grid>
                                     </syncfusionex:SfExpander.Header>
 
                                     <syncfusionex:SfExpander.Content>
                                         <ScrollView Padding="20,15,20,20">
                                             <VerticalStackLayout Spacing="15">
-                                                <!-- INSTRUCTION -->
+                                                <!--  INSTRUCTION  -->
                                                 <Label
-                                FontSize="12"
-                                TextColor="{StaticResource TextSecondary}"
-                                Text="Download the Excel template, fill in your inventory items, then import the completed file to add items faster." />
+                                                    FontSize="12"
+                                                    Text="Download the Excel template, fill in your inventory items, then import the completed file to add items faster."
+                                                    TextColor="{StaticResource TextSecondary}" />
 
-                                                <!-- ACTION BUTTONS -->
+                                                <!--  ACTION BUTTONS  -->
                                                 <HorizontalStackLayout Spacing="10">
                                                     <Button
-                                    Text="Download Template"
-                                    FontSize="12"
-                                    Padding="12,6"
-                                    BackgroundColor="{StaticResource Primary}"
-                                    TextColor="White"
-                                    CornerRadius="6"
-                                    Command="{Binding DownloadTemplateCommand}" />
+                                                        Padding="12,6"
+                                                        BackgroundColor="{StaticResource Primary}"
+                                                        Command="{Binding DownloadTemplateCommand}"
+                                                        CornerRadius="6"
+                                                        FontSize="12"
+                                                        Text="Download Template"
+                                                        TextColor="White" />
 
                                                     <Button
-                                    Text="Import Template"
-                                    FontSize="12"
-                                    Padding="12,6"
-                                    BackgroundColor="{StaticResource Primary}"
-                                    TextColor="White"
-                                    CornerRadius="6"
-                                    Command="{Binding ImportTemplateCommand}" />
+                                                        Padding="12,6"
+                                                        BackgroundColor="{StaticResource Primary}"
+                                                        Command="{Binding ImportTemplateCommand}"
+                                                        CornerRadius="6"
+                                                        FontSize="12"
+                                                        Text="Import Template"
+                                                        TextColor="White" />
                                                 </HorizontalStackLayout>
                                             </VerticalStackLayout>
+                                        </ScrollView>
+                                    </syncfusionex:SfExpander.Content>
+                                </syncfusionex:SfExpander>
+                            </Border>
+                            <!--#endregion-->
+
+                            <!--#region Refund Sale settings-->
+                            <Border
+                                Grid.Row="3"
+                                BindingContext="{Binding RefundSaleVM}"
+                                Style="{StaticResource CardBorder}">
+                                <syncfusionex:SfExpander AnimationDuration="200" IsExpanded="False">
+                                    <syncfusionex:SfExpander.Header>
+                                        <Grid Padding="10,0">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="48" />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="40" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <!--  Icon  -->
+                                            <Image
+                                                Grid.Column="0"
+                                                HeightRequest="24"
+                                                Source="void.png"
+                                                VerticalOptions="Center"
+                                                WidthRequest="24" />
+                                            <!--  Header Text  -->
+                                            <Label
+                                                Grid.Column="1"
+                                                CharacterSpacing="0.25"
+                                                FontAttributes="Bold"
+                                                FontSize="16"
+                                                Text="Void Sale"
+                                                TextColor="{StaticResource TextPrimary}"
+                                                VerticalOptions="Center" />
+                                        </Grid>
+                                    </syncfusionex:SfExpander.Header>
+
+                                    <syncfusionex:SfExpander.Content>
+                                        <ScrollView Padding="20,15,20,20">
+                                            <!--  Two Column Layout  -->
+                                            <Grid
+                                                ColumnDefinitions="*,*"
+                                                ColumnSpacing="20"
+                                                RowDefinitions="Auto,Auto">
+
+                                                <!--  LEFT COLUMN  -->
+                                                <VerticalStackLayout
+                                                    Grid.Row="0"
+                                                    Grid.Column="0"
+                                                    Spacing="20">
+
+
+                                                    <!--  Search Sale Section  -->
+                                                    <Border
+                                                        Padding="15"
+                                                        BackgroundColor="{StaticResource CardBackground}"
+                                                        Stroke="{StaticResource TextSecondary}"
+                                                        StrokeShape="RoundRectangle 8"
+                                                        StrokeThickness="1">
+                                                        <VerticalStackLayout Spacing="12">
+                                                            <!--  Refund / Void Selection  -->
+
+                                                            <buttons:SfRadioGroup x:Name="radioGroup">
+                                                                <buttons:SfRadioButton
+                                                                    x:Name="Void"
+                                                                    CheckedColor="{StaticResource Primary}"
+                                                                    IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToStringConverter}, ConverterParameter=Voided}"
+                                                                    Text="Void"
+                                                                    TextColor="{StaticResource TextPrimary}" />
+                                                                <buttons:SfRadioButton
+                                                                    x:Name="Refund"
+                                                                    CheckedColor="{StaticResource Primary}"
+                                                                    IsChecked="{Binding SelectedMode, Converter={StaticResource EnumToStringConverter}, ConverterParameter=Refunded}"
+                                                                    Text="Refund"
+                                                                    TextColor="{StaticResource TextPrimary}" />
+                                                            </buttons:SfRadioGroup>
+                                                            <!--  Section Header  -->
+
+
+                                                            <BoxView
+                                                                Margin="0,5,0,10"
+                                                                HeightRequest="1"
+                                                                Opacity="0.3"
+                                                                Color="{StaticResource TextSecondary}" />
+
+                                                            <!--  Sale ID Entry  -->
+                                                            <Label
+                                                                FontAttributes="Bold"
+                                                                FontSize="12"
+                                                                Text=" Search Sale Transaction"
+                                                                TextColor="{StaticResource TextPrimary}" />
+
+                                                            <Border
+                                                                Padding="2"
+                                                                Stroke="{StaticResource TextSecondary}"
+                                                                StrokeShape="RoundRectangle 6"
+                                                                StrokeThickness="1">
+                                                                <Entry
+                                                                    BackgroundColor="Transparent"
+                                                                    Placeholder="Enter Receipt No"
+                                                                    PlaceholderColor="{StaticResource TextSecondary}"
+                                                                    Text="{Binding SearchReceiptNo, Mode=TwoWay}"
+                                                                    TextColor="{StaticResource TextPrimary}" />
+                                                            </Border>
+
+                                                            <!--  Find Button  -->
+                                                            <Button
+                                                                Margin="0,8,0,0"
+                                                                BackgroundColor="{StaticResource Primary}"
+                                                                Command="{Binding FindSaleCommand}"
+                                                                CornerRadius="6"
+                                                                HeightRequest="44"
+                                                                Text="🔍 Find Transaction"
+                                                                TextColor="White" />
+                                                        </VerticalStackLayout>
+                                                    </Border>
+
+                                                    <!--  Sale Details Section  -->
+                                                    <Border
+                                                        Padding="15"
+                                                        BackgroundColor="{StaticResource CardBackground}"
+                                                        IsVisible="{Binding IsSaleFound}"
+                                                        Stroke="{StaticResource TextSecondary}"
+                                                        StrokeShape="RoundRectangle 8"
+                                                        StrokeThickness="1">
+                                                        <VerticalStackLayout Spacing="12">
+                                                            <!--  Section Header  -->
+                                                            <HorizontalStackLayout Spacing="8">
+                                                                <Label
+                                                                    FontSize="18"
+                                                                    Text="📄"
+                                                                    VerticalOptions="Center" />
+                                                                <Label
+                                                                    FontAttributes="Bold"
+                                                                    FontSize="14"
+                                                                    Text="Sale Details"
+                                                                    TextColor="{StaticResource TextPrimary}"
+                                                                    VerticalOptions="Center" />
+                                                            </HorizontalStackLayout>
+
+                                                            <BoxView
+                                                                Margin="0,5,0,10"
+                                                                HeightRequest="1"
+                                                                Opacity="0.3"
+                                                                Color="{StaticResource TextSecondary}" />
+
+                                                            <!--  Sale Info Grid  -->
+                                                            <Grid
+                                                                ColumnDefinitions="Auto,*"
+                                                                ColumnSpacing="10"
+                                                                RowDefinitions="Auto,Auto,Auto"
+                                                                RowSpacing="10">
+                                                                <!--  Sale ID  -->
+                                                                <Label
+                                                                    Grid.Row="0"
+                                                                    Grid.Column="0"
+                                                                    FontAttributes="Bold"
+                                                                    FontSize="12"
+                                                                    Text="Receipt No:"
+                                                                    TextColor="{StaticResource TextSecondary}" />
+                                                                <Label
+                                                                    Grid.Row="0"
+                                                                    Grid.Column="1"
+                                                                    FontSize="12"
+                                                                    Text="{Binding SelectedSaleTransaction.ReceiptNo}"
+                                                                    TextColor="{StaticResource TextPrimary}" />
+
+                                                                <!--  Date Transacted  -->
+                                                                <Label
+                                                                    Grid.Row="1"
+                                                                    Grid.Column="0"
+                                                                    FontAttributes="Bold"
+                                                                    FontSize="12"
+                                                                    Text="Date:"
+                                                                    TextColor="{StaticResource TextSecondary}" />
+                                                                <Label
+                                                                    Grid.Row="1"
+                                                                    Grid.Column="1"
+                                                                    FontSize="12"
+                                                                    Text="{Binding SelectedSaleTransaction.SaleDate, StringFormat='{0:MMM dd, yyyy hh:mm tt}'}"
+                                                                    TextColor="{StaticResource TextPrimary}" />
+
+                                                                <!--  Total Amount  -->
+                                                                <Label
+                                                                    Grid.Row="2"
+                                                                    Grid.Column="0"
+                                                                    FontAttributes="Bold"
+                                                                    FontSize="12"
+                                                                    Text="Total:"
+                                                                    TextColor="{StaticResource TextSecondary}" />
+                                                                <Label
+                                                                    Grid.Row="2"
+                                                                    Grid.Column="1"
+                                                                    FontAttributes="Bold"
+                                                                    FontSize="12"
+                                                                    Text="{Binding SelectedSaleTransaction.TotalAmount, StringFormat='₱{0:N2}'}"
+                                                                    TextColor="{StaticResource Primary}" />
+                                                            </Grid>
+
+                                                            <!--  Sale Items List  -->
+                                                            <Label
+                                                                Margin="0,10,0,5"
+                                                                FontAttributes="Bold"
+                                                                FontSize="12"
+                                                                Text="Sale Items"
+                                                                TextColor="{StaticResource TextPrimary}" />
+
+                                                            <syncfusion:SfListView
+                                                                HeightRequest="220"
+                                                                ItemSize="55"
+                                                                ItemsSource="{Binding SaleItems}"
+                                                                SelectionBackground="Transparent">
+                                                                <syncfusion:SfListView.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <Border
+                                                                            Margin="0,2"
+                                                                            Padding="8"
+                                                                            BackgroundColor="{StaticResource CardBackground}"
+                                                                            Stroke="#CAC4D0"
+                                                                            StrokeShape="RoundRectangle 4"
+                                                                            StrokeThickness="1">
+                                                                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                                                                                <!--  Item Name  -->
+                                                                                <Label
+                                                                                    Grid.Row="0"
+                                                                                    Grid.Column="0"
+                                                                                    FontAttributes="Bold"
+                                                                                    FontSize="12"
+                                                                                    Text="{Binding MenuItemName}"
+                                                                                    TextColor="{StaticResource TextPrimary}" />
+
+                                                                                <!--  Quantity  -->
+                                                                                <Label
+                                                                                    Grid.Row="1"
+                                                                                    Grid.Column="0"
+                                                                                    FontSize="10"
+                                                                                    Text="{Binding Quantity, StringFormat='Qty: {0} @ ₱{1:N2}', ConverterParameter={Binding UnitPrice}}"
+                                                                                    TextColor="{StaticResource TextSecondary}" />
+
+                                                                                <!--  Total  -->
+                                                                                <Label
+                                                                                    Grid.Row="0"
+                                                                                    Grid.RowSpan="2"
+                                                                                    Grid.Column="1"
+                                                                                    FontAttributes="Bold"
+                                                                                    FontSize="12"
+                                                                                    Text="{Binding LineTotal, StringFormat='₱{0:N2}'}"
+                                                                                    TextColor="{StaticResource Primary}"
+                                                                                    VerticalOptions="Center" />
+                                                                            </Grid>
+                                                                        </Border>
+                                                                    </DataTemplate>
+                                                                </syncfusion:SfListView.ItemTemplate>
+                                                            </syncfusion:SfListView>
+                                                        </VerticalStackLayout>
+                                                    </Border>
+
+                                                </VerticalStackLayout>
+
+                                                <!--  RIGHT COLUMN  -->
+                                                <VerticalStackLayout
+                                                    Grid.Row="0"
+                                                    Grid.Column="1"
+                                                    Spacing="20">
+
+                                                    <!--  Void Authorization Section  -->
+                                                    <Border
+                                                        Padding="15"
+                                                        BackgroundColor="{StaticResource CardBackground}"
+                                                        Stroke="{StaticResource TextSecondary}"
+                                                        StrokeShape="RoundRectangle 8"
+                                                        StrokeThickness="1">
+                                                        <VerticalStackLayout Spacing="12">
+                                                            <!--  Section Header  -->
+                                                            <VerticalStackLayout IsEnabled="{Binding IsRefundMode}">
+                                                                <HorizontalStackLayout Spacing="8">
+                                                                    <Label
+                                                                        FontSize="18"
+                                                                        Text="🔐"
+                                                                        VerticalOptions="Center" />
+                                                                    <Label
+                                                                        FontAttributes="Bold"
+                                                                        FontSize="14"
+                                                                        Text="Authorization and Details"
+                                                                        TextColor="{StaticResource TextPrimary}"
+                                                                        VerticalOptions="Center" />
+                                                                </HorizontalStackLayout>
+
+                                                                <BoxView
+                                                                    Margin="0,5,0,10"
+                                                                    HeightRequest="1"
+                                                                    Opacity="0.3"
+                                                                    Color="{StaticResource TextSecondary}" />
+
+                                                                <!--  Admin Password  -->
+                                                                <Label
+                                                                    FontAttributes="Bold"
+                                                                    FontSize="12"
+                                                                    Text="Admin Password"
+                                                                    TextColor="{StaticResource TextPrimary}" />
+
+                                                                <Border
+                                                                    Padding="2"
+                                                                    Stroke="{StaticResource TextSecondary}"
+                                                                    StrokeShape="RoundRectangle 6"
+                                                                    StrokeThickness="1">
+                                                                    <Entry
+                                                                        BackgroundColor="Transparent"
+                                                                        IsPassword="True"
+                                                                        Placeholder="Enter admin password"
+                                                                        PlaceholderColor="{StaticResource TextSecondary}"
+                                                                        Text="{Binding AdminPassword, Mode=TwoWay}"
+                                                                        TextColor="{StaticResource TextPrimary}" />
+                                                                </Border>
+
+                                                                <!--  Void Reason  -->
+                                                                <Label
+                                                                    Margin="0,8,0,0"
+                                                                    FontAttributes="Bold"
+                                                                    FontSize="12"
+                                                                    Text="Reason for Void"
+                                                                    TextColor="{StaticResource TextPrimary}" />
+
+                                                                <Border
+                                                                    Padding="2"
+                                                                    Stroke="{StaticResource TextSecondary}"
+                                                                    StrokeShape="RoundRectangle 6"
+                                                                    StrokeThickness="1">
+                                                                    <Editor
+                                                                        BackgroundColor="Transparent"
+                                                                        HeightRequest="70"
+                                                                        Placeholder="Enter reason for voiding this sale"
+                                                                        PlaceholderColor="{StaticResource TextSecondary}"
+                                                                        Text="{Binding VoidReason, Mode=TwoWay}"
+                                                                        TextColor="{StaticResource TextPrimary}" />
+                                                                </Border>
+
+                                                                <!--  Customer Info Grid  -->
+                                                                <Grid
+                                                                    Margin="0,8,0,0"
+                                                                    ColumnDefinitions="*,*"
+                                                                    ColumnSpacing="10"
+                                                                    RowDefinitions="Auto,Auto,Auto,Auto"
+                                                                    RowSpacing="8">
+                                                                    <!--  Customer Name Label  -->
+                                                                    <Label
+                                                                        Grid.Row="0"
+                                                                        Grid.Column="0"
+                                                                        FontAttributes="Bold"
+                                                                        FontSize="12"
+                                                                        Text="Customer Name"
+                                                                        TextColor="{StaticResource TextPrimary}" />
+
+                                                                    <!--  Customer Contact Label  -->
+                                                                    <Label
+                                                                        Grid.Row="0"
+                                                                        Grid.Column="1"
+                                                                        FontAttributes="Bold"
+                                                                        FontSize="12"
+                                                                        Text="Customer Contact"
+                                                                        TextColor="{StaticResource TextPrimary}" />
+
+                                                                    <!--  Customer Name Entry  -->
+                                                                    <Border
+                                                                        Grid.Row="1"
+                                                                        Grid.Column="0"
+                                                                        Padding="2"
+                                                                        Stroke="{StaticResource TextSecondary}"
+                                                                        StrokeShape="RoundRectangle 6"
+                                                                        StrokeThickness="1">
+                                                                        <Entry
+                                                                            BackgroundColor="Transparent"
+                                                                            Placeholder="Customer name"
+                                                                            PlaceholderColor="{StaticResource TextSecondary}"
+                                                                            Text="{Binding CustomerName, Mode=TwoWay}"
+                                                                            TextColor="{StaticResource TextPrimary}" />
+                                                                    </Border>
+
+                                                                    <!--  Customer Contact Entry  -->
+                                                                    <Border
+                                                                        Grid.Row="1"
+                                                                        Grid.Column="1"
+                                                                        Padding="2"
+                                                                        Stroke="{StaticResource TextSecondary}"
+                                                                        StrokeShape="RoundRectangle 6"
+                                                                        StrokeThickness="1">
+                                                                        <Entry
+                                                                            BackgroundColor="Transparent"
+                                                                            Keyboard="Telephone"
+                                                                            Placeholder="Contact number"
+                                                                            PlaceholderColor="{StaticResource TextSecondary}"
+                                                                            Text="{Binding CustomerContact, Mode=TwoWay}"
+                                                                            TextColor="{StaticResource TextPrimary}" />
+                                                                    </Border>
+
+                                                                    <!--  Refunded Amount Label  -->
+                                                                    <Label
+                                                                        Grid.Row="2"
+                                                                        Grid.Column="0"
+                                                                        Margin="0,8,0,0"
+                                                                        FontAttributes="Bold"
+                                                                        FontSize="12"
+                                                                        Text="Refunded Amount"
+                                                                        TextColor="{StaticResource TextPrimary}" />
+
+                                                                    <!--  Authorized By Label  -->
+                                                                    <Label
+                                                                        Grid.Row="2"
+                                                                        Grid.Column="1"
+                                                                        Margin="0,8,0,0"
+                                                                        FontAttributes="Bold"
+                                                                        FontSize="12"
+                                                                        Text="Authorized By"
+                                                                        TextColor="{StaticResource TextPrimary}" />
+
+                                                                    <!--  Refunded Amount Entry  -->
+                                                                    <Border
+                                                                        Grid.Row="3"
+                                                                        Grid.Column="0"
+                                                                        Padding="2"
+                                                                        Stroke="{StaticResource TextSecondary}"
+                                                                        StrokeShape="RoundRectangle 6"
+                                                                        StrokeThickness="1">
+                                                                        <Entry
+                                                                            BackgroundColor="Transparent"
+                                                                            Keyboard="Numeric"
+                                                                            Placeholder="Refund amount"
+                                                                            PlaceholderColor="{StaticResource TextSecondary}"
+                                                                            Text="{Binding RefundedAmount, Mode=TwoWay}"
+                                                                            TextColor="{StaticResource TextPrimary}" />
+                                                                    </Border>
+
+                                                                    <!--  Authorized By Entry  -->
+                                                                    <Border
+                                                                        Grid.Row="3"
+                                                                        Grid.Column="1"
+                                                                        Padding="2"
+                                                                        Stroke="{StaticResource TextSecondary}"
+                                                                        StrokeShape="RoundRectangle 6"
+                                                                        StrokeThickness="1">
+                                                                        <Entry
+                                                                            BackgroundColor="Transparent"
+                                                                            Placeholder="Manager/Admin name"
+                                                                            PlaceholderColor="{StaticResource TextSecondary}"
+                                                                            Text="{Binding AuthorizedBy, Mode=TwoWay}"
+                                                                            TextColor="{StaticResource TextPrimary}" />
+                                                                    </Border>
+                                                                </Grid>
+
+                                                                <!--  Max Amount Warning  -->
+                                                                <Label
+                                                                    Margin="5,5,0,0"
+                                                                    FontSize="11"
+                                                                    Text="{Binding FoundSale.TotalAmount, StringFormat='Maximum refund: ₱{0:N2}'}"
+                                                                    TextColor="{StaticResource Secondary}" />
+                                                            </VerticalStackLayout>
+
+                                                            <!--  Process Void Button  -->
+                                                            <Button
+                                                                Margin="0,15,0,0"
+                                                                BackgroundColor="{Binding ButtonColor}"
+                                                                Command="{Binding ProcessVoidSaleCommand}"
+                                                                CornerRadius="6"
+                                                                HeightRequest="48"
+                                                                Text="{Binding ButtonText}"
+                                                                TextColor="White" />
+                                                        </VerticalStackLayout>
+                                                    </Border>
+
+                                                </VerticalStackLayout>
+
+                                            </Grid>
                                         </ScrollView>
                                     </syncfusionex:SfExpander.Content>
                                 </syncfusionex:SfExpander>
@@ -801,24 +1361,27 @@
 
                 </tabView:SfTabItem>
                 <!--#endregion-->
-                <!--#region about settings -->
-                <!--================= ABOUT SETTINGS ================= -->
-                <tabView:SfTabItem Header="About"
-                   ImageSource="info.png"
-                   TextColor="{StaticResource TextPrimary}"
-                FontSize="12"
-                ImageSize="20"
-                   ImagePosition="Left">
+                <!--#region about settings-->
+                <!--  ================= ABOUT SETTINGS =================  -->
+                <tabView:SfTabItem
+                    FontSize="12"
+                    Header="About"
+                    ImagePosition="Left"
+                    ImageSize="20"
+                    ImageSource="info.png"
+                    TextColor="{StaticResource TextPrimary}">
 
                     <Grid RowDefinitions="Auto,*">
-                        <Image Grid.Row="0"
-                               Source="kusinaposlogo.png"
-                               HeightRequest="80"
-                               HorizontalOptions="Center"/>
-                        <WebView x:Name="AboutWebView"
-                                VerticalOptions="Fill"
-                                 HorizontalOptions="Fill"
-                                 Grid.Row="1"/>
+                        <Image
+                            Grid.Row="0"
+                            HeightRequest="80"
+                            HorizontalOptions="Center"
+                            Source="kusinaposlogo.png" />
+                        <WebView
+                            x:Name="AboutWebView"
+                            Grid.Row="1"
+                            HorizontalOptions="Fill"
+                            VerticalOptions="Fill" />
                     </Grid>
 
                 </tabView:SfTabItem>
