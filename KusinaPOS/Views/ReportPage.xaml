@@ -823,6 +823,7 @@
                     </tabView:SfTabItem>
 
                     <!--#endregion-->
+                    <!--#region inventory and expenses reports-->
                     <tabView:SfTabItem
                         BackgroundColor="{StaticResource CardBackground}"
                         FontSize="12"
@@ -830,7 +831,232 @@
                         ImagePosition="Left"
                         ImageSize="20"
                         ImageSource="inventory_check.png"
-                        TextColor="{StaticResource TextPrimary}" />
+                        TextColor="{StaticResource TextPrimary}">
+                        <Grid
+                            Padding="20"
+                            RowDefinitions="Auto,*"
+                            RowSpacing="20">
+
+                            <!--  Header  -->
+                            <VerticalStackLayout Grid.Row="0" Spacing="8">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="Large"
+                                    Text="Expenses Report"
+                                    TextColor="{StaticResource TextPrimary}" />
+                                <Label
+                                    FontSize="Small"
+                                    Text="Track your expenses"
+                                    TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+
+                            <!--  Main Content: 2 Columns  -->
+                            <Grid
+                                Grid.Row="1"
+                                BackgroundColor="Green"
+                                ColumnDefinitions="300,*"
+                                ColumnSpacing="10">
+
+                                <!--  Column 1: Filter Form  -->
+                                <ScrollView Grid.Column="0">
+                                    <Border Padding="12" Style="{StaticResource CardBorder}">
+
+                                        <VerticalStackLayout Spacing="10">
+
+                                            <!--  Header  -->
+                                            <Label
+                                                FontAttributes="Bold"
+                                                FontSize="14"
+                                                Text="Filters"
+                                                TextColor="{StaticResource TextPrimary}" />
+
+                                            <!--  Date Range (compact row)  -->
+                                            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                                <DatePicker Date="{Binding FromDate}" />
+                                                <DatePicker Grid.Column="1" Date="{Binding ToDate}" />
+                                            </Grid>
+
+
+                                            <!--  Quick Filters (compact buttons)  -->
+                                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6">
+                                                <Button
+                                                    Padding="6"
+                                                    BackgroundColor="{StaticResource CardDark}"
+                                                    BorderColor="{StaticResource Gray200}"
+                                                    BorderWidth="1"
+                                                    Command="{Binding FilterMenuTodayCommand}"
+                                                    CornerRadius="8"
+                                                    FontSize="12"
+                                                    Text="Today" />
+
+                                                <Button
+                                                    Grid.Column="1"
+                                                    Padding="6"
+                                                    BackgroundColor="{StaticResource CardDark}"
+                                                    BorderColor="{StaticResource Gray200}"
+                                                    BorderWidth="1"
+                                                    Command="{Binding FilterMenuWeekCommand}"
+                                                    CornerRadius="8"
+                                                    FontSize="12"
+                                                    Text="Week" />
+
+                                                <Button
+                                                    Grid.Column="2"
+                                                    Padding="6"
+                                                    BackgroundColor="{StaticResource CardDark}"
+                                                    BorderColor="{StaticResource Gray200}"
+                                                    BorderWidth="1"
+                                                    Command="{Binding FilterMenuMonthCommand}"
+                                                    CornerRadius="8"
+                                                    FontSize="12"
+                                                    Text="Month" />
+                                            </Grid>
+
+                                            <!--  Generate  -->
+                                            <Button
+                                                Padding="10"
+                                                BackgroundColor="{StaticResource Primary}"
+                                                Command="{Binding GenerateMenuReportCommand}"
+                                                FontSize="13"
+                                                Text="Generate"
+                                                TextColor="White" />
+                                            <Label
+                                                FontSize="14"
+                                                Text="Export to Excel"
+                                                TextColor="{StaticResource TextSecondary}"
+                                                TextDecorations="Underline">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding MenuReportExportToExcelCommand}" />
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </ScrollView>
+
+
+                                <!--  Column 2: expenses Report + Charts  -->
+                                <Grid
+                                    Grid.Column="2"
+                                    RowDefinitions="Auto,*"
+                                    RowSpacing="10">
+
+                                    <Border
+                                        Grid.Row="0"
+                                        HeightRequest="150"
+                                        Style="{StaticResource CardBorder}">
+                                        <Label
+                                            HorizontalOptions="Center"
+                                            Text="Summary Banner Area (Total Costs, Food Cost %, etc.)"
+                                            VerticalOptions="Center" />
+                                    </Border>
+
+                                    <Grid
+                                        Grid.Row="1"
+                                        ColumnDefinitions="*,2*"
+                                        ColumnSpacing="20">
+
+                                        <Grid Grid.Column="0">
+                                            <chart:SfCartesianChart>
+                                                <chart:SfCartesianChart.Title>
+                                                    <Label
+                                                        FontAttributes="Bold"
+                                                        FontSize="16"
+                                                        Text="Monthly Cost Trend" />
+                                                </chart:SfCartesianChart.Title>
+
+                                                <chart:SfCartesianChart.XAxes>
+                                                    <chart:CategoryAxis ShowMajorGridLines="False" />
+                                                </chart:SfCartesianChart.XAxes>
+
+                                                <chart:SfCartesianChart.YAxes>
+                                                    <chart:NumericalAxis
+                                                        LabelFormat="$0"
+                                                        Maximum="2000"
+                                                        ShowMajorGridLines="True" />
+                                                </chart:SfCartesianChart.YAxes>
+
+                                                <chart:ColumnSeries
+                                                    EnableTooltip="True"
+                                                    Fill="#2ecc71"
+                                                    ItemsSource="{Binding TrendData}"
+                                                    XBindingPath="DateLabel"
+                                                    YBindingPath="Amount" />
+                                            </chart:SfCartesianChart>
+                                        </Grid>
+
+                                        <Grid Grid.Column="1">
+                                            <Grid RowDefinitions="Auto,*">
+                                                <Label
+                                                    Grid.Row="0"
+                                                    Margin="0,0,0,10"
+                                                    FontAttributes="Bold"
+                                                    Text="Recent Transactions" />
+
+                                                <sfListView:SfListView
+                                                    Grid.Row="1"
+                                                    ItemSpacing="5"
+                                                    ItemsSource="{Binding ExpenseTransactions}"
+                                                    SelectionMode="None">
+                                                    <sfListView:SfListView.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Border
+                                                                Padding="10"
+                                                                BackgroundColor="{AppThemeBinding Light=White,
+                                                                                                  Dark=#1E1E1E}"
+                                                                StrokeThickness="0">
+                                                                <Grid
+                                                                    ColumnDefinitions="Auto, 2*, 2*, Auto, Auto, Auto"
+                                                                    ColumnSpacing="10"
+                                                                    VerticalOptions="Center">
+                                                                    <Label
+                                                                        Grid.Column="0"
+                                                                        FontAttributes="Bold"
+                                                                        Text="{Binding Date, StringFormat='{0:MMM dd}'}"
+                                                                        TextColor="Gray" />
+
+                                                                    <Label
+                                                                        Grid.Column="1"
+                                                                        LineBreakMode="TailTruncation"
+                                                                        Text="{Binding ItemName}" />
+
+                                                                    <Label
+                                                                        Grid.Column="2"
+                                                                        LineBreakMode="TailTruncation"
+                                                                        Text="{Binding Supplier}"
+                                                                        TextColor="Gray" />
+
+                                                                    <Label
+                                                                        Grid.Column="3"
+                                                                        HorizontalOptions="End"
+                                                                        Text="{Binding Quantity}" />
+
+                                                                    <Label
+                                                                        Grid.Column="4"
+                                                                        HorizontalOptions="End"
+                                                                        Text="{Binding UnitCost, StringFormat='${0:F2}'}"
+                                                                        TextColor="Gray" />
+
+                                                                    <Label
+                                                                        Grid.Column="5"
+                                                                        FontAttributes="Bold"
+                                                                        HorizontalOptions="End"
+                                                                        Text="{Binding TotalCost, StringFormat='${0:F2}'}" />
+                                                                </Grid>
+                                                            </Border>
+                                                        </DataTemplate>
+                                                    </sfListView:SfListView.ItemTemplate>
+                                                </sfListView:SfListView>
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+
+                        </Grid>
+
+
+                    </tabView:SfTabItem>
+                    <!--#endregion-->
                 </tabView:SfTabView.Items>
             </tabView:SfTabView>
 
