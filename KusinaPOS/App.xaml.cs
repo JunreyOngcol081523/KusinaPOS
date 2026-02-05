@@ -43,7 +43,7 @@ namespace KusinaPOS
                 // Initialize database
                 System.Diagnostics.Debug.WriteLine("Initializing database...");
                 await _databaseService.InitializeAsync();
-
+                //await _databaseService.ResetDatabaseAsync(); // For testing only
                 // Initialize user service
                 System.Diagnostics.Debug.WriteLine("Initializing user service...");
                 await _userService.InitializeAsync();

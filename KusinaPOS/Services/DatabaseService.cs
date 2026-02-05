@@ -9,6 +9,7 @@ namespace KusinaPOS.Services
     public interface IDatabaseService
     {
         Task InitializeAsync();
+        //Task ResetDatabaseAsync();
         SQLiteAsyncConnection GetConnection();
     }
 
@@ -30,11 +31,23 @@ namespace KusinaPOS.Services
         {
             return _database;
         }
-
+        //drop all tables and recreate
+        public async Task ResetDatabaseAsync()
+        {
+            // Drop all tables
+            await _database.DropTableAsync<SaleItem>();
+            await _database.DropTableAsync<Sale>();
+            await _database.DropTableAsync<MenuItemIngredient>();
+            await _database.DropTableAsync<InventoryItem>();
+            await _database.DropTableAsync<MenuItem>();
+            await _database.DropTableAsync<InventoryTransaction>();
+            await _database.DropTableAsync<Category>();
+            // Recreate all tables
+            await InitializeAsync();
+        }
         public async Task InitializeAsync()
         {
-            // Order matters slightly for clarity, not technically required
-            //await _database.DropTableAsync<Sale>();
+
             await _database.CreateTableAsync<MenuItem>();
             await _database.CreateTableAsync<InventoryItem>();
             await _database.CreateTableAsync<MenuItemIngredient>();

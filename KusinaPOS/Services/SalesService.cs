@@ -546,7 +546,7 @@ namespace KusinaPOS.Services
                 var refundTransaction = new Sale
                 {
                     // Generate a unique Refund Receipt No
-                    ReceiptNo = $"REF-{DateTime.Now:yyyyMMdd-HHmmss}",
+                    ReceiptNo = $"REF-{originalSale.ReceiptNo}",
 
                     SaleDate = DateTime.Now,
 

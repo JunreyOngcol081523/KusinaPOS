@@ -7,11 +7,12 @@ using KusinaPOS.Services;
 using SQLite;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+
 namespace KusinaPOS.ViewModel
 {
     public partial class ReportViewModel : ObservableObject
     {
-        #region Fields & Services
+        #region Services
         private readonly ReportService _reportService;
         private readonly SalesService _salesService;
         private readonly InventoryTransactionService _inventoryTransactionService;
@@ -33,43 +34,33 @@ namespace KusinaPOS.ViewModel
         #region Filter Properties
         [ObservableProperty] private DateTime fromDate = DateTime.Today;
         [ObservableProperty] private DateTime toDate = DateTime.Today;
+        [ObservableProperty] private string selectedCategory = "All";
         #endregion
 
-        #region KPI Properties
+        #region Sales Properties & Collections
         [ObservableProperty] private decimal totalSales;
         [ObservableProperty] private int totalTransactions;
         [ObservableProperty] private decimal cashCollected;
         [ObservableProperty] private decimal averageSale;
+        [ObservableProperty] private ObservableCollection<Sale> salesTransactions = new();
+        [ObservableProperty] private Sale selectedSaleTransaction;
+        [ObservableProperty] private ObservableCollection<SaleItemWithMenuName> saleItems = new();
         #endregion
 
-        #region Collections
-        [ObservableProperty]
-        private ObservableCollection<Sale> salesTransactions = new();
-        [ObservableProperty]
-        private Sale selectedSaleTransaction;
-        [ObservableProperty]
-        private ObservableCollection<SaleItemWithMenuName> saleItems=new();
-        [ObservableProperty]
-        private ObservableCollection<Top5MenuItem> top5MenuItems;
-
-        [ObservableProperty]
-        private ObservableCollection<AllMenuItemByCategory> allMenuItemsByCategory;
-        [ObservableProperty]
-        private ObservableCollection<string> categories = new();
+        #region Menu Properties & Collections
+        [ObservableProperty] private ObservableCollection<Top5MenuItem> top5MenuItems;
+        [ObservableProperty] private ObservableCollection<AllMenuItemByCategory> allMenuItemsByCategory;
+        [ObservableProperty] private ObservableCollection<string> categories = new();
         public ObservableCollection<MenuItemReportDto> MenuItemsReport { get; } = new();
-
-        [ObservableProperty]
-        private string selectedCategory = "All";
-
         #endregion
 
         #region UI State
         [ObservableProperty] private bool isBusy;
         [ObservableProperty] private bool isOpenPopup;
-        #endregion
         public event Action? ShowSaleItemsPopupRequested;
+        #endregion
 
-        #region Constructor
+        #region Constructor & Initialization
         public ReportViewModel(
             ReportService reportService,
             SalesService salesService,
@@ -86,22 +77,20 @@ namespace KusinaPOS.ViewModel
             _inventoryTransactionService = inventoryTransactionService;
             _inventoryItemService = inventoryItemService;
             _dateTimeService = dateTimeService;
-            _db = db.GetConnection();
-            LoadPreferences();
-            _dateTimeService.DateTimeChanged += (s, e) => CurrentDateTime = e;
-            _ = LoadTodayReportAsync();
             _excelExportService = excelExportService;
             _menuReportService = menuReportService;
-            // Initialize observable collections for charts
+            _categoryService = categoryService;
+            _db = db.GetConnection();
+
             Top5MenuItems = new ObservableCollection<Top5MenuItem>();
             AllMenuItemsByCategory = new ObservableCollection<AllMenuItemByCategory>();
 
-            _categoryService = categoryService;
-            _=LoadMenuCategoriesAsync(categoryService);
+            LoadPreferences();
+            _dateTimeService.DateTimeChanged += (s, e) => CurrentDateTime = e;
+            _ = LoadTodayReportAsync();
+            _ = LoadMenuCategoriesAsync(categoryService);
         }
-        #endregion
 
-        #region Initialization
         private void LoadPreferences()
         {
             LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
@@ -111,7 +100,7 @@ namespace KusinaPOS.ViewModel
         }
         #endregion
 
-        #region Navigation Commands
+        #region Navigation
         [RelayCommand]
         private async Task GoBackAsync()
         {
@@ -119,10 +108,7 @@ namespace KusinaPOS.ViewModel
         }
         #endregion
 
-        // ====================== SALES REPORT ====================== //
-
-        #region SALES REPORT
-        #region Quick Filter Commands
+        #region Sales Report - Filter Commands
         [RelayCommand]
         private async Task FilterTodayAsync()
         {
@@ -148,7 +134,7 @@ namespace KusinaPOS.ViewModel
         }
         #endregion
 
-        #region Report Generation
+        #region Sales Report - Generation
         [RelayCommand]
         private async Task GenerateReportAsync()
         {
@@ -167,7 +153,6 @@ namespace KusinaPOS.ViewModel
                 }
 
                 var allSales = await _salesService.GetAllSalesAsync();
-
                 var startOfDay = FromDate.Date;
                 var endOfDay = ToDate.Date.AddDays(1).AddTicks(-1);
 
@@ -175,43 +160,42 @@ namespace KusinaPOS.ViewModel
                     .Where(s =>
                         s.SaleDate >= startOfDay &&
                         s.SaleDate <= endOfDay &&
-                        s.Status == "Completed")
+                        (s.Status == "Completed" || s.Status == "Refunded" || s.Status == "Voided"))
                     .OrderByDescending(s => s.SaleDate)
                     .ToList();
 
                 TotalSales = filteredSales.Sum(s => s.TotalAmount);
                 TotalTransactions = filteredSales.Count;
                 CashCollected = filteredSales.Sum(s => s.AmountPaid);
-                AverageSale = TotalTransactions > 0
-                    ? TotalSales / TotalTransactions
-                    : 0;
+                AverageSale = TotalTransactions > 0 ? TotalSales / TotalTransactions : 0;
 
                 SalesTransactions = new ObservableCollection<Sale>(filteredSales);
             }
             catch (Exception ex)
             {
-                await PageHelper.DisplayAlertAsync(
-                    "Error",
-                    $"Failed to generate report: {ex.Message}",
-                    "OK");
+                await PageHelper.DisplayAlertAsync("Error", $"Failed to generate report: {ex.Message}", "OK");
             }
             finally
             {
                 IsBusy = false;
             }
         }
+
+        private async Task LoadTodayReportAsync()
+        {
+            FromDate = DateTime.Today;
+            ToDate = DateTime.Today;
+            await GenerateReportAsync();
+        }
         #endregion
 
-        #region Export
+        #region Sales Report - Export
         [RelayCommand]
         private async Task ExportToExcelAsync()
         {
             if (!SalesTransactions.Any())
             {
-                await PageHelper.DisplayAlertAsync(
-                    "No Data",
-                    "No transactions to export",
-                    "OK");
+                await PageHelper.DisplayAlertAsync("No Data", "No transactions to export", "OK");
                 return;
             }
 
@@ -220,25 +204,21 @@ namespace KusinaPOS.ViewModel
                 IsBusy = true;
 
                 var storeName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
+                var allSales = await _salesService.GetAllSalesAsync();
+                var startOfDay = FromDate.Date;
+                var endOfDay = ToDate.Date.AddDays(1).AddTicks(-1);
 
-                await _excelExportService.ExportSalesReportAsync(
-                    SalesTransactions.ToList(),
-                    FromDate,
-                    ToDate,
-                    storeName);
+                var filteredSales = allSales
+                    .Where(s => s.SaleDate >= startOfDay && s.SaleDate <= endOfDay)
+                    .OrderByDescending(s => s.SaleDate)
+                    .ToList();
 
-                await PageHelper.DisplayAlertAsync(
-                    "Success",
-                    "Sales report exported successfully!",
-                    "OK");
+                await _excelExportService.ExportSalesReportAsync(filteredSales, FromDate, ToDate, storeName);
+                await PageHelper.DisplayAlertAsync("Success", "Sales report exported successfully!", "OK");
             }
             catch (Exception ex)
             {
-                await PageHelper.DisplayAlertAsync(
-                    "Error",
-                    $"Failed to export: {ex.Message}",
-                    "OK");
-
+                await PageHelper.DisplayAlertAsync("Error", $"Failed to export: {ex.Message}", "OK");
                 Debug.WriteLine($"Export error: {ex}");
             }
             finally
@@ -246,18 +226,9 @@ namespace KusinaPOS.ViewModel
                 IsBusy = false;
             }
         }
-
-
         #endregion
 
-        #region Helpers
-        private async Task LoadTodayReportAsync()
-        {
-            FromDate = DateTime.Today;
-            ToDate = DateTime.Today;
-            await GenerateReportAsync();
-        }
-        #endregion
+        #region Sales Report - Sale Items
         partial void OnSelectedSaleTransactionChanged(Sale value)
         {
             SaleItems = new ObservableCollection<SaleItemWithMenuName>();
@@ -271,6 +242,7 @@ namespace KusinaPOS.ViewModel
             _ = LoadSaleItemsAsync(value.Id);
             IsOpenPopup = true;
         }
+
         private async Task LoadSaleItemsAsync(int saleId)
         {
             var items = await _salesService.GetSaleItemsWithMenuNameAsync(saleId);
@@ -283,74 +255,29 @@ namespace KusinaPOS.ViewModel
             });
         }
         #endregion
-        #region MENU REPORT
-        //===================== MENU REPORT ====================== //
+
+        #region Menu Report - Initialization
         public async Task LoadMenuCategoriesAsync(CategoryService categoryService)
         {
             try
             {
                 Categories.Clear();
-                Categories.Add("All"); // always first
+                Categories.Add("All");
 
                 var activeCategories = await categoryService.GetActiveCategoriesAsync();
                 foreach (var cat in activeCategories)
-                {
                     Categories.Add(cat.Name);
-                }
 
-                SelectedCategory = "All"; // default
+                SelectedCategory = "All";
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Failed to load menu categories: {ex.Message}");
             }
         }
-        [RelayCommand]
-        private async Task GenerateMenuReportAsync()
-        {
-            if (IsBusy) return;
-            IsBusy = true;
+        #endregion
 
-            try
-            {
-                if (FromDate > ToDate)
-                {
-                    await PageHelper.DisplayAlertAsync(
-                        "Invalid Date Range",
-                        "From Date cannot be later than To Date",
-                        "OK");
-                    return;
-                }
-
-                var start = FromDate.Date;
-                var end = ToDate.Date.AddDays(1).AddTicks(-1);
-
-                // 🔹 Fetch top 5 menu items
-                var top5 = await _menuReportService.GetTop5MenuItemsAsync(SelectedCategory, start, end);
-                Top5MenuItems = new ObservableCollection<Top5MenuItem>(top5);
-
-                // 🔹 Fetch all menu items by category
-                var allItems = await _menuReportService.GetAllMenuItemsByCategoryAsync(SelectedCategory, start, end);
-                AllMenuItemsByCategory = new ObservableCollection<AllMenuItemByCategory>(allItems);
-
-                //for datagrid
-                await LoadMenuItemsReportAsync();
-            }
-            catch (Exception ex)
-            {
-                await PageHelper.DisplayAlertAsync(
-                    "Error",
-                    $"Failed to generate menu report: {ex.Message}",
-                    "OK");
-                Debug.WriteLine(ex);
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-        #region Menu Items Quick Filter Commands
-
+        #region Menu Report - Filter Commands
         [RelayCommand]
         private async Task FilterMenuTodayAsync()
         {
@@ -362,7 +289,6 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         private async Task FilterMenuWeekAsync()
         {
-            // Start of week = Sunday
             FromDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
             ToDate = DateTime.Today;
             await GenerateMenuReportAsync();
@@ -375,36 +301,71 @@ namespace KusinaPOS.ViewModel
             ToDate = DateTime.Today;
             await GenerateMenuReportAsync();
         }
-
         #endregion
+
+        #region Menu Report - Generation
+        [RelayCommand]
+        private async Task GenerateMenuReportAsync()
+        {
+            if (IsBusy) return;
+            IsBusy = true;
+
+            try
+            {
+                if (FromDate > ToDate)
+                {
+                    await PageHelper.DisplayAlertAsync("Invalid Date Range", "From Date cannot be later than To Date", "OK");
+                    return;
+                }
+
+                var start = FromDate.Date;
+                var end = ToDate.Date.AddDays(1).AddTicks(-1);
+
+                var top5 = await _menuReportService.GetTop5MenuItemsAsync(SelectedCategory, start, end);
+                Top5MenuItems = new ObservableCollection<Top5MenuItem>(top5);
+
+                var allItems = await _menuReportService.GetAllMenuItemsByCategoryAsync(SelectedCategory, start, end);
+                AllMenuItemsByCategory = new ObservableCollection<AllMenuItemByCategory>(allItems);
+
+                await LoadMenuItemsReportAsync();
+            }
+            catch (Exception ex)
+            {
+                await PageHelper.DisplayAlertAsync("Error", $"Failed to generate menu report: {ex.Message}", "OK");
+                Debug.WriteLine(ex);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
         public async Task LoadMenuItemsReportAsync()
         {
             MenuItemsReport.Clear();
 
             const string sql = @"
-        SELECT
-            MenuItemName,
-            Category,
-            SUM(Quantity) AS QuantitySold,
-            SUM(LineTotal) AS TotalSales
-        FROM vwSaleItemsWithDateMenuItem
-        WHERE SaleDate >= ?
-          AND SaleDate < ?
-          AND (? IS NULL OR Category = ?)
-        GROUP BY MenuItemId, MenuItemName, Category
-        ORDER BY TotalSales DESC;
-    ";
+                SELECT
+                    MenuItemName,
+                    Category,
+                    SUM(Quantity) AS QuantitySold,
+                    SUM(LineTotal) AS TotalSales
+                FROM vwSaleItemsWithDateMenuItem
+                WHERE SaleDate >= ?
+                  AND SaleDate < ?
+                  AND (? IS NULL OR Category = ?)
+                GROUP BY MenuItemId, MenuItemName, Category
+                ORDER BY TotalSales DESC;
+            ";
 
-            // Normalize category
-            string? category =
-                SelectedCategory == "All" || string.IsNullOrWhiteSpace(SelectedCategory)
+            string? category = SelectedCategory == "All" || string.IsNullOrWhiteSpace(SelectedCategory)
                 ? null
                 : SelectedCategory;
 
             var result = await _db.QueryAsync<MenuItemReportDto>(
                 sql,
                 FromDate,
-                ToDate.AddDays(1), // ✅ correct date handling
+                ToDate.AddDays(1),
                 category,
                 category
             );
@@ -412,8 +373,49 @@ namespace KusinaPOS.ViewModel
             foreach (var item in result)
                 MenuItemsReport.Add(item);
         }
+        #endregion
+        #region Menu Report - Export
+        [RelayCommand]
+        private async Task MenuReportExportToExcelAsync()
+        {
+            if (IsBusy) return;
+            IsBusy = true;
 
+            try
+            {
+                if (FromDate > ToDate)
+                {
+                    await PageHelper.DisplayAlertAsync("Invalid Date", "From Date cannot be later than To Date", "OK");
+                    return;
+                }
 
+                string categoryFilter = SelectedCategory ?? "All";
+
+                // 1. Fetch VOLUME Data (Qty)
+                var volumeData = await _menuReportService.GetAllMenuSalesForExportAsync(categoryFilter, FromDate, ToDate);
+
+                // 2. Fetch SALES VALUE Data (Money)
+                var salesData = await _menuReportService.GetAllMenuSalesRankingsAsync(categoryFilter, FromDate, ToDate);
+
+                // 3. Check if empty (check both to be safe)
+                if ((volumeData == null || !volumeData.Any()) && (salesData == null || !salesData.Any()))
+                {
+                    await PageHelper.DisplayAlertAsync("No Data", "No sales found for this period.", "OK");
+                    return;
+                }
+
+                // 4. Export Combined File
+                await _excelExportService.ExportMenuPerformanceAsync(volumeData, salesData, FromDate, ToDate);
+            }
+            catch (Exception ex)
+            {
+                await PageHelper.DisplayAlertAsync("Export Failed", ex.Message, "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
         #endregion
     }
 }

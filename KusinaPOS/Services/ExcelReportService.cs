@@ -3,6 +3,7 @@ using Syncfusion.Drawing;
 using Syncfusion.XlsIO;
 using Color = Syncfusion.Drawing.Color;
 using IApplication = Syncfusion.XlsIO.IApplication;
+using IRange = Syncfusion.XlsIO.IRange;
 
 namespace KusinaPOS.Services
 {
@@ -80,6 +81,7 @@ namespace KusinaPOS.Services
                     int headerRow = summaryRow + 2;
                     worksheet.Range[$"A{headerRow}"].Text = "RECEIPT NO";
                     worksheet.Range[$"B{headerRow}"].Text = "DATE & TIME";
+                    worksheet.Range[$"B{headerRow}"].ColumnWidth = 200;
                     worksheet.Range[$"C{headerRow}"].Text = "SUBTOTAL";
                     worksheet.Range[$"D{headerRow}"].Text = "DISCOUNT";
                     worksheet.Range[$"E{headerRow}"].Text = "TAX";
@@ -149,7 +151,7 @@ namespace KusinaPOS.Services
 
                     // Set minimum column widths
                     worksheet.Range["A1"].ColumnWidth = 15;
-                    worksheet.Range["B1"].ColumnWidth = 20;
+                    worksheet.Range["B1"].ColumnWidth = 50;
                     worksheet.Range["C1:H1"].ColumnWidth = 12;
 
                     // Save the workbook
@@ -163,6 +165,195 @@ namespace KusinaPOS.Services
                     saveService.SaveAndView(fileName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", ms);
                 }
             });
+        }
+
+        // In ExcelExportService.cs
+
+        public async Task ExportMenuPerformanceAsync(
+                        List<AllMenuItemByCategory> volumeData, // Sheet 1 Data
+                        List<Top5MenuItem> salesData,           // Sheet 2 Data
+                        DateTime fromDate,
+                        DateTime toDate,
+                        string storeName = "Kusina POS")
+                            {
+                                await Task.Run(() =>
+                                {
+                                    using (ExcelEngine excelEngine = new ExcelEngine())
+                                    {
+                                        IApplication application = excelEngine.Excel;
+                                        application.DefaultVersion = ExcelVersion.Xlsx;
+
+                                        // Create a workbook with 2 Worksheets
+                                        IWorkbook workbook = application.Workbooks.Create(2);
+
+                                        // ===========================================
+                                        // SHEET 1: VOLUME REPORT (Quantity)
+                                        // ===========================================
+                                        IWorksheet sheet1 = workbook.Worksheets[0];
+                                        sheet1.Name = "By Quantity"; // Tab Name
+                                        GenerateVolumeSheet(sheet1, volumeData, fromDate, toDate, storeName);
+
+                                        // ===========================================
+                                        // SHEET 2: SALES RANKING (Money)
+                                        // ===========================================
+                                        IWorksheet sheet2 = workbook.Worksheets[1];
+                                        sheet2.Name = "By Sales Value"; // Tab Name
+                                        GenerateSalesValueSheet(sheet2, salesData, fromDate, toDate, storeName);
+
+                                        // Save
+                                        MemoryStream ms = new MemoryStream();
+                                        workbook.SaveAs(ms);
+                                        ms.Position = 0;
+
+                                        string fileName = $"MenuReport_Full_{fromDate:yyyyMMdd}-{toDate:yyyyMMdd}.xlsx";
+                                        SaveService saveService = new SaveService();
+                                        saveService.SaveAndView(fileName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", ms);
+                                    }
+                                });
+                            }
+
+        // Helper for Sheet 1 (Volume - What we wrote before)
+        private void GenerateVolumeSheet(IWorksheet worksheet, List<AllMenuItemByCategory> data, DateTime fromDate, DateTime toDate, string storeName)
+        {
+            worksheet.IsGridLinesVisible = false;
+
+            // Header Info
+            worksheet.Range["A1"].Text = storeName;
+            worksheet.Range["A1"].CellStyle.Font.Bold = true;
+            worksheet.Range["A1"].CellStyle.Font.Size = 18;
+
+            worksheet.Range["A2"].Text = "Menu Volume Report (Qty)";
+            worksheet.Range["A2"].CellStyle.Font.Bold = true;
+            worksheet.Range["A2"].CellStyle.Font.Size = 14;
+
+            worksheet.Range["A3"].Text = $"Period: {fromDate:MMM dd, yyyy} - {toDate:MMM dd, yyyy}";
+
+            // Table Header
+            int headerRow = 5;
+            string[] headers = { "CATEGORY", "ITEM NAME", "QTY SOLD" };
+
+            for (int i = 0; i < headers.Length; i++)
+                worksheet.Range[headerRow, i + 1].Text = headers[i];
+
+            // Header Style
+            IRange headerRange = worksheet.Range[headerRow, 1, headerRow, 3];
+            headerRange.CellStyle.Color = Color.FromArgb(0, 42, 118, 189);
+            headerRange.CellStyle.Font.Color = ExcelKnownColors.White;
+            headerRange.CellStyle.Font.Bold = true;
+            headerRange.CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+            headerRange.CellStyle.VerticalAlignment = ExcelVAlign.VAlignCenter;
+            headerRange.RowHeight = 25;
+
+            // Data
+            int currentRow = headerRow + 1;
+            foreach (var item in data)
+            {
+                worksheet.Range[currentRow, 1].Text = item.Category;
+                worksheet.Range[currentRow, 2].Text = item.MenuItemName;
+                worksheet.Range[currentRow, 3].Number = item.QuantitySold;
+                currentRow++;
+            }
+
+            // Formatting
+            int lastRow = currentRow - 1;
+            worksheet.Range[$"C{headerRow + 1}:C{lastRow}"].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+
+            // Borders
+            IRange borderRange = worksheet.Range[headerRow, 1, lastRow, 3];
+            borderRange.CellStyle.Borders[ExcelBordersIndex.EdgeTop].LineStyle = ExcelLineStyle.Thin;
+            borderRange.CellStyle.Borders[ExcelBordersIndex.EdgeBottom].LineStyle = ExcelLineStyle.Thin;
+            borderRange.CellStyle.Borders[ExcelBordersIndex.EdgeLeft].LineStyle = ExcelLineStyle.Thin;
+            borderRange.CellStyle.Borders[ExcelBordersIndex.EdgeRight].LineStyle = ExcelLineStyle.Thin;
+            borderRange.CellStyle.Borders[ExcelBordersIndex.InsideVertical].LineStyle = ExcelLineStyle.Thin;
+            borderRange.CellStyle.Borders[ExcelBordersIndex.InsideHorizontal].LineStyle = ExcelLineStyle.Thin;
+            borderRange.CellStyle.Borders.Color = ExcelKnownColors.Grey_25_percent;
+
+            // Total
+            worksheet.Range[currentRow, 1, currentRow, 2].Merge();
+            worksheet.Range[currentRow, 1].Text = "GRAND TOTAL";
+            worksheet.Range[currentRow, 1].CellStyle.Font.Bold = true;
+            worksheet.Range[currentRow, 1].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignRight;
+
+            worksheet.Range[currentRow, 3].Formula = $"=SUM(C{headerRow + 1}:C{lastRow})";
+            worksheet.Range[currentRow, 3].CellStyle.Font.Bold = true;
+            worksheet.Range[currentRow, 3].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+
+            worksheet.UsedRange.AutofitColumns();
+            worksheet.Range["A1"].ColumnWidth = 20;
+            worksheet.Range["B1"].ColumnWidth = 35;
+        }
+
+        // Helper for Sheet 2 (Sales Value - The New One)
+        private void GenerateSalesValueSheet(IWorksheet worksheet, List<Top5MenuItem> data, DateTime fromDate, DateTime toDate, string storeName)
+        {
+            worksheet.IsGridLinesVisible = false;
+
+            // Header Info
+            worksheet.Range["A1"].Text = storeName;
+            worksheet.Range["A1"].CellStyle.Font.Bold = true;
+            worksheet.Range["A1"].CellStyle.Font.Size = 18;
+
+            worksheet.Range["A2"].Text = "Sales Ranking Report (Value)";
+            worksheet.Range["A2"].CellStyle.Font.Bold = true;
+            worksheet.Range["A2"].CellStyle.Font.Size = 14;
+
+            worksheet.Range["A3"].Text = $"Period: {fromDate:MMM dd, yyyy} - {toDate:MMM dd, yyyy}";
+
+            // Table Header
+            int headerRow = 5;
+            worksheet.Range[headerRow, 1].Text = "RANK";
+            worksheet.Range[headerRow, 2].Text = "ITEM NAME";
+            worksheet.Range[headerRow, 3].Text = "TOTAL SALES";
+
+            // Header Style
+            IRange headerRange = worksheet.Range[headerRow, 1, headerRow, 3];
+            headerRange.CellStyle.Color = Color.FromArgb(0, 42, 118, 189);
+            headerRange.CellStyle.Font.Color = ExcelKnownColors.White;
+            headerRange.CellStyle.Font.Bold = true;
+            headerRange.CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+            headerRange.CellStyle.VerticalAlignment = ExcelVAlign.VAlignCenter;
+            headerRange.RowHeight = 25;
+
+            // Data
+            int currentRow = headerRow + 1;
+            int rank = 1;
+            foreach (var item in data)
+            {
+                worksheet.Range[currentRow, 1].Number = rank;
+                worksheet.Range[currentRow, 2].Text = item.MenuItemName;
+                worksheet.Range[currentRow, 3].Number = (double)item.TotalSales;
+
+                rank++;
+                currentRow++;
+            }
+
+            // Formatting
+            int lastRow = currentRow - 1;
+            worksheet.Range[$"A{headerRow + 1}:A{lastRow}"].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+            worksheet.Range[$"C{headerRow + 1}:C{lastRow}"].NumberFormat = "₱#,##0.00";
+
+            // Borders
+            IRange borderRange = worksheet.Range[headerRow, 1, lastRow, 3];
+            borderRange.CellStyle.Borders[ExcelBordersIndex.EdgeTop].LineStyle = ExcelLineStyle.Thin;
+            borderRange.CellStyle.Borders[ExcelBordersIndex.EdgeBottom].LineStyle = ExcelLineStyle.Thin;
+            borderRange.CellStyle.Borders[ExcelBordersIndex.EdgeLeft].LineStyle = ExcelLineStyle.Thin;
+            borderRange.CellStyle.Borders[ExcelBordersIndex.EdgeRight].LineStyle = ExcelLineStyle.Thin;
+            borderRange.CellStyle.Borders[ExcelBordersIndex.InsideVertical].LineStyle = ExcelLineStyle.Thin;
+            borderRange.CellStyle.Borders[ExcelBordersIndex.InsideHorizontal].LineStyle = ExcelLineStyle.Thin;
+            borderRange.CellStyle.Borders.Color = ExcelKnownColors.Grey_25_percent;
+
+            // Total
+            worksheet.Range[currentRow, 1, currentRow, 2].Merge();
+            worksheet.Range[currentRow, 1].Text = "GRAND TOTAL";
+            worksheet.Range[currentRow, 1].CellStyle.Font.Bold = true;
+            worksheet.Range[currentRow, 1].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignRight;
+
+            worksheet.Range[currentRow, 3].Formula = $"=SUM(C{headerRow + 1}:C{lastRow})";
+            worksheet.Range[currentRow, 3].CellStyle.Font.Bold = true;
+            worksheet.Range[currentRow, 3].NumberFormat = "₱#,##0.00";
+
+            worksheet.UsedRange.AutofitColumns();
+            worksheet.Range["B1"].ColumnWidth = 35;
         }
     }
 }

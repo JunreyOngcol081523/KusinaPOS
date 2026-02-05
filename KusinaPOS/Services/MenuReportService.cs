@@ -47,5 +47,40 @@ namespace KusinaPOS.Services
 
             return _db.QueryAsync<AllMenuItemByCategory>(sql, fromDate, toDate);
         }
+        // In MenuReportService.cs
+
+        public Task<List<AllMenuItemByCategory>> GetAllMenuSalesForExportAsync(string category, DateTime fromDate, DateTime toDate)
+        {
+            // ONLY fetching QuantitySold now.
+            string sql = @"SELECT MenuItemName, Category, 
+                          SUM(Quantity) AS QuantitySold
+                   FROM vwSaleItemsWithDateMenuItem
+                   WHERE SaleDate BETWEEN ? AND ?
+                   {0}
+                   GROUP BY MenuItemName, Category
+                   ORDER BY Category ASC, QuantitySold DESC;";
+
+            string categoryFilter = category != "All" ? $"AND Category = '{category}'" : "";
+
+            sql = string.Format(sql, categoryFilter);
+
+            return _db.QueryAsync<AllMenuItemByCategory>(sql, fromDate, toDate);
+        }
+        public Task<List<Top5MenuItem>> GetAllMenuSalesRankingsAsync(string category, DateTime fromDate, DateTime toDate)
+        {
+            // Removed LIMIT 5.
+            // This ranks ALL items by Total Money Earned.
+            string sql = @"SELECT MenuItemName, SUM(UnitPrice * Quantity) AS TotalSales
+                   FROM vwSaleItemsWithDateMenuItem
+                   WHERE SaleDate BETWEEN ? AND ?
+                   {0}
+                   GROUP BY MenuItemName
+                   ORDER BY TotalSales DESC;";
+
+            string categoryFilter = category != "All" ? $"AND Category = '{category}'" : "";
+            sql = string.Format(sql, categoryFilter);
+
+            return _db.QueryAsync<Top5MenuItem>(sql, fromDate, toDate);
+        }
     }
 }

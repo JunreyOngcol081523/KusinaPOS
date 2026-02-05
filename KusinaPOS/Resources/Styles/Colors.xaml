@@ -1,11 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
-<ResourceDictionary 
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-    <!-- Note: For Android please see also Platforms\Android\Resources\values\colors.xml -->
+    <!--  Note: For Android please see also Platforms\Android\Resources\values\colors.xml  -->
 
-    <!-- Primary Colors - Orange Theme -->
+    <!--  Primary Colors - Orange Theme  -->
     <Color x:Key="Primary">#FF6B35</Color>
     <Color x:Key="PrimaryDark">#FF8C61</Color>
     <Color x:Key="PrimaryDarkText">#FFFFFF</Color>
@@ -13,14 +11,14 @@
     <Color x:Key="SecondaryDarkText">#1A1A1A</Color>
     <Color x:Key="Tertiary">#D94E1F</Color>
 
-    <!-- Base Colors -->
+    <!--  Base Colors  -->
     <Color x:Key="White">#FFFFFF</Color>
     <Color x:Key="Black">#000000</Color>
     <Color x:Key="Magenta">#FF6BB5</Color>
     <Color x:Key="MidnightBlue">#0D1B2A</Color>
     <Color x:Key="OffBlack">#121212</Color>
 
-        <!-- Dark Theme Grays -->
+    <!--  Dark Theme Grays  -->
     <Color x:Key="Gray100">#2A2A2A</Color>
     <Color x:Key="Gray200">#3A3A3A</Color>
     <Color x:Key="Gray300">#4A4A4A</Color>
@@ -30,46 +28,46 @@
     <Color x:Key="Gray900">#E0E0E0</Color>
     <Color x:Key="Gray950">#F5F5F5</Color>
 
-    <!-- Dark Background Colors -->
+    <!--  Dark Background Colors  -->
     <Color x:Key="BackgroundDark">#121212</Color>
     <Color x:Key="SurfaceDark">#1E1E1E</Color>
     <Color x:Key="CardDark">#252525</Color>
 
-    <!-- Text Colors for Dark Theme -->
+    <!--  Text Colors for Dark Theme  -->
     <Color x:Key="TextPrimary">#FFFFFF</Color>
     <Color x:Key="TextSecondary">#B0B0B0</Color>
     <Color x:Key="TextDisabled">#6A6A6A</Color>
 
-    <!-- Accent Colors -->
+    <!--  Accent Colors  -->
     <Color x:Key="Success">#4CAF50</Color>
     <Color x:Key="Warning">#FFC107</Color>
     <Color x:Key="Error">#F44336</Color>
     <Color x:Key="Info">#2196F3</Color>
 
-    <!-- Brushes -->
-    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
-    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
-    <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>
-    <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}"/>
-    <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}"/>
-    <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}"/>
-    <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}"/>
-    <SolidColorBrush x:Key="Gray300Brush" Color="{StaticResource Gray300}"/>
-    <SolidColorBrush x:Key="Gray400Brush" Color="{StaticResource Gray400}"/>
-    <SolidColorBrush x:Key="Gray500Brush" Color="{StaticResource Gray500}"/>
-    <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
-    <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
-    <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
+    <!--  Brushes  -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />
+    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}" />
+    <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}" />
+    <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}" />
+    <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}" />
+    <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}" />
+    <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}" />
+    <SolidColorBrush x:Key="Gray300Brush" Color="{StaticResource Gray300}" />
+    <SolidColorBrush x:Key="Gray400Brush" Color="{StaticResource Gray400}" />
+    <SolidColorBrush x:Key="Gray500Brush" Color="{StaticResource Gray500}" />
+    <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}" />
+    <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}" />
+    <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}" />
 
-    <!-- Additional Dark Theme Brushes -->
-    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundDark}"/>
-    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceDark}"/>
-    <SolidColorBrush x:Key="CardBrush" Color="{StaticResource CardDark}"/>
-    <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimary}"/>
-    <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondary}"/>
+    <!--  Additional Dark Theme Brushes  -->
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundDark}" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceDark}" />
+    <SolidColorBrush x:Key="CardBrush" Color="{StaticResource CardDark}" />
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimary}" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondary}" />
 
 
-    <!-- ADD THESE MISSING COLORS -->
+    <!--  ADD THESE MISSING COLORS  -->
     <Color x:Key="BackgroundDarker">#0d0d0d</Color>
     <Color x:Key="BorderColor">#333333</Color>
     <Color x:Key="CardBackground">#2b2b2b</Color>
