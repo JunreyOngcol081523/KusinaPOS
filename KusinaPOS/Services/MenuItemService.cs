@@ -69,6 +69,7 @@ namespace KusinaPOS.Services
             int pageIndex,
             int pageSize)
         {
+            await InitializeAsync();
             if (string.IsNullOrWhiteSpace(category))
                 return new List<MenuItem>();
 

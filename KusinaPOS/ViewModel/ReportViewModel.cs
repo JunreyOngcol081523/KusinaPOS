@@ -40,7 +40,7 @@ namespace KusinaPOS.ViewModel
         #region Sales Properties & Collections
         [ObservableProperty] private decimal totalSales;
         [ObservableProperty] private int totalTransactions;
-        [ObservableProperty] private decimal cashCollected;
+        [ObservableProperty] private decimal cashRefunded;
         [ObservableProperty] private decimal averageSale;
         [ObservableProperty] private ObservableCollection<Sale> salesTransactions = new();
         [ObservableProperty] private Sale selectedSaleTransaction;
@@ -48,8 +48,8 @@ namespace KusinaPOS.ViewModel
         #endregion
 
         #region Menu Properties & Collections
-        [ObservableProperty] private ObservableCollection<Top5MenuItem> top5MenuItems;
-        [ObservableProperty] private ObservableCollection<AllMenuItemByCategory> allMenuItemsByCategory;
+        [ObservableProperty] private ObservableCollection<Top5MenuItem> topIncomeGeneratingMenu;
+        [ObservableProperty] private ObservableCollection<AllMenuItemByCategory> topMenuItemsBySoldQty;
         [ObservableProperty] private ObservableCollection<string> categories = new();
         public ObservableCollection<MenuItemReportDto> MenuItemsReport { get; } = new();
         #endregion
@@ -82,8 +82,8 @@ namespace KusinaPOS.ViewModel
             _categoryService = categoryService;
             _db = db.GetConnection();
 
-            Top5MenuItems = new ObservableCollection<Top5MenuItem>();
-            AllMenuItemsByCategory = new ObservableCollection<AllMenuItemByCategory>();
+            TopIncomeGeneratingMenu = new ObservableCollection<Top5MenuItem>();
+            TopMenuItemsBySoldQty = new ObservableCollection<AllMenuItemByCategory>();
 
             LoadPreferences();
             _dateTimeService.DateTimeChanged += (s, e) => CurrentDateTime = e;
@@ -166,7 +166,7 @@ namespace KusinaPOS.ViewModel
 
                 TotalSales = filteredSales.Sum(s => s.TotalAmount);
                 TotalTransactions = filteredSales.Count;
-                CashCollected = filteredSales.Sum(s => s.AmountPaid);
+                CashRefunded = await _salesService.GetRefundTotalByDateAsync(startOfDay, endOfDay);
                 AverageSale = TotalTransactions > 0 ? TotalSales / TotalTransactions : 0;
 
                 SalesTransactions = new ObservableCollection<Sale>(filteredSales);
@@ -321,11 +321,11 @@ namespace KusinaPOS.ViewModel
                 var start = FromDate.Date;
                 var end = ToDate.Date.AddDays(1).AddTicks(-1);
 
-                var top5 = await _menuReportService.GetTop5MenuItemsAsync(SelectedCategory, start, end);
-                Top5MenuItems = new ObservableCollection<Top5MenuItem>(top5);
+                var top5 = await _menuReportService.GetTopIncomeGeneratingMenuItemsAsync(SelectedCategory, start, end);
+                TopIncomeGeneratingMenu = new ObservableCollection<Top5MenuItem>(top5);
 
-                var allItems = await _menuReportService.GetAllMenuItemsByCategoryAsync(SelectedCategory, start, end);
-                AllMenuItemsByCategory = new ObservableCollection<AllMenuItemByCategory>(allItems);
+                var allItems = await _menuReportService.GetTopMenuBySoldQty(SelectedCategory, start, end);
+                TopMenuItemsBySoldQty = new ObservableCollection<AllMenuItemByCategory>(allItems);
 
                 await LoadMenuItemsReportAsync();
             }
@@ -345,33 +345,43 @@ namespace KusinaPOS.ViewModel
             MenuItemsReport.Clear();
 
             const string sql = @"
-                SELECT
-                    MenuItemName,
-                    Category,
-                    SUM(Quantity) AS QuantitySold,
-                    SUM(LineTotal) AS TotalSales
-                FROM vwSaleItemsWithDateMenuItem
-                WHERE SaleDate >= ?
-                  AND SaleDate < ?
-                  AND (? IS NULL OR Category = ?)
-                GROUP BY MenuItemId, MenuItemName, Category
-                ORDER BY TotalSales DESC;
-            ";
+                            SELECT
+                                MenuItemName,
+                                Category,
+                                SUM(Quantity) AS QuantitySold,
+                                SUM(LineTotal) AS TotalSales
+                            FROM vwSaleItemsWithDateMenuItem
+                            WHERE SaleDate >= ?
+                              AND SaleDate < ?
+                              AND Status = 'Completed'
+                              AND (? IS NULL OR Category = ?)
+                            GROUP BY MenuItemId, MenuItemName, Category
+                            ORDER BY TotalSales DESC;
+                            ";
 
+            // Handle "All" category by passing null to the query parameters
             string? category = SelectedCategory == "All" || string.IsNullOrWhiteSpace(SelectedCategory)
                 ? null
                 : SelectedCategory;
 
-            var result = await _db.QueryAsync<MenuItemReportDto>(
-                sql,
-                FromDate,
-                ToDate.AddDays(1),
-                category,
-                category
-            );
+            try
+            {
+                var result = await _db.QueryAsync<MenuItemReportDto>(
+                    sql,
+                    FromDate.Date,       // Ensure we start at 00:00:00
+                    ToDate.Date.AddDays(1), // Includes the whole of ToDate up to midnight
+                    category,
+                    category
+                );
 
-            foreach (var item in result)
-                MenuItemsReport.Add(item);
+                foreach (var item in result)
+                    MenuItemsReport.Add(item);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[REPORT ERROR] {ex.Message}");
+                // Optional: Notify user of the failure
+            }
         }
         #endregion
         #region Menu Report - Export

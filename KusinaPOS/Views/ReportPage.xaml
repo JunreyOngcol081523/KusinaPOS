@@ -344,7 +344,7 @@
                                             </VerticalStackLayout>
                                         </Border>
 
-                                        <!--  Cash Collected  -->
+                                        <!--  Cash Refunded  -->
                                         <Border
                                             Grid.Column="2"
                                             Padding="15"
@@ -355,12 +355,12 @@
                                             <VerticalStackLayout Spacing="5">
                                                 <Label
                                                     FontSize="11"
-                                                    Text="Cash Collected"
+                                                    Text="Cash Refunded"
                                                     TextColor="{StaticResource TextSecondary}" />
                                                 <Label
                                                     FontAttributes="Bold"
                                                     FontSize="18"
-                                                    Text="{Binding CashCollected, StringFormat='₱{0:N2}', FallbackValue='₱0.00'}"
+                                                    Text="{Binding CashRefunded, StringFormat='₱{0:N2}', FallbackValue='₱0.00'}"
                                                     TextColor="{StaticResource Primary}" />
                                             </VerticalStackLayout>
                                         </Border>
@@ -717,7 +717,7 @@
                                                         </chart:NumericalAxis>
                                                     </chart:SfCartesianChart.YAxes>
                                                     <chart:ColumnSeries
-                                                        ItemsSource="{Binding Top5MenuItems}"
+                                                        ItemsSource="{Binding TopIncomeGeneratingMenu}"
                                                         ShowDataLabels="True"
                                                         XBindingPath="MenuItemName"
                                                         YBindingPath="TotalSales" />
@@ -726,7 +726,7 @@
                                         </tabView:SfTabItem>
 
                                         <!--  Tab 2: Top 5 Menu Items by Sold Quantity  -->
-                                        <tabView:SfTabItem Header="Top 5 Sold Menu" TextColor="{StaticResource TextPrimary}">
+                                        <tabView:SfTabItem Header="Top Menu By Sold Qty" TextColor="{StaticResource TextPrimary}">
                                             <tabView:SfTabItem.Content>
                                                 <chart:SfCartesianChart Margin="10" IsTransposed="false">
                                                     <!--  Optional: Custom DataLabel Template  -->
@@ -764,7 +764,7 @@
                                                     </chart:SfCartesianChart.YAxes>
                                                     <!--  ColumnSeries  -->
                                                     <chart:ColumnSeries
-                                                        ItemsSource="{Binding AllMenuItemsByCategory}"
+                                                        ItemsSource="{Binding TopMenuItemsBySoldQty}"
                                                         ShowDataLabels="True"
                                                         XBindingPath="MenuItemName"
                                                         YBindingPath="QuantitySold">

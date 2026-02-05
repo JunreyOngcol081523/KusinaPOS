@@ -20,6 +20,8 @@ namespace KusinaPOS.Models
         // Negative = deduction, Positive = add
         [NotNull]
         public decimal QuantityChange { get; set; }
+        [NotNull]
+        public decimal CostAtTransaction { get; set; }
 
         // Sale, Void, StockIn, Adjustment
         [NotNull]

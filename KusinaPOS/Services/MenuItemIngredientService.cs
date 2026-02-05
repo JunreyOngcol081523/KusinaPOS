@@ -75,6 +75,7 @@ namespace KusinaPOS.Services
 
         public async Task<List<MenuItemIngredient>> GetByMenuItemIdAsync(int menuItemId)
         {
+            await InitializeAsync();
             // Get all ingredients for this menu item
             var ingredients = await _db.Table<MenuItemIngredient>()
                                        .Where(x => x.MenuItemId == menuItemId)
@@ -96,11 +97,13 @@ namespace KusinaPOS.Services
         }
 
 
-        public Task<List<MenuItemIngredient>> GetByInventoryItemIdAsync(int inventoryItemId)
+        public async Task<List<MenuItemIngredient>> GetByInventoryItemIdAsync(int inventoryItemId)
         {
-            return _db.Table<MenuItemIngredient>()
+            await InitializeAsync();
+            var ingredient= _db.Table<MenuItemIngredient>()
                       .Where(x => x.InventoryItemId == inventoryItemId)
                       .ToListAsync();
+            return await ingredient;
         }
     }
 }

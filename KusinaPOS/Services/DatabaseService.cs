@@ -47,7 +47,6 @@ namespace KusinaPOS.Services
         }
         public async Task InitializeAsync()
         {
-
             await _database.CreateTableAsync<MenuItem>();
             await _database.CreateTableAsync<InventoryItem>();
             await _database.CreateTableAsync<MenuItemIngredient>();
@@ -63,18 +62,19 @@ namespace KusinaPOS.Services
 
             // 2. Create without status filter
             await _database.ExecuteAsync(@"
-                    CREATE VIEW View_SaleItemsWithMenuName AS
-                    SELECT 
-                        si.Id,
-                        si.SaleId, 
-                        si.MenuItemId, 
-                        mi.Name AS MenuItemName, 
-                        si.Quantity, 
-                        si.UnitPrice, 
-                        (si.Quantity * si.UnitPrice) AS LineTotal
-                    FROM SaleItem si
-                    INNER JOIN MenuItem mi ON mi.Id = si.MenuItemId
-                    INNER JOIN Sale s ON s.Id = si.SaleId; 
+                                    CREATE VIEW View_SaleItemsWithMenuName AS
+                                    SELECT 
+                                        si.Id,
+                                        si.SaleId, 
+                                        si.MenuItemId, 
+                                        mi.Name AS MenuItemName, 
+                                        si.Quantity, 
+                                        si.UnitPrice, 
+                                        (si.Quantity * si.UnitPrice) AS LineTotal,
+                                        s.Status 
+                                    FROM SaleItem si
+                                    INNER JOIN MenuItem mi ON mi.Id = si.MenuItemId
+                                    INNER JOIN Sale s ON s.Id = si.SaleId;
                 ");
 
             // =========================================================
@@ -85,23 +85,44 @@ namespace KusinaPOS.Services
 
             // 2. Create without status filter
             await _database.ExecuteAsync(@"
-                    CREATE VIEW vwSaleItemsWithDateMenuItem AS
-                    SELECT 
-                        si.Id AS SaleItemId, 
-                        si.SaleId, 
-                        s.ReceiptNo, 
-                        s.SaleDate, 
-                        si.MenuItemId, 
-                        m.Name AS MenuItemName, 
-                        m.Category, 
-                        m.ImagePath, 
-                        si.Quantity, 
-                        si.UnitPrice, 
-                        (si.Quantity * si.UnitPrice) AS LineTotal
-                    FROM SaleItem si
-                    INNER JOIN Sale s ON si.SaleId = s.Id
-                    INNER JOIN MenuItem m ON si.MenuItemId = m.Id;
+                                CREATE VIEW vwSaleItemsWithDateMenuItem AS
+                                SELECT 
+                                    si.Id AS SaleItemId, 
+                                    si.SaleId, 
+                                    s.ReceiptNo, 
+                                    s.SaleDate, 
+                                    s.Status, 
+                                    si.MenuItemId, 
+                                    m.Name AS MenuItemName, 
+                                    m.Category, 
+                                    m.ImagePath, 
+                                    si.Quantity, 
+                                    si.UnitPrice, 
+                                    (si.Quantity * si.UnitPrice) AS LineTotal
+                                FROM SaleItem si
+                                INNER JOIN Sale s ON si.SaleId = s.Id
+                                INNER JOIN MenuItem m ON si.MenuItemId = m.Id;
                 ");
+            // Inside your Database initialization logic
+            await _database.ExecuteAsync("DROP VIEW IF EXISTS View_InventoryHistory");
+
+            await _database.ExecuteAsync(@"
+                    CREATE VIEW View_InventoryHistory AS
+                    SELECT 
+                        it.Id AS TransactionId,
+                        it.InventoryItemId,
+                        i.Name AS ItemName,
+                        i.Unit,
+                        it.QuantityChange,
+                        it.CostAtTransaction, 
+                        (it.QuantityChange * it.CostAtTransaction) AS TransactionValue,
+                        it.Reason,
+                        it.Remarks,
+                        it.TransactionDate,
+                        it.SaleId
+                    FROM InventoryTransaction it
+                    INNER JOIN InventoryItem i ON it.InventoryItemId = i.Id;
+            ");
         }
     }
 

@@ -14,72 +14,87 @@ namespace KusinaPOS.Services
             _db = databaseService.GetConnection();
         }
 
-        public Task<List<Top5MenuItem>> GetTop5MenuItemsAsync(string category, DateTime fromDate, DateTime toDate)
+        public async Task<List<Top5MenuItem>> GetTopIncomeGeneratingMenuItemsAsync(string category, DateTime fromDate, DateTime toDate)
         {
-            // Filter by category and date range
+            // 1. Base query with Status filter
             string sql = @"SELECT MenuItemName, SUM(UnitPrice * Quantity) AS TotalSales
-                           FROM vwSaleItemsWithDateMenuItem
-                           WHERE SaleDate BETWEEN ? AND ?
-                           {0}
-                           GROUP BY MenuItemName
-                           ORDER BY TotalSales DESC
-                           LIMIT 5;";
+                       FROM vwSaleItemsWithDateMenuItem
+                       WHERE SaleDate BETWEEN ? AND ? 
+                       AND Status = 'Completed' ";
 
-            string categoryFilter = category != "All" ? "AND Category = '" + category + "'" : "";
+            // 2. Safe filtering for Category
+            if (category != "All")
+            {
+                sql += " AND Category = ? ";
+                sql += " GROUP BY MenuItemName ORDER BY TotalSales DESC LIMIT 5;";
+                return await _db.QueryAsync<Top5MenuItem>(sql, fromDate, toDate, category);
+            }
 
-            sql = string.Format(sql, categoryFilter);
-
-            return _db.QueryAsync<Top5MenuItem>(sql, fromDate, toDate);
+            sql += " GROUP BY MenuItemName ORDER BY TotalSales DESC LIMIT 5;";
+            return await _db.QueryAsync<Top5MenuItem>(sql, fromDate, toDate);
         }
 
-        public Task<List<AllMenuItemByCategory>> GetAllMenuItemsByCategoryAsync(string category, DateTime fromDate, DateTime toDate)
+        public Task<List<AllMenuItemByCategory>> GetTopMenuBySoldQty(string category, DateTime fromDate, DateTime toDate)
         {
+            // Added 'AND Status = 'Completed'' to the base query
             string sql = @"SELECT MenuItemName, Category, SUM(Quantity) AS QuantitySold
-                           FROM vwSaleItemsWithDateMenuItem
-                           WHERE SaleDate BETWEEN ? AND ?
-                           {0}
-                           GROUP BY MenuItemName, Category
-                           ORDER BY QuantitySold DESC LIMIT 5;";
+                   FROM vwSaleItemsWithDateMenuItem
+                   WHERE (SaleDate BETWEEN ? AND ?)
+                   AND Status = 'Completed'
+                   {0}
+                   GROUP BY MenuItemName, Category
+                   ORDER BY QuantitySold DESC LIMIT 5;";
 
-            string categoryFilter = category != "All" ? "AND Category = '" + category + "'" : "";
+            if (category != "All")
+            {
+                // Use a placeholder {0} for the extra condition, 
+                // but use a parameter '?' for the actual value to be safe.
+                sql = string.Format(sql, "AND Category = ?");
+                return _db.QueryAsync<AllMenuItemByCategory>(sql, fromDate, toDate, category);
+            }
 
-            sql = string.Format(sql, categoryFilter);
-
+            // If "All", just remove the placeholder
+            sql = string.Format(sql, "");
             return _db.QueryAsync<AllMenuItemByCategory>(sql, fromDate, toDate);
         }
         // In MenuReportService.cs
 
-        public Task<List<AllMenuItemByCategory>> GetAllMenuSalesForExportAsync(string category, DateTime fromDate, DateTime toDate)
+        public async Task<List<AllMenuItemByCategory>> GetAllMenuSalesForExportAsync(string category, DateTime fromDate, DateTime toDate)
         {
-            // ONLY fetching QuantitySold now.
-            string sql = @"SELECT MenuItemName, Category, 
-                          SUM(Quantity) AS QuantitySold
-                   FROM vwSaleItemsWithDateMenuItem
-                   WHERE SaleDate BETWEEN ? AND ?
-                   {0}
-                   GROUP BY MenuItemName, Category
-                   ORDER BY Category ASC, QuantitySold DESC;";
+            string sql = @"SELECT MenuItemName, Category, SUM(Quantity) AS QuantitySold
+                       FROM vwSaleItemsWithDateMenuItem
+                       WHERE SaleDate BETWEEN ? AND ?
+                       AND Status = 'Completed' ";
 
-            string categoryFilter = category != "All" ? $"AND Category = '{category}'" : "";
+            if (category != "All")
+            {
+                sql += " AND Category = ? GROUP BY MenuItemName, Category ORDER BY Category ASC, QuantitySold DESC;";
+                return await _db.QueryAsync<AllMenuItemByCategory>(sql, fromDate, toDate, category);
+            }
 
-            sql = string.Format(sql, categoryFilter);
-
-            return _db.QueryAsync<AllMenuItemByCategory>(sql, fromDate, toDate);
+            sql += " GROUP BY MenuItemName, Category ORDER BY Category ASC, QuantitySold DESC;";
+            return await _db.QueryAsync<AllMenuItemByCategory>(sql, fromDate, toDate);
         }
         public Task<List<Top5MenuItem>> GetAllMenuSalesRankingsAsync(string category, DateTime fromDate, DateTime toDate)
         {
-            // Removed LIMIT 5.
-            // This ranks ALL items by Total Money Earned.
+            // Added 'AND Status = 'Completed''
+            // This ensures only successful, non-refunded, non-voided sales are ranked.
             string sql = @"SELECT MenuItemName, SUM(UnitPrice * Quantity) AS TotalSales
                    FROM vwSaleItemsWithDateMenuItem
-                   WHERE SaleDate BETWEEN ? AND ?
+                   WHERE (SaleDate BETWEEN ? AND ?)
+                   AND Status = 'Completed'
                    {0}
                    GROUP BY MenuItemName
                    ORDER BY TotalSales DESC;";
 
-            string categoryFilter = category != "All" ? $"AND Category = '{category}'" : "";
-            sql = string.Format(sql, categoryFilter);
+            // Using a safer parameter check for category
+            if (category != "All")
+            {
+                sql = string.Format(sql, "AND Category = ?");
+                return _db.QueryAsync<Top5MenuItem>(sql, fromDate, toDate, category);
+            }
 
+            sql = string.Format(sql, "");
             return _db.QueryAsync<Top5MenuItem>(sql, fromDate, toDate);
         }
     }

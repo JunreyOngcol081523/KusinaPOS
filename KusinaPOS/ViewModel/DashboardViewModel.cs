@@ -61,9 +61,8 @@ namespace KusinaPOS.ViewModel
                 StoreName = "Kusina POS";
                 AppLogo = "kusinaposlogo.png";
                 AppTitle = "Kusina POS";
-                TodaySalesTotal = $"₱{_salesService.GetTodaySale(DateTime.Today, DateTime.Today):N2}";
-                TodayTransactionsCount = $"Today's Transaction: {_salesService.GetTotalTransactionsCount(DateTime.Today,DateTime.Today)}";
-                _=FilterWeekSales();
+
+                _= LoadSales();
                 Debug.WriteLine("DashboardViewModel constructor completed");
             }
             catch (Exception ex)
@@ -93,7 +92,7 @@ namespace KusinaPOS.ViewModel
                         var storeNamePref = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
                         var userIdPref = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
                         var userNamePref = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
-
+                        // Use 'await' to extract the actual decimal/int from the Task
                         // Get logo path safely
                         var logoPath = _settingsService?.GetStoreLogo ?? "kusinaposlogo.png";
                         var title = _settingsService?.GetAppTitle ?? "Kusina POS";
@@ -101,6 +100,10 @@ namespace KusinaPOS.ViewModel
                         // Update on main thread
                         MainThread.BeginInvokeOnMainThread(() =>
                         {
+                            
+
+                            Debug.WriteLine($"todaysales: {TodaySalesTotal}");
+                            Debug.WriteLine($"todaysalestransaction: {TodayTransactionsCount}");
                             StoreName = storeNamePref;
                             LoggedInUserId = userIdPref;
                             LoggedInUserName = userNamePref;
@@ -255,12 +258,25 @@ namespace KusinaPOS.ViewModel
                 Debug.WriteLine($"Navigation error: {ex.Message}");
             }
         }
-        private async Task FilterWeekSales()
+        private async Task LoadSales()
         {
             var fromDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
             var toDate = DateTime.Today;
-            WeeklyTransactionsCount = $"Weekly Transactions: {_salesService.GetTotalTransactionsCount(fromDate, toDate)}";
-            WeeklySalesTotal = $"₱{_salesService.GetTodaySale(fromDate, toDate):N2}";
+
+            // 1. Await the Transaction Counts (Don't forget the await!)
+            var weeklyCount = await _salesService.GetTotalTransactionsCount(fromDate, toDate);
+            var todayCount = await _salesService.GetTotalTransactionsCount(DateTime.Today, DateTime.Today);
+
+            // 2. Await the Net Sales
+            var todaysls = await _salesService.GetNetSalesAsync(DateTime.Today, DateTime.Today);
+            var weeksls = await _salesService.GetNetSalesAsync(fromDate, toDate);
+
+            // 3. Update the UI Strings
+            WeeklyTransactionsCount = $"Weekly Transactions: {weeklyCount}";
+            TodayTransactionsCount = $"Today's Transaction: {todayCount}";
+
+            TodaySalesTotal = $"₱{todaysls:N2}";
+            WeeklySalesTotal = $"₱{weeksls:N2}";
         }
     }
 }

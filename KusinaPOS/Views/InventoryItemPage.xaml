@@ -1,194 +1,226 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="KusinaPOS.Views.InventoryItemPage"
-             xmlns:viewmodel="clr-namespace:KusinaPOS.ViewModel"
-             xmlns:sfeditors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
-             xmlns:sfbuttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
-             xmlns:sfdatagrid="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
-             xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
-             xmlns:pager="clr-namespace:Syncfusion.Maui.DataGrid.DataPager;assembly=Syncfusion.Maui.DataGrid"
-             xmlns:converters="clr-namespace:KusinaPOS.Converters"
-             BackgroundColor="{StaticResource BackgroundDark}">
+<ContentPage
+    x:Class="KusinaPOS.Views.InventoryItemPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:converters="clr-namespace:KusinaPOS.Converters"
+    xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:pager="clr-namespace:Syncfusion.Maui.DataGrid.DataPager;assembly=Syncfusion.Maui.DataGrid"
+    xmlns:sfbuttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:sfdatagrid="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
+    xmlns:sfeditors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+    xmlns:viewmodel="clr-namespace:KusinaPOS.ViewModel"
+    BackgroundColor="{StaticResource BackgroundDark}">
 
-    <Grid Padding="20"
-          RowDefinitions="Auto,*">
+    <Grid Padding="20" RowDefinitions="Auto,*">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!-- Top Header -->
-        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,0,0,8">
-            <ImageButton Grid.Column="0"
-                    Margin="0,0,15,0"
-                    WidthRequest="10"
-                    HeightRequest="10"
-                    Command="{Binding GoBackCommand}"
-                    Source="arrowback.png"
-                    BackgroundColor="Transparent" />
+        <!--  Top Header  -->
+        <Grid
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="0,0,0,8"
+            ColumnDefinitions="Auto,*,Auto,Auto">
+            <ImageButton
+                Grid.Column="0"
+                Margin="0,0,15,0"
+                BackgroundColor="Transparent"
+                Command="{Binding GoBackCommand}"
+                HeightRequest="10"
+                Source="arrowback.png"
+                WidthRequest="10" />
 
-            <Label Grid.Column="1" 
-                   Text="{Binding StoreName, StringFormat='Manage Inventory - {0}'}"
-                   FontSize="15" 
-                   FontAttributes="Bold"
-                   TextColor="{StaticResource TextPrimary}"
-                   VerticalOptions="Center" />
+            <Label
+                Grid.Column="1"
+                FontAttributes="Bold"
+                FontSize="15"
+                Text="{Binding StoreName, StringFormat='Manage Inventory - {0}'}"
+                TextColor="{StaticResource TextPrimary}"
+                VerticalOptions="Center" />
 
-            <Label Grid.Column="2" 
-                   Text="{Binding CurrentDateTime}" 
-                   FontSize="12"
-                   TextColor="{StaticResource TextSecondary}"
-                   VerticalOptions="Center"
-                   Margin="0,0,15,0" />
+            <Label
+                Grid.Column="2"
+                Margin="0,0,15,0"
+                FontSize="12"
+                Text="{Binding CurrentDateTime}"
+                TextColor="{StaticResource TextSecondary}"
+                VerticalOptions="Center" />
 
-            <HorizontalStackLayout Grid.Column="3" Spacing="8" VerticalOptions="Center">
-                <Label Text="{Binding LoggedInUserName}" 
-                       FontSize="12"
-                       TextColor="{StaticResource TextSecondary}"
-                       VerticalOptions="Center" />
+            <HorizontalStackLayout
+                Grid.Column="3"
+                Spacing="8"
+                VerticalOptions="Center">
+                <Label
+                    FontSize="12"
+                    Text="{Binding LoggedInUserName}"
+                    TextColor="{StaticResource TextSecondary}"
+                    VerticalOptions="Center" />
 
-                <Border StrokeShape="RoundRectangle 15"
-                        WidthRequest="30"
-                        HeightRequest="30"
-                        BackgroundColor="{StaticResource Primary}">
-                    <Label Text="⚙" 
-                           FontSize="16"
-                           HorizontalOptions="Center"
-                           VerticalOptions="Center"
-                           TextColor="White" />
+                <Border
+                    BackgroundColor="{StaticResource Primary}"
+                    HeightRequest="30"
+                    StrokeShape="RoundRectangle 15"
+                    WidthRequest="30">
+                    <Label
+                        FontSize="16"
+                        HorizontalOptions="Center"
+                        Text="⚙"
+                        TextColor="White"
+                        VerticalOptions="Center" />
                 </Border>
             </HorizontalStackLayout>
         </Grid>
 
-        <!-- Left Panel: Inventory Items List -->
-        <Border Grid.Column="0"
-                Grid.Row="1"
-                BackgroundColor="{StaticResource Gray100}"
-                Stroke="{StaticResource Gray200}"
-                StrokeThickness="1"
-                Margin="0,0,10,0"
-                Padding="20"
-                StrokeShape="RoundRectangle 10">
+        <!--  Left Panel: Inventory Items List  -->
+        <Border
+            Grid.Row="1"
+            Grid.Column="0"
+            Margin="0,0,10,0"
+            Padding="20"
+            BackgroundColor="{StaticResource Gray100}"
+            Stroke="{StaticResource Gray200}"
+            StrokeShape="RoundRectangle 10"
+            StrokeThickness="1">
 
             <Grid RowDefinitions="Auto,Auto,*">
 
-                <!-- Header -->
-                <Grid ColumnDefinitions="Auto,*"
-                      Grid.Row="0">
-                    <Label Grid.Column="0"
-                           Text="Inventory Items List"
-                           FontSize="Small"
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource TextPrimary}"
-                           Margin="0,0,0,8"
-                           HorizontalOptions="Center" 
-                           VerticalOptions="Center"/>
+                <!--  Header  -->
+                <Grid Grid.Row="0" ColumnDefinitions="Auto,*">
+                    <Label
+                        Grid.Column="0"
+                        Margin="0,0,0,8"
+                        FontAttributes="Bold"
+                        FontSize="Small"
+                        HorizontalOptions="Center"
+                        Text="Inventory Items List"
+                        TextColor="{StaticResource TextPrimary}"
+                        VerticalOptions="Center" />
 
-                    <Button Grid.Column="1"
-                            ImageSource="refresh.png"
-                            BackgroundColor="Transparent"
-                            HeightRequest="20"
-                            VerticalOptions="Start"
-                            Command="{Binding RefreshInventoryCommand}"
-                            HorizontalOptions="End" />
+                    <Button
+                        Grid.Column="1"
+                        BackgroundColor="Transparent"
+                        Command="{Binding RefreshInventoryCommand}"
+                        HeightRequest="20"
+                        HorizontalOptions="End"
+                        ImageSource="refresh.png"
+                        VerticalOptions="Start" />
                 </Grid>
 
-                <!-- Search and Add Button -->
-                <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+                <!--  Search and Add Button  -->
+                <Grid
+                    Grid.Row="1"
+                    Margin="0,0,0,8"
+                    ColumnDefinitions="*,Auto">
 
-                    <SearchBar Grid.Column="0"
-                                    Text="{Binding SearchText}"
-                                   FontSize="12"
-                                   Placeholder="Search"
-                                   PlaceholderColor="{StaticResource TextDisabled}"
-                                   TextColor="{StaticResource TextPrimary}"
-                                   BackgroundColor="Transparent" />
+                    <SearchBar
+                        Grid.Column="0"
+                        BackgroundColor="Transparent"
+                        FontSize="12"
+                        Placeholder="Search"
+                        PlaceholderColor="{StaticResource TextDisabled}"
+                        Text="{Binding SearchText}"
+                        TextColor="{StaticResource TextPrimary}" />
 
-                    <Button Grid.Column="1"
-                            Text="Add Item"
-                            BackgroundColor="{StaticResource Primary}"
-                            TextColor="{StaticResource White}"
-                            CornerRadius="5"
-                            Padding="20,10"
-                            Command="{Binding AddItemCommand}" />
+                    <Button
+                        Grid.Column="1"
+                        Padding="20,10"
+                        BackgroundColor="{StaticResource Primary}"
+                        Command="{Binding AddItemCommand}"
+                        CornerRadius="5"
+                        Text="Add Item"
+                        TextColor="{StaticResource White}" />
                 </Grid>
 
-                <!-- Inventory List -->
+                <!--  Inventory List  -->
                 <Border Grid.Row="2" Style="{StaticResource CardBorder}">
-                    <Grid RowDefinitions="*,Auto" Padding="0">
-                        <!-- DataGrid -->
-                        <sfdatagrid:SfDataGrid 
-                                Grid.Row="0"
-                               x:Name="inventoryDataGrid"
-                            ScrollingMode="Line"
+                    <Grid Padding="0" RowDefinitions="*,Auto">
+                        <!--  DataGrid  -->
+                        <sfdatagrid:SfDataGrid
+                            x:Name="inventoryDataGrid"
+                            Grid.Row="0"
+                            AutoGenerateColumnsMode="None"
+                            ColumnWidthMode="Fill"
+                            HeaderRowHeight="40"
                             HorizontalScrollBarVisibility="Always"
-                               AutoGenerateColumnsMode="None"
-                               ItemsSource="{Binding Source={x:Reference inventoryPager}, Path=PagedSource}"
-                               SelectionMode="None"
-                               SelectedRow="{Binding SelectedItem, Mode=TwoWay}"
-                               ColumnWidthMode="Fill"
-                               RowHeight="50"
-                               HeaderRowHeight="40"                               
-                               SortingMode="Single">
+                            ItemsSource="{Binding Source={x:Reference inventoryPager}, Path=PagedSource}"
+                            RowHeight="50"
+                            ScrollingMode="Line"
+                            SelectedRow="{Binding SelectedItem, Mode=TwoWay}"
+                            SelectionMode="None"
+                            SortingMode="Single">
                             <sfdatagrid:SfDataGrid.Columns>
-                                <!-- Name Column -->
-                                <sfdatagrid:DataGridTextColumn MappingName="Name"
-                                                                HeaderText="Name"
-                                                               ColumnWidthMode="Auto"/>
+                                <!--  Name Column  -->
+                                <sfdatagrid:DataGridTextColumn
+                                    ColumnWidthMode="Auto"
+                                    HeaderText="Name"
+                                    MappingName="Name" />
 
-                                <!-- Quantity Column -->
-                                <sfdatagrid:DataGridTextColumn MappingName="QuantityOnHand"
-                                                               HeaderText="Quantity"
-                                                               ColumnWidthMode="Auto"
-                                                               Format="N0"/>
+                                <!--  Quantity Column  -->
+                                <sfdatagrid:DataGridTextColumn
+                                    ColumnWidthMode="Auto"
+                                    Format="N0"
+                                    HeaderText="Quantity"
+                                    MappingName="QuantityOnHand" />
 
-                                <!-- Unit Column -->
-                                <sfdatagrid:DataGridTextColumn MappingName="Unit"
-                                               HeaderText="Unit" Width="80"/>
-                                <!-- low stock Column -->
-                                <sfdatagrid:DataGridTextColumn MappingName="IsLowStock" Visible="False"
-                                               HeaderText="Low Stock" Width="60"/>
-                                
-                                <!-- Active Column (Switch) -->
-                                <sfdatagrid:DataGridTemplateColumn MappingName="IsActive" 
-                                                                   Width="80"
-                                                                   ColumnWidthMode="LastColumnFill"
-                                                                   HeaderText="Active">
+                                <!--  Unit Column  -->
+                                <sfdatagrid:DataGridTextColumn
+                                    Width="80"
+                                    HeaderText="Unit"
+                                    MappingName="Unit" />
+                                <!--  low stock Column  -->
+                                <sfdatagrid:DataGridTextColumn
+                                    Width="60"
+                                    HeaderText="Low Stock"
+                                    MappingName="IsLowStock"
+                                    Visible="False" />
+
+                                <!--  Active Column (Switch)  -->
+                                <sfdatagrid:DataGridTemplateColumn
+                                    Width="80"
+                                    ColumnWidthMode="LastColumnFill"
+                                    HeaderText="Active"
+                                    MappingName="IsActive">
                                     <sfdatagrid:DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Switch IsToggled="{Binding IsActive}"
-                                                    OnColor="{StaticResource Primary}"
-                                                    ThumbColor="{StaticResource White}"
-                                                    VerticalOptions="Center"
-                                                    HorizontalOptions="Center"
-                                                    Margin="0,0,10,0"/>
+                                            <Switch
+                                                Margin="0,0,10,0"
+                                                HorizontalOptions="Center"
+                                                IsToggled="{Binding IsActive}"
+                                                OnColor="{StaticResource Primary}"
+                                                ThumbColor="{StaticResource White}"
+                                                VerticalOptions="Center" />
                                         </DataTemplate>
                                     </sfdatagrid:DataGridTemplateColumn.CellTemplate>
                                 </sfdatagrid:DataGridTemplateColumn>
 
-                                <!-- Action Column (Edit & View Buttons) -->
-                                <sfdatagrid:DataGridTemplateColumn HeaderText="Action"
-                                                   ColumnWidthMode="Auto">
+                                <!--  Action Column (Edit & View Buttons)  -->
+                                <sfdatagrid:DataGridTemplateColumn ColumnWidthMode="Auto" HeaderText="Action">
                                     <sfdatagrid:DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <HorizontalStackLayout Spacing="5"
-                                                   HorizontalOptions="Start"
-                                                   VerticalOptions="Center"
-                                                   Padding="5,0">
-                                                <ImageButton Source="edit.png"
-                                                            BackgroundColor="Transparent"
-                                                            WidthRequest="15"
-                                                            HeightRequest="15"
-                                                            Command="{Binding Source={x:Reference inventoryDataGrid}, Path=BindingContext.EditItemCommand}"
-                                                            CommandParameter="{Binding .}"/>
+                                            <HorizontalStackLayout
+                                                Padding="5,0"
+                                                HorizontalOptions="Start"
+                                                Spacing="5"
+                                                VerticalOptions="Center">
+                                                <ImageButton
+                                                    BackgroundColor="Transparent"
+                                                    Command="{Binding Source={x:Reference inventoryDataGrid}, Path=BindingContext.EditItemCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    HeightRequest="15"
+                                                    Source="edit.png"
+                                                    WidthRequest="15" />
 
-                                                <ImageButton Source="view.png"
-                                                                BackgroundColor="Transparent"
-                                                                WidthRequest="15"
-                                                                HeightRequest="15"
-                                                                Command="{Binding Source={x:Reference inventoryDataGrid}, Path=BindingContext.ViewTransactionsCommand}"
-                                                                CommandParameter="{Binding .}"/>
+                                                <ImageButton
+                                                    BackgroundColor="Transparent"
+                                                    Command="{Binding Source={x:Reference inventoryDataGrid}, Path=BindingContext.ViewTransactionsCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    HeightRequest="15"
+                                                    Source="view.png"
+                                                    WidthRequest="15" />
                                             </HorizontalStackLayout>
                                         </DataTemplate>
                                     </sfdatagrid:DataGridTemplateColumn.CellTemplate>
@@ -197,178 +229,328 @@
 
                         </sfdatagrid:SfDataGrid>
 
-                        <!-- DataPager -->
-                        <pager:SfDataPager Grid.Row="1"
-                           x:Name="inventoryPager"
-                           PageSize="5"
-                           NumericButtonCount="5"
-                           Source="{Binding InventoryItems}"
-                           BackgroundColor="{StaticResource CardBackground}"
-                           HorizontalOptions="Center"
-                           Margin="0,8,0,8"
-                           />
+                        <!--  DataPager  -->
+                        <pager:SfDataPager
+                            x:Name="inventoryPager"
+                            Grid.Row="1"
+                            Margin="0,8,0,8"
+                            BackgroundColor="{StaticResource CardBackground}"
+                            HorizontalOptions="Center"
+                            NumericButtonCount="5"
+                            PageSize="5"
+                            Source="{Binding InventoryItems}" />
                     </Grid>
                 </Border>
             </Grid>
         </Border>
 
-        <!-- Right Panel: Edit Inventory Item -->
-        <Border Grid.Column="1"
-                Grid.Row="1"
-                BackgroundColor="{StaticResource Gray100}"
-                Stroke="{StaticResource Gray200}"
-                StrokeThickness="1"
-                Margin="10,0,0,0"
-                Padding="20"
-                StrokeShape="RoundRectangle 10"
-                IsVisible="{Binding IsEditPanelVisible}">
+        <!--  Right Panel: Edit Inventory Item  -->
+        <Border
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="10,0,0,0"
+            Padding="20"
+            BackgroundColor="{StaticResource Gray100}"
+            IsVisible="{Binding IsEditPanelVisible}"
+            Stroke="{StaticResource Gray200}"
+            StrokeShape="RoundRectangle 10"
+            StrokeThickness="1">
             <Grid RowDefinitions="Auto,*,Auto">
 
-                <!-- Header -->
+                <!--  Header  -->
                 <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
-                    <Label Grid.Column="0" Text="{Binding EditPanelTitle}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center" />
+                    <Label
+                        Grid.Column="0"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        Text="{Binding EditPanelTitle}"
+                        TextColor="{StaticResource TextPrimary}"
+                        VerticalOptions="Center" />
 
                     <HorizontalStackLayout Grid.Column="1" Spacing="10">
-                        <Label Text="{Binding EditingIsActive, Converter={StaticResource BoolToStatusConverter}}" FontSize="14" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center" />
-                        <sfbuttons:SfSwitch IsOn="{Binding EditingIsActive, Mode=TwoWay}" WidthRequest="60" HeightRequest="32" />
+                        <Label
+                            FontSize="14"
+                            Text="{Binding EditingIsActive, Converter={StaticResource BoolToStatusConverter}}"
+                            TextColor="{StaticResource TextPrimary}"
+                            VerticalOptions="Center" />
+                        <sfbuttons:SfSwitch
+                            HeightRequest="32"
+                            IsOn="{Binding EditingIsActive, Mode=TwoWay}"
+                            WidthRequest="60" />
                     </HorizontalStackLayout>
                 </Grid>
 
-                <!-- Form Fields -->
+                <!--  Form Fields  -->
                 <ScrollView Grid.Row="1">
-                    <Grid ColumnDefinitions="*,*"
-                          RowDefinitions="Auto,Auto,Auto,Auto"
-                          ColumnSpacing="15"
-                          RowSpacing="15">
+                    <Grid
+                        ColumnDefinitions="*,*"
+                        ColumnSpacing="15"
+                        RowDefinitions="Auto,Auto,Auto,Auto"
+                        RowSpacing="15">
 
-                        <!-- Row 0: Name -->
-                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="5" VerticalOptions="End">
-                            <inputLayout:SfTextInputLayout Hint="Name" HelperText="Enter the item name" ContainerType="None" ContainerBackground="{StaticResource BackgroundDark}">
-                                <Entry Text="{Binding EditingName, Mode=TwoWay}" TextColor="{StaticResource TextPrimary}" BackgroundColor="Transparent"/>
+                        <!--  Row 0: Name  -->
+                        <VerticalStackLayout
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Spacing="5"
+                            VerticalOptions="End">
+                            <inputLayout:SfTextInputLayout
+                                ContainerBackground="{StaticResource BackgroundDark}"
+                                ContainerType="None"
+                                HelperText="Enter the item name"
+                                Hint="Name">
+                                <Entry
+                                    BackgroundColor="Transparent"
+                                    Text="{Binding EditingName, Mode=TwoWay}"
+                                    TextColor="{StaticResource TextPrimary}" />
                             </inputLayout:SfTextInputLayout>
                         </VerticalStackLayout>
 
-                        <!-- Row 0: Unit -->
-                        <!-- Row 0: Unit / Category Selection -->
-                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="10">
+                        <!--  Row 0: Unit  -->
+                        <!--  Row 0: Unit / Category Selection  -->
+                        <VerticalStackLayout
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Spacing="10">
 
-                            <!-- Autocomplete for Unit Selection -->
-                            <inputLayout:SfTextInputLayout Hint="Unit" HelperText="grams/pcs/kg/liter/bottle" ContainerType="None" ContainerBackground="{StaticResource BackgroundDark}">
-                                <sfeditors:SfAutocomplete x:Name="autocomplete"
-                                            Placeholder="Select Unit"
-                                            TextColor="{StaticResource TextPrimary}"            
-                                            ItemsSource="{Binding UnitMeasurements}"
-                                            SelectedItem="{Binding EditingUnit, Mode=TwoWay}" />
+                            <!--  Autocomplete for Unit Selection  -->
+                            <inputLayout:SfTextInputLayout
+                                ContainerBackground="{StaticResource BackgroundDark}"
+                                ContainerType="None"
+                                HelperText="grams/pcs/kg/liter/bottle"
+                                Hint="Unit">
+                                <sfeditors:SfAutocomplete
+                                    x:Name="autocomplete"
+                                    ItemsSource="{Binding UnitMeasurements}"
+                                    Placeholder="Select Unit"
+                                    SelectedItem="{Binding EditingUnit, Mode=TwoWay}"
+                                    TextColor="{StaticResource TextPrimary}" />
                             </inputLayout:SfTextInputLayout>
                         </VerticalStackLayout>
 
 
 
-                        <!-- Row 1: Quantity On Hand -->
-                        <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="5">
-                            <inputLayout:SfTextInputLayout Hint="Quantity On Hand" HelperText="Current stock quantity" ContainerType="None" ContainerBackground="{StaticResource BackgroundDark}">
-                                <Entry Text="{Binding EditingQuantityOnHand, Mode=TwoWay}" Keyboard="Numeric" TextColor="{StaticResource TextPrimary}" BackgroundColor="Transparent"/>
+                        <!--  Row 1: Quantity On Hand  -->
+                        <VerticalStackLayout
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Spacing="5">
+                            <inputLayout:SfTextInputLayout
+                                ContainerBackground="{StaticResource BackgroundDark}"
+                                ContainerType="None"
+                                HelperText="Current stock quantity"
+                                Hint="Quantity On Hand">
+                                <Entry
+                                    BackgroundColor="Transparent"
+                                    Keyboard="Numeric"
+                                    Text="{Binding EditingQuantityOnHand, Mode=TwoWay}"
+                                    TextColor="{StaticResource TextPrimary}" />
                             </inputLayout:SfTextInputLayout>
                         </VerticalStackLayout>
 
-                        <!-- Row 1: Quantity Changed -->
-                        <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="5">
-                            <inputLayout:SfTextInputLayout Hint="Quantity Changed (+/-)" HelperText="Auto-calculated" ContainerType="None" ContainerBackground="{StaticResource BackgroundDark}">
-                                <Entry Text="{Binding DisplayQuantityChanged, Mode=TwoWay}" Keyboard="Numeric" IsEnabled="False" TextColor="{StaticResource TextPrimary}" BackgroundColor="Transparent"/>
+                        <!--  Row 1: Quantity Changed  -->
+                        <VerticalStackLayout
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Spacing="5">
+                            <inputLayout:SfTextInputLayout
+                                ContainerBackground="{StaticResource BackgroundDark}"
+                                ContainerType="None"
+                                HelperText="Auto-calculated"
+                                Hint="Quantity Changed (+/-)">
+                                <Entry
+                                    BackgroundColor="Transparent"
+                                    IsEnabled="False"
+                                    Keyboard="Numeric"
+                                    Text="{Binding DisplayQuantityChanged, Mode=TwoWay}"
+                                    TextColor="{StaticResource TextPrimary}" />
                             </inputLayout:SfTextInputLayout>
                         </VerticalStackLayout>
 
-                        <!-- Row 2: Cost Per Unit -->
-                        <VerticalStackLayout Grid.Row="2" Grid.Column="0" Spacing="5">
-                            <inputLayout:SfTextInputLayout Hint="{Binding CostPerUnitLabel}" HelperText="{Binding CostPerUnitLabel}" ContainerType="None" ContainerBackground="{StaticResource BackgroundDark}">
-                                <Entry Text="{Binding EditingCostPerUnit, Mode=TwoWay}" Keyboard="Numeric" TextColor="{StaticResource TextPrimary}" BackgroundColor="Transparent"/>
+                        <!--  Row 2: Cost Per Unit  -->
+                        <VerticalStackLayout
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Spacing="5">
+                            <inputLayout:SfTextInputLayout
+                                ContainerBackground="{StaticResource BackgroundDark}"
+                                ContainerType="None"
+                                HelperText="{Binding CostPerUnitLabel}"
+                                Hint="{Binding CostPerUnitLabel}">
+                                <Entry
+                                    BackgroundColor="Transparent"
+                                    Keyboard="Numeric"
+                                    Text="{Binding EditingCostPerUnit, Mode=TwoWay}"
+                                    TextColor="{StaticResource TextPrimary}" />
                             </inputLayout:SfTextInputLayout>
                         </VerticalStackLayout>
 
-                        <!-- Row 2: Re-Order Level -->
-                        <VerticalStackLayout Grid.Row="2" Grid.Column="1" Spacing="5">
-                            <inputLayout:SfTextInputLayout Hint="Re-Order Level" HelperText="Minimum stock before re-order" ContainerType="None" ContainerBackground="{StaticResource BackgroundDark}">
-                                <Entry Text="{Binding EditingReOrderLevel, Mode=TwoWay}" Keyboard="Numeric" TextColor="{StaticResource TextPrimary}" BackgroundColor="Transparent"/>
+                        <!--  Row 2: Re-Order Level  -->
+                        <VerticalStackLayout
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Spacing="5">
+                            <inputLayout:SfTextInputLayout
+                                ContainerBackground="{StaticResource BackgroundDark}"
+                                ContainerType="None"
+                                HelperText="Minimum stock before re-order"
+                                Hint="Re-Order Level">
+                                <Entry
+                                    BackgroundColor="Transparent"
+                                    Keyboard="Numeric"
+                                    Text="{Binding EditingReOrderLevel, Mode=TwoWay}"
+                                    TextColor="{StaticResource TextPrimary}" />
                             </inputLayout:SfTextInputLayout>
                         </VerticalStackLayout>
 
-                        <!-- Row 3: Reason -->
-                        <VerticalStackLayout Grid.Row="3" Grid.Column="0" Spacing="5">
-                            <inputLayout:SfTextInputLayout Hint="Reason" HelperText="Reason for adjusting quantity" ContainerType="None" ContainerBackground="{StaticResource BackgroundDark}">
-                                <sfeditors:SfComboBox HeightRequest="45" IsEnabled="{Binding IsQuantityChanged}" ItemsSource="{Binding Reasons}" SelectedItem="{Binding SelectedReason}" TextColor="{StaticResource TextPrimary}" BackgroundColor="{StaticResource BackgroundDark}"/>
+                        <!--  Row 3: Reason  -->
+                        <VerticalStackLayout
+                            Grid.Row="3"
+                            Grid.Column="0"
+                            Spacing="5">
+                            <inputLayout:SfTextInputLayout
+                                ContainerBackground="{StaticResource BackgroundDark}"
+                                ContainerType="None"
+                                HelperText="Reason for adjusting quantity"
+                                Hint="Reason">
+                                <sfeditors:SfComboBox
+                                    BackgroundColor="{StaticResource BackgroundDark}"
+                                    HeightRequest="45"
+                                    IsEnabled="{Binding IsQuantityChanged}"
+                                    ItemsSource="{Binding Reasons}"
+                                    SelectedItem="{Binding SelectedReason}"
+                                    TextColor="{StaticResource TextPrimary}" />
                             </inputLayout:SfTextInputLayout>
-                            </VerticalStackLayout>
+                        </VerticalStackLayout>
 
-                        <!-- Row 3: Remarks -->
-                        <VerticalStackLayout Grid.Row="3" Grid.Column="1" Spacing="5">
-                            <inputLayout:SfTextInputLayout Hint="Remarks" HelperText="Additional notes" ContainerType="None" ContainerBackground="{StaticResource BackgroundDark}">
-                                <Entry Text="{Binding Remarks, Mode=TwoWay}" TextColor="{StaticResource TextPrimary}" BackgroundColor="Transparent"/>
+                        <!--  Row 3: Remarks  -->
+                        <VerticalStackLayout
+                            Grid.Row="3"
+                            Grid.Column="1"
+                            Spacing="5">
+                            <inputLayout:SfTextInputLayout
+                                ContainerBackground="{StaticResource BackgroundDark}"
+                                ContainerType="None"
+                                HelperText="Additional notes"
+                                Hint="Remarks">
+                                <Entry
+                                    BackgroundColor="Transparent"
+                                    Text="{Binding Remarks, Mode=TwoWay}"
+                                    TextColor="{StaticResource TextPrimary}" />
                             </inputLayout:SfTextInputLayout>
                         </VerticalStackLayout>
 
                     </Grid>
                 </ScrollView>
 
-                <!-- Action Buttons -->
-                <Grid Grid.Row="2" ColumnDefinitions="*,*" Margin="0,20,0,0" ColumnSpacing="10">
-                    <Button Grid.Column="0" Text="CANCEL" BackgroundColor="{StaticResource Gray200}" TextColor="{StaticResource TextPrimary}" CornerRadius="5" Padding="0,12" Command="{Binding CancelCommand}" />
-                    <Button Grid.Column="1" Text="SAVE CHANGES" BackgroundColor="{StaticResource Primary}" TextColor="{StaticResource White}" CornerRadius="5" Padding="0,12" Command="{Binding SaveChangesCommand}" />
+                <!--  Action Buttons  -->
+                <Grid
+                    Grid.Row="2"
+                    Margin="0,20,0,0"
+                    ColumnDefinitions="*,*"
+                    ColumnSpacing="10">
+                    <Button
+                        Grid.Column="0"
+                        Padding="0,12"
+                        BackgroundColor="{StaticResource Gray200}"
+                        Command="{Binding CancelCommand}"
+                        CornerRadius="5"
+                        Text="CANCEL"
+                        TextColor="{StaticResource TextPrimary}" />
+                    <Button
+                        Grid.Column="1"
+                        Padding="0,12"
+                        BackgroundColor="{StaticResource Primary}"
+                        Command="{Binding SaveChangesCommand}"
+                        CornerRadius="5"
+                        Text="SAVE CHANGES"
+                        TextColor="{StaticResource White}" />
                 </Grid>
 
             </Grid>
         </Border>
 
-        <!-- Right Panel: Show inventory transaction logs per item -->
-        <Border Grid.Column="1" Grid.Row="1" BackgroundColor="{StaticResource Gray100}" Margin="10,0,0,0" Padding="20" Style="{StaticResource CardBorder}" IsVisible="{Binding IsTransactionPanelVisible}">
+        <!--  Right Panel: Show inventory transaction logs per item  -->
+        <Border
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="10,0,0,0"
+            Padding="20"
+            BackgroundColor="{StaticResource Gray100}"
+            IsVisible="{Binding IsTransactionPanelVisible}"
+            Style="{StaticResource CardBorder}">
             <Grid RowDefinitions="Auto,*,Auto">
 
-                <!-- Header -->
-                <Label Grid.Row="0" 
-                       Text="{Binding TransactionLogPanelTitle, Mode=OneWay}" 
-                       FontSize="16" 
-                       FontAttributes="Bold" 
-                       TextColor="{StaticResource TextPrimary}" Margin="0,0,0,20"/>
+                <!--  Header  -->
+                <Label
+                    Grid.Row="0"
+                    Margin="0,0,0,20"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    Text="{Binding TransactionLogPanelTitle, Mode=OneWay}"
+                    TextColor="{StaticResource TextPrimary}" />
 
-                <!-- Table -->
+                <!--  Table  -->
 
-                <!-- Add the namespace for DataPager at the top of your page -->
-                
+                <!--  Add the namespace for DataPager at the top of your page  -->
 
-                <!-- Update your Grid to include a row for the pager -->
-                <Grid Grid.Row="1" 
-                      RowDefinitions="*,Auto">
 
-                    <!-- DataGrid -->
-                    <sfdatagrid:SfDataGrid Grid.Row="0"
-                           x:Name="transactionDataGrid"
-                           GridLinesVisibility="Horizontal"
-                           HeaderGridLinesVisibility="None"
-                           AutoGenerateColumnsMode="None"
-                           ItemsSource="{Binding Source={x:Reference transactionPager}, Path=PagedSource}"
-                           ColumnWidthMode="FitByCell"
-                           SortingMode="Single">
+                <!--  Update your Grid to include a row for the pager  -->
+                <Grid Grid.Row="1" RowDefinitions="*,Auto">
+
+                    <!--  DataGrid  -->
+                    <sfdatagrid:SfDataGrid
+                        x:Name="transactionDataGrid"
+                        Grid.Row="0"
+                        AutoGenerateColumnsMode="None"
+                        ColumnWidthMode="FitByCell"
+                        GridLinesVisibility="Horizontal"
+                        HeaderGridLinesVisibility="None"
+                        ItemsSource="{Binding Source={x:Reference transactionPager}, Path=PagedSource}"
+                        SortingMode="Single">
                         <sfdatagrid:SfDataGrid.Columns>
-                            <sfdatagrid:DataGridTextColumn MappingName="TransactionDate" Format="MMM dd, yyyy hh:mm tt" HeaderText="Log Date" />
-                            <sfdatagrid:DataGridTextColumn MappingName="QuantityChange" HeaderText="Quantity Changed" Format="N0" />
-                            <sfdatagrid:DataGridTextColumn MappingName="Reason" HeaderText="Reason" />
-                            <sfdatagrid:DataGridTextColumn MappingName="Remarks" HeaderText="Remarks"/>
+                            <sfdatagrid:DataGridTextColumn
+                                Format="MMM dd, yyyy hh:mm tt"
+                                HeaderText="Log Date"
+                                MappingName="TransactionDate" />
+
+                            <sfdatagrid:DataGridTextColumn
+                                Format="N0"
+                                HeaderText="Qty Changed"
+                                MappingName="QuantityChange" />
+
+                            <sfdatagrid:DataGridNumericColumn
+                                Format="₱#,##0.00"
+                                HeaderText="Unit Cost"
+                                MappingName="CostAtTransaction" />
+
+                            <sfdatagrid:DataGridTextColumn HeaderText="Reason" MappingName="Reason" />
+
+                            <sfdatagrid:DataGridTextColumn HeaderText="Remarks" MappingName="Remarks" />
                         </sfdatagrid:SfDataGrid.Columns>
                     </sfdatagrid:SfDataGrid>
 
-                    <!-- DataPager -->
-                    <pager:SfDataPager Grid.Row="1"
-                       x:Name="transactionPager"
-                       PageSize="5"
-                       NumericButtonCount="10"
-                       Source="{Binding TransactionLogs}"
-                       Margin="0,8,0,0" 
-                       HorizontalOptions="Center"/>
+                    <!--  DataPager  -->
+                    <pager:SfDataPager
+                        x:Name="transactionPager"
+                        Grid.Row="1"
+                        Margin="0,8,0,0"
+                        HorizontalOptions="Center"
+                        NumericButtonCount="10"
+                        PageSize="5"
+                        Source="{Binding TransactionLogs}" />
 
                 </Grid>
 
 
-                <!-- Close Button -->
-                <Button Grid.Row="2" Text="CLOSE" BackgroundColor="{StaticResource Gray200}" TextColor="{StaticResource TextPrimary}" Padding="0,12" Command="{Binding CloseTransactionPanelCommand}" />
+                <!--  Close Button  -->
+                <Button
+                    Grid.Row="2"
+                    Padding="0,12"
+                    BackgroundColor="{StaticResource Gray200}"
+                    Command="{Binding CloseTransactionPanelCommand}"
+                    Text="CLOSE"
+                    TextColor="{StaticResource TextPrimary}" />
 
             </Grid>
         </Border>

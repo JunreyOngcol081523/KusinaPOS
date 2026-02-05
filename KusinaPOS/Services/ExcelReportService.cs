@@ -150,8 +150,8 @@ namespace KusinaPOS.Services
                     worksheet.UsedRange.AutofitColumns();
 
                     // Set minimum column widths
-                    worksheet.Range["A1"].ColumnWidth = 15;
-                    worksheet.Range["B1"].ColumnWidth = 50;
+                    worksheet.Range["A1"].ColumnWidth = 20;
+                    worksheet.Range["B1"].ColumnWidth = 30;
                     worksheet.Range["C1:H1"].ColumnWidth = 12;
 
                     // Save the workbook

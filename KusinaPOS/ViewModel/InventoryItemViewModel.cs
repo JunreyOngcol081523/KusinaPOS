@@ -110,7 +110,7 @@ namespace KusinaPOS.ViewModel
                 StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
 
                 // Predefined stock adjustment reasons
-                Reasons = new() { "Initial Stock", "Purchase", "Adjustment" };
+                Reasons = new() { "Stock In", "Adjustment","Waste" };
 
                 // Live date/time updates
                 _dateTimeService.DateTimeChanged += (_, dt) => CurrentDateTime = dt;
@@ -268,7 +268,43 @@ namespace KusinaPOS.ViewModel
                         "OK");
                     return;
                 }
+                var originalItem = InventoryItems.FirstOrDefault(i => i.Id == EditingId);
 
+                if (originalItem != null) // Update Mode
+                {
+                    bool costChanged = originalItem.CostPerUnit != EditingCostPerUnit;
+
+                    // THE NEW RULE: 
+                    // If the cost is different, IsQuantityChanged MUST be true.
+                    if (costChanged && !IsQuantityChanged)
+                    {
+                        await PageHelper.DisplayAlertAsync(
+                            "Price Update Required",
+                            "To update the Cost Per Unit, you must also record a Quantity Adjustment (Stock In).",
+                            "OK");
+                        return;
+                    }
+                }
+                // Inside SaveChanges validation block
+                if (IsQuantityChanged)
+                {
+                    // Rule: Stock In must be Positive
+                    if (SelectedReason == "Stock In" && QuantityChanged <= 0)
+                    {
+                        await PageHelper.DisplayAlertAsync("Invalid Quantity",
+                            "Stock In must be a positive number. Use 'Adjustment' or 'Waste' for deductions.", "OK");
+                        return;
+                    }
+
+                    // Rule: Waste/Damage must be Negative (or we force it to be negative)
+                    if ((SelectedReason == "Waste" || SelectedReason == "Adjustment") && QuantityChanged > 0)
+                    {
+                        // Optional: You can either block them or automatically flip the sign
+                        await PageHelper.DisplayAlertAsync("Invalid Quantity",
+                           "Waste or Adjustments usually represent a decrease in stock.", "OK");
+                        return;
+                    }
+                }
 
                 // ADD MODE
                 if (EditingId == 0)
@@ -293,6 +329,7 @@ namespace KusinaPOS.ViewModel
                         {
                             InventoryItemId = item.Id,
                             QuantityChange = QuantityChanged,
+                            CostAtTransaction = EditingCostPerUnit,
                             Reason = SelectedReason,
                             Remarks = Remarks,
                             TransactionDate = DateTime.Now,
@@ -325,6 +362,7 @@ namespace KusinaPOS.ViewModel
                         {
                             InventoryItemId = item.Id,
                             QuantityChange = QuantityChanged,
+                            CostAtTransaction = EditingCostPerUnit,
                             Reason = SelectedReason,
                             Remarks = Remarks,
                             TransactionDate = DateTime.Now,
@@ -334,7 +372,7 @@ namespace KusinaPOS.ViewModel
                     }
                 }
 
-
+                await PageHelper.DisplayAlertAsync("Success", "Inventory item saved successfully.", "OK");
                 await LoadInventoryItems();
                 Cancel();
             }
