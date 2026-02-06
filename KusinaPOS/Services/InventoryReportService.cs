@@ -29,7 +29,7 @@ namespace KusinaPOS.Services
             var result = await _db.ExecuteScalarAsync<decimal>(@"
                     SELECT SUM(TransactionValue) 
                     FROM View_InventoryHistory 
-                    WHERE Reason = 'StockIn' 
+                    WHERE Reason = 'Stock In' 
                     AND QuantityChange > 0
                     AND TransactionDate BETWEEN ? AND ?", start, end);
 
@@ -59,6 +59,7 @@ namespace KusinaPOS.Services
     public class InventoryHistoryDto
     {
         public string ItemName { get; set; }
+        public string Unit { get; set; }
         public decimal QuantityChange { get; set; }
         public decimal TransactionValue { get; set; }
         public DateTime TransactionDate { get; set; }

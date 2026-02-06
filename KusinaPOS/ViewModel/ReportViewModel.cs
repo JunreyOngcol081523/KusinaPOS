@@ -22,6 +22,7 @@ namespace KusinaPOS.ViewModel
         private readonly MenuReportService _menuReportService;
         private readonly CategoryService _categoryService;
         private readonly SQLiteAsyncConnection _db;
+        private readonly InventoryReportService _inventoryReportService;
         #endregion
 
         #region Header Properties
@@ -53,7 +54,12 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty] private ObservableCollection<string> categories = new();
         public ObservableCollection<MenuItemReportDto> MenuItemsReport { get; } = new();
         #endregion
-
+        #region Expenses Properties & Collections
+        [ObservableProperty] private ObservableCollection<InventoryHistoryDto> inventoryHistory;
+        [ObservableProperty] private decimal totalInventoryExpense;
+        [ObservableProperty] private ObservableCollection<TrendDataModel> trendData;
+        [ObservableProperty] private ObservableCollection<InventoryItem> lowStockItems;
+        #endregion
         #region UI State
         [ObservableProperty] private bool isBusy;
         [ObservableProperty] private bool isOpenPopup;
@@ -70,7 +76,8 @@ namespace KusinaPOS.ViewModel
             ExcelExportService excelExportService,
             IDatabaseService db,
             MenuReportService menuReportService,
-            CategoryService categoryService)
+            CategoryService categoryService,
+            InventoryReportService inventoryReportService)
         {
             _reportService = reportService;
             _salesService = salesService;
@@ -84,11 +91,15 @@ namespace KusinaPOS.ViewModel
 
             TopIncomeGeneratingMenu = new ObservableCollection<Top5MenuItem>();
             TopMenuItemsBySoldQty = new ObservableCollection<AllMenuItemByCategory>();
-
+            InventoryHistory = new ObservableCollection<InventoryHistoryDto>();
+            TrendData = new ObservableCollection<TrendDataModel>();
+            LowStockItems = new ObservableCollection<InventoryItem>();
             LoadPreferences();
             _dateTimeService.DateTimeChanged += (s, e) => CurrentDateTime = e;
             _ = LoadTodayReportAsync();
             _ = LoadMenuCategoriesAsync(categoryService);
+            _inventoryReportService = inventoryReportService;
+            
         }
 
         private void LoadPreferences()
@@ -426,6 +437,137 @@ namespace KusinaPOS.ViewModel
                 IsBusy = false;
             }
         }
+        #endregion
+
+        #region Expenses Report
+        #region Expenses Report - Generation
+        [RelayCommand]
+        private async Task GenerateExpensesReportAsync()
+        {
+            if (IsBusy) return;
+            IsBusy = true;
+            try
+            {
+                if (FromDate > ToDate)
+                {
+                    await PageHelper.DisplayAlertAsync("Invalid Date Range", "From Date cannot be later than To Date", "OK");
+                    return;
+                }
+                var start = FromDate.Date;
+                var end = ToDate.Date.AddDays(1).AddTicks(-1);
+                var expenses = await _inventoryReportService.GetInventoryReportAsync(start, end);
+                if(expenses == null || !expenses.Any())
+                {
+                    await PageHelper.DisplayAlertAsync("No Data", "No inventory transactions found for this period.", "OK");
+                    InventoryHistory.Clear();
+                    TotalInventoryExpense = 0;
+                    return;
+                }
+                InventoryHistory = new ObservableCollection<InventoryHistoryDto>(expenses);
+                TotalInventoryExpense = await _inventoryReportService.GetTotalInventoryExpensesAsync(start, end);
+            }
+            catch (Exception ex)
+            {
+                await PageHelper.DisplayAlertAsync("Error", $"Failed to generate expenses report: {ex.Message}", "OK");
+                Debug.WriteLine(ex);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+        public async Task LoadExpensesReportAsync()
+        {
+            FromDate = DateTime.Today;
+            ToDate = DateTime.Today;
+            await GenerateExpensesReportAsync();
+        }
+        public async Task LoadWeeklyChartDataAsync()
+        {
+            try
+            {
+                // 1. Calculate the start (Monday) and end (Sunday) of the CURRENT week
+                // regardless of the user's DatePicker selection.
+                DateTime today = DateTime.Today;
+                int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
+                DateTime startOfWeek = today.AddDays(-1 * diff).Date; // Monday
+                DateTime endOfWeek = startOfWeek.AddDays(7).AddTicks(-1); // End of Sunday
+
+                // 2. Fetch ONLY "StockIn" data for this fixed week
+                // We pass "StockIn" to ensure we don't accidentally chart StockOuts or Wastage.
+                var weeklyExpenses = await _inventoryReportService.GetInventoryReportAsync(startOfWeek, endOfWeek, "Stock In");
+
+                // 3. Prepare the buckets for Mon-Sun
+                var daysOfWeek = new List<string> { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+                var chartPoints = new List<TrendDataModel>();
+
+                for (int i = 0; i < 7; i++)
+                {
+                    var currentDayDate = startOfWeek.AddDays(i);
+                    var dayName = daysOfWeek[i];
+
+                    // 4. Calculate Daily Sum
+                    // Since View_InventoryHistory already multiplied Quantity * Cost, we just SUM here.
+                    var dailySum = weeklyExpenses
+                        .Where(e => e.TransactionDate.Date == currentDayDate)
+                        .Sum(e => e.TransactionValue);
+
+                    chartPoints.Add(new TrendDataModel
+                    {
+                        DateLabel = dayName,
+                        Amount = dailySum
+                    });
+                }
+
+                // 5. Update the UI
+                TrendData = new ObservableCollection<TrendDataModel>(chartPoints);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading chart: {ex.Message}");
+            }
+        }
+        #endregion
+        #region Expenses Report - Filter Commands
+        [RelayCommand]
+        private async Task FilterExpensesTodayAsync()
+        {
+            FromDate = DateTime.Today;
+            ToDate = DateTime.Today;
+            await GenerateExpensesReportAsync();
+        }
+
+        [RelayCommand]
+        private async Task FilterExpensesWeekAsync()
+        {
+            FromDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
+            ToDate = DateTime.Today;
+            await GenerateExpensesReportAsync();
+        }
+
+        [RelayCommand]
+        private async Task FilterExpensesMonthAsync()
+        {
+            FromDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+            ToDate = DateTime.Today;
+            await GenerateExpensesReportAsync();
+        }
+        #endregion
+        #region Expenses Report - Low Stocks
+        public async Task LoadLowStockItemsAsync()
+        {
+            try
+            {
+                var allitems = await _inventoryItemService.GetAllInventoryItemsAsync();
+                var lowStock = allitems.Where(i => i.IsLowStock).ToList();
+                LowStockItems = new ObservableCollection<InventoryItem>(lowStock);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Failed to load low stock items: {ex.Message}");
+            }
+        }
+        #endregion
         #endregion
     }
 }

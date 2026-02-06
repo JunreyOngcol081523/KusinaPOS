@@ -24,6 +24,7 @@ namespace KusinaPOS
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    fonts.AddFont("MauiMaterialAssets.ttf", "MaterialAssets");
                 });
 
 #if DEBUG
@@ -45,6 +46,7 @@ namespace KusinaPOS
             builder.Services.AddSingleton<ExcelExportService>();
             builder.Services.AddSingleton<MenuReportService>();
             builder.Services.AddSingleton<SaveService>();
+            builder.Services.AddSingleton<InventoryReportService>();
 
             //viewmodels and pages
             builder.Services.AddTransient<MainPage>();
