@@ -23,6 +23,7 @@ public partial class ReportPage : ContentPage
             await vm.LoadWeeklyChartDataAsync();
             await vm.LoadExpensesReportAsync();
             await vm.LoadLowStockItemsAsync();
+            await vm.LoadStockMovementPieChartAsync();
         }
     }
 }

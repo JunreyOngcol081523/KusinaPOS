@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="KusinaPOS.Views.DashboardPage"
-             xmlns:viewmodels="clr-namespace:KusinaPOS.ViewModel"
-             BackgroundColor="{StaticResource BackgroundDark}">
+<ContentPage
+    x:Class="KusinaPOS.Views.DashboardPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewmodels="clr-namespace:KusinaPOS.ViewModel"
+    BackgroundColor="{StaticResource BackgroundDark}">
 
     <ScrollView>
         <Grid Padding="15">
@@ -12,48 +13,60 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <!-- Top Header -->
-            <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,5">
-                <Grid Grid.Column="0" 
-                  ColumnDefinitions="Auto,Auto"
-                  ColumnSpacing="10">
-                    <Image 
-                   Grid.Column="0" 
-                   Source="{Binding AppLogo}" 
-                   HeightRequest="20"
-                   VerticalOptions="Start"
-                   HorizontalOptions="Start"/>
-                    <Label Grid.Column="1"
-                       Text="{Binding AppTitle}"
-                       FontSize="15"
-                       VerticalOptions="Start"
-                       VerticalTextAlignment="Start"
-                       HorizontalOptions="Start"
-                       TextColor="{StaticResource TextPrimary}"/>
+            <!--  Top Header  -->
+            <Grid
+                Grid.Row="0"
+                Margin="0,0,0,5"
+                ColumnDefinitions="*,Auto,Auto">
+                <Grid
+                    Grid.Column="0"
+                    ColumnDefinitions="Auto,Auto"
+                    ColumnSpacing="10">
+                    <Image
+                        Grid.Column="0"
+                        HeightRequest="20"
+                        HorizontalOptions="Start"
+                        Source="{Binding AppLogo}"
+                        VerticalOptions="Start" />
+                    <Label
+                        Grid.Column="1"
+                        FontSize="15"
+                        HorizontalOptions="Start"
+                        Text="{Binding AppTitle}"
+                        TextColor="{StaticResource TextPrimary}"
+                        VerticalOptions="Start"
+                        VerticalTextAlignment="Start" />
                 </Grid>
 
-                <Label Grid.Column="1" 
-                   Text="{Binding CurrentDateTime}" 
-                   FontSize="12"
-                   TextColor="{StaticResource TextSecondary}"
-                   VerticalOptions="Center"
-                   Margin="0,0,20,0" />
+                <Label
+                    Grid.Column="1"
+                    Margin="0,0,20,0"
+                    FontSize="12"
+                    Text="{Binding CurrentDateTime}"
+                    TextColor="{StaticResource TextSecondary}"
+                    VerticalOptions="Center" />
 
-                <HorizontalStackLayout Grid.Column="2" Spacing="10" VerticalOptions="Center">
-                    <Label Text="{Binding LoggedInUserName}" 
-                       FontSize="12"
-                       TextColor="{StaticResource TextSecondary}"
-                       VerticalOptions="Center" />
-                    <Border StrokeShape="RoundRectangle 15"
-                        WidthRequest="20"
+                <HorizontalStackLayout
+                    Grid.Column="2"
+                    Spacing="10"
+                    VerticalOptions="Center">
+                    <Label
+                        FontSize="12"
+                        Text="{Binding LoggedInUserName}"
+                        TextColor="{StaticResource TextSecondary}"
+                        VerticalOptions="Center" />
+                    <Border
+                        BackgroundColor="{StaticResource Primary}"
                         HeightRequest="20"
-                        BackgroundColor="{StaticResource Primary}">
-                        <Label Text="⚙" 
-                           FontSize="14"
-                           HorizontalOptions="Center"
-                           VerticalOptions="Center"
-                           TextColor="White" >
-                            <!--tapped event below-->
+                        StrokeShape="RoundRectangle 15"
+                        WidthRequest="20">
+                        <Label
+                            FontSize="14"
+                            HorizontalOptions="Center"
+                            Text="⚙"
+                            TextColor="White"
+                            VerticalOptions="Center">
+                            <!--  tapped event below  -->
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding OpenSettingsCommand}" />
                             </Label.GestureRecognizers>
@@ -62,118 +75,165 @@
                 </HorizontalStackLayout>
             </Grid>
 
-            <!-- Main Content -->
-            <Grid Grid.Row="1" RowDefinitions="Auto,*" RowSpacing="10">
+            <!--  Main Content  -->
+            <Grid
+                Grid.Row="1"
+                RowDefinitions="Auto,*"
+                RowSpacing="10">
 
-                <!-- Top Cards Row -->
-                <Grid Grid.Row="0" ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
+                <!--  Top Cards Row  -->
+                <Grid
+                    Grid.Row="0"
+                    ColumnDefinitions="*,*,*,*"
+                    ColumnSpacing="8">
 
-                    <!-- Today's Sales Card -->
-                    <Border Grid.Column="0" 
+                    <!--  Today's Sales Card  -->
+                    <Border
+                        Grid.Column="0"
+                        Padding="15"
                         BackgroundColor="{StaticResource SurfaceDark}"
-                        StrokeShape="RoundRectangle 15"
-                        Padding="15">
+                        StrokeShape="RoundRectangle 15">
                         <VerticalStackLayout Spacing="8">
-                            <Label Text="TODAY'S SALES" 
-                               FontSize="12" 
-                               FontAttributes="Bold"
-                               TextColor="{StaticResource TextSecondary}" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="12"
+                                Text="TODAY'S SALES"
+                                TextColor="{StaticResource TextSecondary}" />
 
-                            <Label Text="💰" 
-                               FontSize="35"
-                               HorizontalOptions="Start" />
+                            <Label
+                                FontSize="35"
+                                HorizontalOptions="Start"
+                                Text="💰" />
 
-                            <Label Text="{Binding TodaySalesTotal}" 
-                               FontSize="25" 
-                               FontAttributes="Bold"
-                               TextColor="{StaticResource Primary}" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="25"
+                                Text="{Binding TodaySalesTotal}"
+                                TextColor="{StaticResource Primary}" />
 
-                            <Label Text="{Binding TodayTransactionsCount}" 
-                               FontSize="12"
-                               TextColor="{StaticResource TextSecondary}" />
+                            <Label
+                                FontSize="12"
+                                Text="{Binding TodayTransactionsCount}"
+                                TextColor="{StaticResource TextSecondary}" />
                         </VerticalStackLayout>
                     </Border>
 
-                    <!-- Inventory Status Card -->
-                    <Border Grid.Column="1" 
+                    <!--  Inventory Status Card  -->
+                    <Border
+                        Grid.Column="1"
+                        Padding="15"
                         BackgroundColor="{StaticResource SurfaceDark}"
-                        StrokeShape="RoundRectangle 15"
-                        Padding="15">
+                        StrokeShape="RoundRectangle 15">
                         <VerticalStackLayout Spacing="8">
-                            <Label Text="WEEKLY SALES" 
-                               FontSize="12" 
-                               FontAttributes="Bold"
-                               TextColor="{StaticResource TextSecondary}" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="12"
+                                Text="WEEKLY SALES"
+                                TextColor="{StaticResource TextSecondary}" />
 
-                            <Label Text="💰" 
-                               FontSize="35"
-                               HorizontalOptions="Start" />
+                            <Label
+                                FontSize="35"
+                                HorizontalOptions="Start"
+                                Text="💰" />
 
-                            <Label Text="{Binding WeeklySalesTotal}" 
-                               FontSize="25" 
-                               FontAttributes="Bold"
-                               TextColor="{StaticResource Primary}" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="25"
+                                Text="{Binding WeeklySalesTotal}"
+                                TextColor="{StaticResource Primary}" />
 
-                            <Label Text="{Binding WeeklyTransactionsCount}" 
-                               FontSize="12"
-                               TextColor="{StaticResource TextSecondary}" />
+                            <Label
+                                FontSize="12"
+                                Text="{Binding WeeklyTransactionsCount}"
+                                TextColor="{StaticResource TextSecondary}" />
                         </VerticalStackLayout>
                     </Border>
 
-                    <!-- Top Selling Items Card -->
-                    <Border Grid.Column="2" 
+                    <!--  Top Selling Items Card  -->
+                    <Border
+                        Grid.Column="2"
+                        Padding="15"
                         BackgroundColor="{StaticResource SurfaceDark}"
-                        StrokeShape="RoundRectangle 15"
-                        Padding="15">
+                        StrokeShape="RoundRectangle 15">
                         <VerticalStackLayout Spacing="8">
-                            <Label Text="TOP SELLING ITEMS" 
-                               FontSize="12" 
-                               FontAttributes="Bold"
-                               TextColor="{StaticResource TextSecondary}" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="12"
+                                Text="TOP SELLING ITEMS"
+                                TextColor="{StaticResource TextSecondary}" />
 
                             <VerticalStackLayout Spacing="8">
                                 <HorizontalStackLayout Spacing="8">
-                                    <Label Text="1. 🐟 Grilled Salmon (38)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                                    <Label
+                                        FontSize="13"
+                                        Text="1. 🐟 Grilled Salmon (38)"
+                                        TextColor="{StaticResource TextPrimary}" />
                                 </HorizontalStackLayout>
                                 <HorizontalStackLayout Spacing="8">
-                                    <Label Text="2. 🥩 Ribeye Steak (25)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                                    <Label
+                                        FontSize="13"
+                                        Text="2. 🥩 Ribeye Steak (25)"
+                                        TextColor="{StaticResource TextPrimary}" />
                                 </HorizontalStackLayout>
                                 <HorizontalStackLayout Spacing="8">
-                                    <Label Text="3. 🥗 Caesar Salad (42)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                                    <Label
+                                        FontSize="13"
+                                        Text="3. 🥗 Caesar Salad (42)"
+                                        TextColor="{StaticResource TextPrimary}" />
                                 </HorizontalStackLayout>
                                 <HorizontalStackLayout Spacing="8">
-                                    <Label Text="4. 🍕 Margarita Pizza (20)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                                    <Label
+                                        FontSize="13"
+                                        Text="4. 🍕 Margarita Pizza (20)"
+                                        TextColor="{StaticResource TextPrimary}" />
                                 </HorizontalStackLayout>
                                 <HorizontalStackLayout Spacing="8">
-                                    <Label Text="5. ☕ Tiramisu (18)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                                    <Label
+                                        FontSize="13"
+                                        Text="5. ☕ Tiramisu (18)"
+                                        TextColor="{StaticResource TextPrimary}" />
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
                         </VerticalStackLayout>
                     </Border>
 
-                    <!-- Cashier Performance Card -->
-                    <Border Grid.Column="3" 
+                    <!--  Cashier Performance Card  -->
+                    <Border
+                        Grid.Column="3"
+                        Padding="20"
                         BackgroundColor="{StaticResource SurfaceDark}"
-                        StrokeShape="RoundRectangle 15"
-                        Padding="20">
+                        StrokeShape="RoundRectangle 15">
                         <VerticalStackLayout Spacing="8">
-                            <Label Text="CASHIER PERFORMANCE" 
-                               FontSize="12" 
-                               FontAttributes="Bold"
-                               TextColor="{StaticResource TextSecondary}" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="12"
+                                Text="CASHIER PERFORMANCE"
+                                TextColor="{StaticResource TextSecondary}" />
 
                             <VerticalStackLayout Spacing="8">
                                 <HorizontalStackLayout Spacing="8">
-                                    <Label Text="1. 🥇 Sarah J. ($750.00)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                                    <Label
+                                        FontSize="13"
+                                        Text="1. 🥇 Sarah J. ($750.00)"
+                                        TextColor="{StaticResource TextPrimary}" />
                                 </HorizontalStackLayout>
                                 <HorizontalStackLayout Spacing="8">
-                                    <Label Text="2. 🥈 Michael B. ($520.50)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                                    <Label
+                                        FontSize="13"
+                                        Text="2. 🥈 Michael B. ($520.50)"
+                                        TextColor="{StaticResource TextPrimary}" />
                                 </HorizontalStackLayout>
                                 <HorizontalStackLayout Spacing="8">
-                                    <Label Text="3. 🥉 David L. ($415.00)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                                    <Label
+                                        FontSize="13"
+                                        Text="3. 🥉 David L. ($415.00)"
+                                        TextColor="{StaticResource TextPrimary}" />
                                 </HorizontalStackLayout>
                                 <HorizontalStackLayout Spacing="8">
-                                    <Label Text="4. 👤 Emily R. ($160.00)" FontSize="13" TextColor="{StaticResource TextPrimary}" />
+                                    <Label
+                                        FontSize="13"
+                                        Text="4. 👤 Emily R. ($160.00)"
+                                        TextColor="{StaticResource TextPrimary}" />
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
                         </VerticalStackLayout>
@@ -181,56 +241,83 @@
 
                 </Grid>
 
-                <!-- Bottom Section -->
-                <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="8">
+                <!--  Bottom Section  -->
+                <Grid
+                    Grid.Row="1"
+                    ColumnDefinitions="*,*"
+                    ColumnSpacing="8">
 
-                    <!-- Daily Sales Overview Chart -->
-                    <Border Grid.Column="0" 
+                    <!--  Daily Sales Overview Chart  -->
+                    <Border
+                        Grid.Column="0"
+                        Padding="15"
                         BackgroundColor="{StaticResource SurfaceDark}"
-                        StrokeShape="RoundRectangle 15"
-                        Padding="15">
+                        StrokeShape="RoundRectangle 15">
                         <VerticalStackLayout Spacing="15">
-                            <Label Text="DAILY SALES OVERVIEW" 
-                               FontSize="12" 
-                               FontAttributes="Bold"
-                               TextColor="{StaticResource TextSecondary}" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="12"
+                                Text="DAILY SALES OVERVIEW"
+                                TextColor="{StaticResource TextSecondary}" />
 
-                            <!-- Chart Placeholder - You'll need a charting library like LiveCharts or Microcharts -->
-                            <Grid RowDefinitions="*,Auto" RowSpacing="10">
-
-                            </Grid>
+                            <!--  Chart Placeholder - You'll need a charting library like LiveCharts or Microcharts  -->
+                            <Grid RowDefinitions="*,Auto" RowSpacing="10" />
                         </VerticalStackLayout>
                     </Border>
 
-                    <!-- Action Buttons -->
-                    <Grid Grid.Column="1" RowDefinitions="*,*,*" RowSpacing="15">
+                    <!--  Action Buttons  -->
+                    <Grid
+                        Grid.Column="1"
+                        RowDefinitions="*,*,*"
+                        RowSpacing="15">
 
-                        <!-- Row 1 -->
-                        <Grid Grid.Row="0" ColumnDefinitions="*,*" ColumnSpacing="15">
-                            <Border Grid.Column="0" 
+                        <!--  Row 1  -->
+                        <Grid
+                            Grid.Row="0"
+                            ColumnDefinitions="*,*"
+                            ColumnSpacing="15">
+                            <Border
+                                Grid.Column="0"
+                                Padding="15"
                                 BackgroundColor="{StaticResource SurfaceDark}"
                                 Stroke="{StaticResource Primary}"
-                                StrokeThickness="2"
                                 StrokeShape="RoundRectangle 15"
-                                Padding="15">
+                                StrokeThickness="2">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding OpenMenuManagementCommand}" />
                                 </Border.GestureRecognizers>
-                                <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Image Source="menu.png" HeightRequest="40"/>
-                                    <Label Text="MANAGE MENU" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                                <VerticalStackLayout
+                                    HorizontalOptions="Center"
+                                    Spacing="10"
+                                    VerticalOptions="Center">
+                                    <Image HeightRequest="40" Source="menu.png" />
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="12"
+                                        HorizontalOptions="Center"
+                                        Text="MANAGE MENU"
+                                        TextColor="{StaticResource TextPrimary}" />
                                 </VerticalStackLayout>
                             </Border>
 
-                            <Border Grid.Column="1" 
+                            <Border
+                                Grid.Column="1"
+                                Padding="15"
                                 BackgroundColor="{StaticResource SurfaceDark}"
                                 Stroke="{StaticResource Primary}"
-                                StrokeThickness="2"
                                 StrokeShape="RoundRectangle 15"
-                                Padding="15">
-                                <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Image Source="weighingscale.png" HeightRequest="40"/>
-                                    <Label Text="MANAGE PER SERVING" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                                StrokeThickness="2">
+                                <VerticalStackLayout
+                                    HorizontalOptions="Center"
+                                    Spacing="10"
+                                    VerticalOptions="Center">
+                                    <Image HeightRequest="40" Source="weighingscale.png" />
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="12"
+                                        HorizontalOptions="Center"
+                                        Text="MANAGE PER SERVING"
+                                        TextColor="{StaticResource TextPrimary}" />
                                 </VerticalStackLayout>
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding OpenRecipeManagementCommand}" />
@@ -238,32 +325,53 @@
                             </Border>
                         </Grid>
 
-                        <!-- Row 2 -->
-                        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="15">
-                            <Border Grid.Column="0" 
+                        <!--  Row 2  -->
+                        <Grid
+                            Grid.Row="1"
+                            ColumnDefinitions="*,*"
+                            ColumnSpacing="15">
+                            <Border
+                                Grid.Column="0"
+                                Padding="15"
                                 BackgroundColor="{StaticResource SurfaceDark}"
                                 Stroke="{StaticResource Primary}"
-                                StrokeThickness="2"
                                 StrokeShape="RoundRectangle 15"
-                                Padding="15">
-                                <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Image Source="inventory.png" HeightRequest="40"/>
-                                    <Label Text="INVENTORY" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                                StrokeThickness="2">
+                                <VerticalStackLayout
+                                    HorizontalOptions="Center"
+                                    Spacing="10"
+                                    VerticalOptions="Center">
+                                    <Image HeightRequest="40" Source="inventory.png" />
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="12"
+                                        HorizontalOptions="Center"
+                                        Text="INVENTORY"
+                                        TextColor="{StaticResource TextPrimary}" />
                                 </VerticalStackLayout>
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding OpenInventoryManagementCommand}" />
                                 </Border.GestureRecognizers>
                             </Border>
 
-                            <Border Grid.Column="1" 
+                            <Border
+                                Grid.Column="1"
+                                Padding="15"
                                 BackgroundColor="{StaticResource SurfaceDark}"
                                 Stroke="{StaticResource Primary}"
-                                StrokeThickness="2"
                                 StrokeShape="RoundRectangle 15"
-                                Padding="15">
-                                <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Image Source="sales.png" HeightRequest="40"/>
-                                    <Label Text="REPORTS" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                                StrokeThickness="2">
+                                <VerticalStackLayout
+                                    HorizontalOptions="Center"
+                                    Spacing="10"
+                                    VerticalOptions="Center">
+                                    <Image HeightRequest="40" Source="chart.png" />
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="12"
+                                        HorizontalOptions="Center"
+                                        Text="REPORTS"
+                                        TextColor="{StaticResource TextPrimary}" />
                                 </VerticalStackLayout>
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding OpenReportsCommand}" />
@@ -271,32 +379,53 @@
                             </Border>
                         </Grid>
 
-                        <!-- Row 3 -->
-                        <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="15">
-                            <Border Grid.Column="0" 
+                        <!--  Row 3  -->
+                        <Grid
+                            Grid.Row="2"
+                            ColumnDefinitions="*,*"
+                            ColumnSpacing="15">
+                            <Border
+                                Grid.Column="0"
+                                Padding="15"
                                 BackgroundColor="{StaticResource SurfaceDark}"
                                 Stroke="{StaticResource Primary}"
-                                StrokeThickness="2"
                                 StrokeShape="RoundRectangle 15"
-                                Padding="15">
-                                <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Image Source="usersettings.png" HeightRequest="40"/>
-                                    <Label Text="USER" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                                StrokeThickness="2">
+                                <VerticalStackLayout
+                                    HorizontalOptions="Center"
+                                    Spacing="10"
+                                    VerticalOptions="Center">
+                                    <Image HeightRequest="40" Source="usersettings.png" />
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="12"
+                                        HorizontalOptions="Center"
+                                        Text="USER"
+                                        TextColor="{StaticResource TextPrimary}" />
                                 </VerticalStackLayout>
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding OpenUserManagementCommand}" />
                                 </Border.GestureRecognizers>
                             </Border>
 
-                            <Border Grid.Column="1" 
+                            <Border
+                                Grid.Column="1"
+                                Padding="15"
                                 BackgroundColor="{StaticResource SurfaceDark}"
                                 Stroke="{StaticResource Primary}"
-                                StrokeThickness="2"
                                 StrokeShape="RoundRectangle 15"
-                                Padding="15">
-                                <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Image Source="settings.png" HeightRequest="40"/>
-                                    <Label Text="SETTINGS" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+                                StrokeThickness="2">
+                                <VerticalStackLayout
+                                    HorizontalOptions="Center"
+                                    Spacing="10"
+                                    VerticalOptions="Center">
+                                    <Image HeightRequest="40" Source="settings.png" />
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="12"
+                                        HorizontalOptions="Center"
+                                        Text="SETTINGS"
+                                        TextColor="{StaticResource TextPrimary}" />
                                 </VerticalStackLayout>
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding OpenSettingsCommand}" />

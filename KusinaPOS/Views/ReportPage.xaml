@@ -959,7 +959,7 @@
                                         Grid.Row="0"
                                         Padding="15"
                                         Style="{StaticResource CardBorder}">
-                                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="20">
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="20">
                                             <VerticalStackLayout Grid.Column="0" Spacing="2">
                                                 <Label
                                                     FontSize="12"
@@ -1047,23 +1047,13 @@
                                                     </CollectionView.ItemTemplate>
                                                 </CollectionView>
                                             </VerticalStackLayout>
-                                            <VerticalStackLayout Grid.Column="2" Spacing="2">
-                                                <Label
-                                                    FontSize="12"
-                                                    Text="Vs Last Month"
-                                                    TextColor="{StaticResource TextSecondary}" />
-                                                <Label
-                                                    FontAttributes="Bold"
-                                                    FontSize="16"
-                                                    Text="▼ 4.2%"
-                                                    TextColor="#27ae60" />
-                                            </VerticalStackLayout>
+
                                         </Grid>
                                     </Border>
 
                                     <Grid
                                         Grid.Row="1"
-                                        ColumnDefinitions="*,*"
+                                        ColumnDefinitions="*,*,*"
                                         ColumnSpacing="15">
 
                                         <Border
@@ -1076,7 +1066,7 @@
                                                     Margin="5,0,0,10"
                                                     FontAttributes="Bold"
                                                     FontSize="15"
-                                                    Text="Monthly Cost Trend"
+                                                    Text="Weekly Expenses Trend"
                                                     TextColor="{StaticResource TextPrimary}" />
 
                                                 <chart:SfCartesianChart Grid.Row="1">
@@ -1195,7 +1185,7 @@
                                                                         Grid.Column="1"
                                                                         FontSize="11"
                                                                         LineBreakMode="TailTruncation"
-                                                                        Text="{Binding Remarks}"
+                                                                        Text="{Binding Reason}"
                                                                         TextColor="{StaticResource TextSecondary}" />
 
                                                                     <Label
@@ -1228,7 +1218,67 @@
                                                 </sfListView:SfListView>
                                             </Grid>
                                         </Border>
+                                        <Border Grid.Column="2" Style="{StaticResource CardBorder}">
+                                            <chart:SfCircularChart Margin="-30,0,0,0">
 
+                                                <chart:SfCircularChart.Resources>
+                                                    <DataTemplate x:Key="labelTemplate">
+                                                        <HorizontalStackLayout Spacing="4">
+                                                            <Label
+                                                                FontAttributes="Bold"
+                                                                FontSize="11"
+                                                                Text="{Binding Item.Reason}"
+                                                                TextColor="{StaticResource TextPrimary}" />
+                                                            <Label
+                                                                FontSize="11"
+                                                                Text=":"
+                                                                TextColor="{StaticResource TextPrimary}" />
+                                                            <Label
+                                                                FontSize="11"
+                                                                Text="{Binding Item.QuantityChange, StringFormat='{0:N0}'}"
+                                                                TextColor="{StaticResource TextPrimary}" />
+                                                        </HorizontalStackLayout>
+                                                    </DataTemplate>
+                                                </chart:SfCircularChart.Resources>
+
+                                                <chart:PieSeries
+                                                    EndAngle="360"
+                                                    ItemsSource="{Binding PieChartStockMovement}"
+                                                    LabelTemplate="{StaticResource labelTemplate}"
+                                                    Radius="0.75"
+                                                    ShowDataLabels="True"
+                                                    StartAngle="0"
+                                                    Stroke="{AppThemeBinding Light=White,
+                                                                             Dark=#1E1E1E}"
+                                                    StrokeWidth="1"
+                                                    XBindingPath="Reason"
+                                                    YBindingPath="QuantityChange">
+
+                                                    <chart:PieSeries.DataLabelSettings>
+                                                        <chart:CircularDataLabelSettings LabelPosition="Outside" SmartLabelAlignment="Shift">
+
+                                                            <chart:CircularDataLabelSettings.ConnectorLineSettings>
+                                                                <chart:ConnectorLineStyle Stroke="{AppThemeBinding Light=Gray, Dark=Gray}" StrokeWidth="1" />
+                                                            </chart:CircularDataLabelSettings.ConnectorLineSettings>
+
+                                                        </chart:CircularDataLabelSettings>
+                                                    </chart:PieSeries.DataLabelSettings>
+
+                                                    <chart:PieSeries.PaletteBrushes>
+                                                        <SolidColorBrush Color="#27ae60" />
+                                                        <SolidColorBrush Color="#c0392b" />
+                                                        <SolidColorBrush Color="#f39c12" />
+                                                        <SolidColorBrush Color="#7f8c8d" />
+                                                    </chart:PieSeries.PaletteBrushes>
+
+                                                </chart:PieSeries>
+
+                                                <chart:SfCircularChart.Legend>
+                                                    <chart:ChartLegend IsVisible="True" />
+                                                </chart:SfCircularChart.Legend>
+
+                                            </chart:SfCircularChart>
+                                        </Border>
                                     </Grid>
                                 </Grid>
                             </Grid>

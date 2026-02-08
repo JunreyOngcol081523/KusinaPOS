@@ -63,6 +63,7 @@ namespace KusinaPOS.Services
         public decimal QuantityChange { get; set; }
         public decimal TransactionValue { get; set; }
         public DateTime TransactionDate { get; set; }
+        public string Reason { get; set; }
         public string Remarks { get; set; }
     }
 }

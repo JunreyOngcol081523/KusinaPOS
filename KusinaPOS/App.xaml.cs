@@ -59,10 +59,7 @@ namespace KusinaPOS
                 System.Diagnostics.Debug.WriteLine($"Fatal error during app initialization: {ex.Message}");
                 await MainThread.InvokeOnMainThreadAsync(async () =>
                 {
-                    await PageHelper.DisplayAlertAsync(
-                        "Initialization Error",
-                        $"Failed to initialize the application. {ex.Message}",
-                        "OK");
+                   AlertHelper.ShowToast("App initialization failed. Please restart the app.");
                 });
             }
         }

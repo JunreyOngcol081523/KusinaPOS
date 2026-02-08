@@ -54,8 +54,9 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty] private ObservableCollection<string> categories = new();
         public ObservableCollection<MenuItemReportDto> MenuItemsReport { get; } = new();
         #endregion
-        #region Expenses Properties & Collections
+        #region Expenses and Inventory Properties & Collections
         [ObservableProperty] private ObservableCollection<InventoryHistoryDto> inventoryHistory;
+        [ObservableProperty] private ObservableCollection<InventoryHistoryDto> pieChartStockMovement;
         [ObservableProperty] private decimal totalInventoryExpense;
         [ObservableProperty] private ObservableCollection<TrendDataModel> trendData;
         [ObservableProperty] private ObservableCollection<InventoryItem> lowStockItems;
@@ -94,6 +95,7 @@ namespace KusinaPOS.ViewModel
             InventoryHistory = new ObservableCollection<InventoryHistoryDto>();
             TrendData = new ObservableCollection<TrendDataModel>();
             LowStockItems = new ObservableCollection<InventoryItem>();
+            PieChartStockMovement = new ObservableCollection<InventoryHistoryDto>();
             LoadPreferences();
             _dateTimeService.DateTimeChanged += (s, e) => CurrentDateTime = e;
             _ = LoadTodayReportAsync();
@@ -465,6 +467,7 @@ namespace KusinaPOS.ViewModel
                 }
                 InventoryHistory = new ObservableCollection<InventoryHistoryDto>(expenses);
                 TotalInventoryExpense = await _inventoryReportService.GetTotalInventoryExpensesAsync(start, end);
+                await LoadStockMovementPieChartAsync();
             }
             catch (Exception ex)
             {
@@ -525,6 +528,42 @@ namespace KusinaPOS.ViewModel
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error loading chart: {ex.Message}");
+            }
+        }
+        public async Task LoadStockMovementPieChartAsync()
+        {
+            try
+            {
+                // 1. Get raw transactions
+                var transactions = await _inventoryReportService.GetInventoryReportAsync(FromDate, ToDate);
+
+                // 2. Process the data: Filter, Group, Sum, and SORT
+                var groupedData = transactions
+                    .Where(t => t.Reason != "Stock In") // Exclude restocks to focus on consumption/loss
+                    .GroupBy(t => t.Reason)
+                    .Select(g => new InventoryHistoryDto
+                    {
+                        Reason = g.Key,
+                        // Convert negative outflows to positive numbers for the chart
+                        QuantityChange = g.Sum(t => Math.Abs(t.QuantityChange))
+                    })
+                    // 3. FORCE SORTING: Sale (1st), Waste (2nd), Adjustment (3rd)
+                    // This ensures the PaletteBrushes in XAML always apply the right color to the right slice.
+                    .OrderBy(x => x.Reason == "SALE" ? 0
+                                : x.Reason == "Waste" ? 1
+                                : 2)
+                    .ToList();
+
+                // 4. Update the UI
+                PieChartStockMovement.Clear();
+                foreach (var item in groupedData)
+                {
+                    PieChartStockMovement.Add(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading pie chart: {ex.Message}");
             }
         }
         #endregion

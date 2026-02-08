@@ -348,8 +348,7 @@ namespace KusinaPOS.ViewModel
                 // Cleanup old backups
                 CleanupOldBackups(backupDir, maxBackupsToKeep: 10);
 
-                await PageHelper.DisplayAlertAsync("Success",
-                    $"Database backed up successfully.", "OK");
+                AlertHelper.ShowToast("Database backup created successfully.");
                 //save to preferences date last backup
                 Preferences.Set(DatabaseConstants.LastBackupDateKey, DateTime.UtcNow.Ticks);
             }
