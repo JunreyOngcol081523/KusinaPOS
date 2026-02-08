@@ -16,6 +16,7 @@ namespace KusinaPOS.ViewModel
 
         private readonly IDateTimeService? _dateTimeService;
         private readonly SalesService? _salesService;
+        private readonly InventoryItemService? _inventoryItemService;
         private readonly SettingsService? _settingsService;
         private bool _isInitialized = false;
 
@@ -58,6 +59,12 @@ namespace KusinaPOS.ViewModel
 
         [ObservableProperty]
         private bool isLoading = true;
+        [ObservableProperty]
+        private int totalVoidedTransactions;
+        [ObservableProperty]
+        private int totalRefundedTransactions;
+        [ObservableProperty]
+        private int totalLowStocksItems;
 
         // 1. Property for the Chart
         public ObservableCollection<SalesChartDto> SalesChartData { get; set; } = new ObservableCollection<SalesChartDto>();
@@ -72,7 +79,8 @@ namespace KusinaPOS.ViewModel
         public DashboardViewModel(
             IDateTimeService dateTimeService,
             SalesService salesService,
-            SettingsService settingsService)
+            SettingsService settingsService,
+            InventoryItemService? inventoryItemService)
         {
             try
             {
@@ -98,6 +106,8 @@ namespace KusinaPOS.ViewModel
             {
                 Debug.WriteLine($"Error in DashboardViewModel constructor: {ex.Message}");
             }
+
+            _inventoryItemService = inventoryItemService;
         }
 
         #endregion
@@ -221,6 +231,12 @@ namespace KusinaPOS.ViewModel
 
             TodaySalesTotal = $"₱{todaysls:N2}";
             WeeklySalesTotal = $"₱{weeksls:N2}";
+            TotalVoidedTransactions = await _salesService.GetSalesCountByStatusAsync("Voided");
+            TotalRefundedTransactions = await _salesService.GetSalesCountByStatusAsync("Refunded");
+            var allitems = await _inventoryItemService.GetAllInventoryItemsAsync();
+            var lowStock = allitems.Where(i => i.IsLowStock).ToList();
+            var lowStockList = new ObservableCollection<InventoryItem>(lowStock);
+            TotalLowStocksItems = lowStockList.Count;
         }
 
         public async Task LoadSalesChartAsync(string filterType)

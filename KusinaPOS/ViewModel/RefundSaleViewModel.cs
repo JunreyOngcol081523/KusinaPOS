@@ -14,6 +14,7 @@ namespace KusinaPOS.ViewModel
     public partial class RefundSaleViewModel:ObservableObject
     {
         readonly SalesService _salesService;
+        readonly UserService _userService;
         // 3. Authorization Fields
         [ObservableProperty]
         private string _adminPassword = string.Empty;
@@ -47,9 +48,10 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty]
         private bool isSaleFound = false;
         //constructor
-        public RefundSaleViewModel(SalesService salesService)
+        public RefundSaleViewModel(SalesService salesService, UserService userService)
         {
             _salesService = salesService;
+            _userService = userService;
         }
         public SaleActionMode SelectedMode
         {
@@ -136,12 +138,18 @@ namespace KusinaPOS.ViewModel
             // ------------------------------------
 
             // 2. Validate Common Required Fields (Admin Password, Reason, Authorizer)
+            var user = await _userService.LoginWithPinAsync(AdminPassword,"Administrator");
+
             if (string.IsNullOrWhiteSpace(AdminPassword))
             {
                 await PageHelper.DisplayAlertAsync("Validation Error", "Please enter the Admin Password.", "OK");
                 return;
             }
-
+            if (user is null)
+            {
+                await PageHelper.DisplayAlertAsync("Authentication Failed", "Invalid Admin Password. Please try again.", "OK");
+                return;
+            }
             if (string.IsNullOrWhiteSpace(VoidReason))
             {
                 await PageHelper.DisplayAlertAsync("Validation Error", "Please provide a reason for this action.", "OK");

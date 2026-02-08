@@ -3,6 +3,7 @@
     x:Class="KusinaPOS.Views.DashboardPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:badgeView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
     xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
     xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
     xmlns:viewmodels="clr-namespace:KusinaPOS.ViewModel"
@@ -161,40 +162,61 @@
                             <Label
                                 FontAttributes="Bold"
                                 FontSize="12"
-                                Text="TOP SELLING ITEMS"
+                                Text="TODAY'S TRANSACTION COUNTER"
                                 TextColor="{StaticResource TextSecondary}" />
 
-                            <VerticalStackLayout Spacing="8">
-                                <HorizontalStackLayout Spacing="8">
-                                    <Label
-                                        FontSize="13"
-                                        Text="1. 🐟 Grilled Salmon (38)"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                </HorizontalStackLayout>
-                                <HorizontalStackLayout Spacing="8">
-                                    <Label
-                                        FontSize="13"
-                                        Text="2. 🥩 Ribeye Steak (25)"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                </HorizontalStackLayout>
-                                <HorizontalStackLayout Spacing="8">
-                                    <Label
-                                        FontSize="13"
-                                        Text="3. 🥗 Caesar Salad (42)"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                </HorizontalStackLayout>
-                                <HorizontalStackLayout Spacing="8">
-                                    <Label
-                                        FontSize="13"
-                                        Text="4. 🍕 Margarita Pizza (20)"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                </HorizontalStackLayout>
-                                <HorizontalStackLayout Spacing="8">
-                                    <Label
-                                        FontSize="13"
-                                        Text="5. ☕ Tiramisu (18)"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                </HorizontalStackLayout>
+                            <VerticalStackLayout HorizontalOptions="Start" Spacing="2">
+                                <badgeView:SfBadgeView
+                                    BadgeText="{Binding TotalRefundedTransactions}"
+                                    HorizontalOptions="Start"
+                                    VerticalOptions="Center">
+                                    <badgeView:SfBadgeView.Content>
+                                        <Border Padding="5" Style="{StaticResource CardBorder}">
+                                            <Label
+                                                FontSize="13"
+                                                LineBreakMode="WordWrap"
+                                                Text="Refunded Transactions Count"
+                                                TextColor="White" />
+                                        </Border>
+                                    </badgeView:SfBadgeView.Content>
+                                    <badgeView:SfBadgeView.BadgeSettings>
+                                        <badgeView:BadgeSettings Type="Info" />
+                                    </badgeView:SfBadgeView.BadgeSettings>
+                                </badgeView:SfBadgeView>
+                                <badgeView:SfBadgeView
+                                    BadgeText="{Binding TotalVoidedTransactions}"
+                                    HorizontalOptions="Start"
+                                    VerticalOptions="Center">
+                                    <badgeView:SfBadgeView.Content>
+                                        <Border Padding="5" Style="{StaticResource CardBorder}">
+                                            <Label
+                                                FontSize="13"
+                                                LineBreakMode="WordWrap"
+                                                Text="Voided Transactions Count"
+                                                TextColor="White" />
+                                        </Border>
+                                    </badgeView:SfBadgeView.Content>
+                                    <badgeView:SfBadgeView.BadgeSettings>
+                                        <badgeView:BadgeSettings Type="Info" />
+                                    </badgeView:SfBadgeView.BadgeSettings>
+                                </badgeView:SfBadgeView>
+                                <badgeView:SfBadgeView
+                                    BadgeText="{Binding TotalLowStocksItems}"
+                                    HorizontalOptions="Start"
+                                    VerticalOptions="Center">
+                                    <badgeView:SfBadgeView.Content>
+                                        <Border Padding="5" Style="{StaticResource CardBorder}">
+                                            <Label
+                                                FontSize="13"
+                                                LineBreakMode="WordWrap"
+                                                Text="Low Stocks Count"
+                                                TextColor="White" />
+                                        </Border>
+                                    </badgeView:SfBadgeView.Content>
+                                    <badgeView:SfBadgeView.BadgeSettings>
+                                        <badgeView:BadgeSettings Type="Error" />
+                                    </badgeView:SfBadgeView.BadgeSettings>
+                                </badgeView:SfBadgeView>
                             </VerticalStackLayout>
                         </VerticalStackLayout>
                     </Border>

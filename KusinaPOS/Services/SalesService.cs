@@ -201,7 +201,31 @@ namespace KusinaPOS.Services
                 return new List<Sale>();
             }
         }
+        public async Task<int> GetSalesCountByStatusAsync(string status, DateTime? fromDate = null, DateTime? toDate = null)
+        {
+            try
+            {
+                await InitializeAsync();
 
+                // 1. Set Defaults: If null, use Today
+                var start = (fromDate ?? DateTime.Today).Date;
+
+                // 2. Adjust End Date: Make sure it covers the whole day (until 11:59:59 PM)
+                var end = (toDate ?? DateTime.Today).Date.AddDays(1).AddTicks(-1);
+
+                return await _db.Table<Sale>()
+                                .Where(s => s.Status == status
+                                            && s.ReferenceReceiptNo == null
+                                            && s.SaleDate >= start
+                                            && s.SaleDate <= end)
+                                .CountAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[GET SALES COUNT BY STATUS ERROR] {ex}");
+                return 0;
+            }
+        }
         public async Task<decimal> GetNetSalesAsync(DateTime fromDate, DateTime toDate)
         {
             await InitializeAsync();

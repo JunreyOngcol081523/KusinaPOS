@@ -58,6 +58,7 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty] private ObservableCollection<InventoryHistoryDto> inventoryHistory;
         [ObservableProperty] private ObservableCollection<InventoryHistoryDto> pieChartStockMovement;
         [ObservableProperty] private decimal totalInventoryExpense;
+        [ObservableProperty] private decimal totalValueOfWasteItems;
         [ObservableProperty] private ObservableCollection<TrendDataModel> trendData;
         [ObservableProperty] private ObservableCollection<InventoryItem> lowStockItems;
         #endregion
@@ -467,6 +468,7 @@ namespace KusinaPOS.ViewModel
                 }
                 InventoryHistory = new ObservableCollection<InventoryHistoryDto>(expenses);
                 TotalInventoryExpense = await _inventoryReportService.GetTotalInventoryExpensesAsync(start, end);
+                TotalValueOfWasteItems = await _inventoryReportService.GetTotalWastedValueAsync(start, end);
                 await LoadStockMovementPieChartAsync();
             }
             catch (Exception ex)
@@ -539,20 +541,15 @@ namespace KusinaPOS.ViewModel
 
                 // 2. Process the data: Filter, Group, Sum, and SORT
                 var groupedData = transactions
-                    .Where(t => t.Reason != "Stock In") // Exclude restocks to focus on consumption/loss
+                    .Where(t => t.Reason == "SALE" || t.Reason == "Waste")
                     .GroupBy(t => t.Reason)
                     .Select(g => new InventoryHistoryDto
                     {
                         Reason = g.Key,
-                        // Convert negative outflows to positive numbers for the chart
                         QuantityChange = g.Sum(t => Math.Abs(t.QuantityChange))
-                    })
-                    // 3. FORCE SORTING: Sale (1st), Waste (2nd), Adjustment (3rd)
-                    // This ensures the PaletteBrushes in XAML always apply the right color to the right slice.
-                    .OrderBy(x => x.Reason == "SALE" ? 0
+                    }).OrderBy(x => x.Reason == "SALE" ? 0
                                 : x.Reason == "Waste" ? 1
-                                : 2)
-                    .ToList();
+                                : 2).ToList();
 
                 // 4. Update the UI
                 PieChartStockMovement.Clear();

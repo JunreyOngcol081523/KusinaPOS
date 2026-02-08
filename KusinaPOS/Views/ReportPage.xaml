@@ -1148,16 +1148,26 @@
                                         Padding="15"
                                         Style="{StaticResource CardBorder}">
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="20">
-                                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                            <VerticalStackLayout Grid.Column="0" Spacing="4">
                                                 <Label
                                                     FontSize="12"
                                                     Text="Total Period Expenses"
                                                     TextColor="{StaticResource TextSecondary}" />
                                                 <Label
+                                                    Margin="0,0,0,10"
                                                     FontAttributes="Bold"
-                                                    FontSize="24"
+                                                    FontSize="18"
                                                     Text="{Binding TotalInventoryExpense, StringFormat='₱{0:N2}'}"
                                                     TextColor="{StaticResource TextPrimary}" />
+                                                <Label
+                                                    FontSize="12"
+                                                    Text="Total Value of Waste Items"
+                                                    TextColor="{StaticResource TextSecondary}" />
+                                                <Label
+                                                    FontAttributes="Bold"
+                                                    FontSize="18"
+                                                    Text="{Binding TotalValueOfWasteItems, StringFormat='₱{0:N2}'}"
+                                                    TextColor="{StaticResource Secondary}" />
                                             </VerticalStackLayout>
                                             <VerticalStackLayout
                                                 Grid.Column="1"
@@ -1218,7 +1228,7 @@
                                                                                 Text="{Binding QuantityOnHand, StringFormat='{0:N0}'}"
                                                                                 TextColor="#D32F2F" />
 
-                                                                            <Span Text="{Binding Unit, StringFormat=' {0})'}" TextColor="{StaticResource TextSecondary}" />
+                                                                            <Span Text="{Binding Unit, StringFormat=' {0} left)'}" TextColor="{StaticResource TextSecondary}" />
                                                                         </FormattedString>
                                                                     </Label.FormattedText>
                                                                 </Label>
@@ -1227,9 +1237,8 @@
                                                                     Grid.Row="1"
                                                                     Grid.ColumnSpan="2"
                                                                     Margin="0,4,0,0"
-                                                                    HeightRequest="1"
-                                                                    Color="{AppThemeBinding Light=#E0E0E0,
-                                                                                            Dark=#333333}" />
+                                                                    HeightRequest="5"
+                                                                    Color="Black" />
                                                             </Grid>
                                                         </DataTemplate>
                                                     </CollectionView.ItemTemplate>
