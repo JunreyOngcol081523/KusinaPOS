@@ -1,5 +1,7 @@
+using KusinaPOS.Helpers;
 using KusinaPOS.Services;
 using KusinaPOS.ViewModel;
+using Syncfusion.Maui.Buttons;
 using System.Diagnostics;
 
 namespace KusinaPOS.Views
@@ -84,7 +86,25 @@ namespace KusinaPOS.Views
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error initializing dashboard: {ex.Message}");
-                await DisplayAlert("Error", $"Failed to load dashboard: {ex.Message}", "OK");
+                AlertHelper.ShowToast($"Dashboard Initialization Failed{ ex.Message}");
+            }
+        }
+        private async void OnFilterChanged(object sender, StateChangedEventArgs e)
+        {
+            // 1. Only react when a button is CHECKED (ignore the uncheck event)
+            if (e.IsChecked.HasValue && e.IsChecked.Value)
+            {
+                var radioButton = sender as SfRadioButton;
+                if (radioButton == null) return;
+
+                // 2. Get the ViewModel
+                var viewModel = BindingContext as DashboardViewModel;
+
+                // 3. Call your existing logic with the text (Hourly, Daily, etc.)
+                if (viewModel != null)
+                {
+                    await viewModel.LoadSalesChartAsync(radioButton.Text);
+                }
             }
         }
 

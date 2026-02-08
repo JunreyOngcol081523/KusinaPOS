@@ -187,103 +187,140 @@
                                 ColumnDefinitions="300,*"
                                 ColumnSpacing="20">
 
-                                <!--  Column 1: Filter Form  -->
+                                <!--  UNIFIED FILTER CARD - SALES  -->
                                 <ScrollView Grid.Column="0">
                                     <Border
-                                        Padding="20"
+                                        Padding="16"
                                         BackgroundColor="{StaticResource SurfaceDark}"
                                         Stroke="{StaticResource Gray200}"
                                         StrokeShape="RoundRectangle 12"
                                         StrokeThickness="1">
-                                        <VerticalStackLayout Spacing="15">
+                                        <VerticalStackLayout Spacing="12">
+
+                                            <!--  Header  -->
                                             <Label
                                                 FontAttributes="Bold"
-                                                FontSize="16"
-                                                Text="Filter by Date Range"
+                                                FontSize="15"
+                                                Text="Date Range Filter"
                                                 TextColor="{StaticResource TextPrimary}" />
 
-                                            <!--  From Date  -->
-                                            <VerticalStackLayout Spacing="8">
-                                                <Label
-                                                    FontSize="12"
-                                                    Text="From Date"
-                                                    TextColor="{StaticResource TextSecondary}" />
-                                                <Border
-                                                    Padding="8,5"
-                                                    BackgroundColor="{StaticResource CardDark}"
-                                                    Stroke="{StaticResource Gray200}"
-                                                    StrokeShape="RoundRectangle 8"
-                                                    StrokeThickness="1">
-                                                    <DatePicker
-                                                        BackgroundColor="Transparent"
-                                                        Date="{Binding FromDate}"
+                                            <!--  Date Range Section  -->
+                                            <VerticalStackLayout Spacing="10">
+
+                                                <!--  From Date  -->
+                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                                    <Label
+                                                        Grid.Column="0"
                                                         FontSize="12"
-                                                        TextColor="{StaticResource TextPrimary}" />
-                                                </Border>
+                                                        Text="From"
+                                                        TextColor="{StaticResource TextSecondary}"
+                                                        VerticalOptions="Center"
+                                                        WidthRequest="40" />
+                                                    <Border
+                                                        Grid.Column="1"
+                                                        Padding="8,4"
+                                                        BackgroundColor="{StaticResource CardDark}"
+                                                        Stroke="{StaticResource Gray200}"
+                                                        StrokeShape="RoundRectangle 6"
+                                                        StrokeThickness="1">
+                                                        <DatePicker
+                                                            BackgroundColor="Transparent"
+                                                            Date="{Binding FromDate}"
+                                                            FontSize="12"
+                                                            TextColor="{StaticResource TextPrimary}" />
+                                                    </Border>
+                                                </Grid>
+
+                                                <!--  To Date  -->
+                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                                    <Label
+                                                        Grid.Column="0"
+                                                        FontSize="12"
+                                                        Text="To"
+                                                        TextColor="{StaticResource TextSecondary}"
+                                                        VerticalOptions="Center"
+                                                        WidthRequest="40" />
+                                                    <Border
+                                                        Grid.Column="1"
+                                                        Padding="8,4"
+                                                        BackgroundColor="{StaticResource CardDark}"
+                                                        Stroke="{StaticResource Gray200}"
+                                                        StrokeShape="RoundRectangle 6"
+                                                        StrokeThickness="1">
+                                                        <DatePicker
+                                                            BackgroundColor="Transparent"
+                                                            Date="{Binding ToDate}"
+                                                            FontSize="12"
+                                                            TextColor="{StaticResource TextPrimary}" />
+                                                    </Border>
+                                                </Grid>
                                             </VerticalStackLayout>
 
-                                            <!--  To Date  -->
-                                            <VerticalStackLayout Spacing="8">
-                                                <Label
-                                                    FontSize="12"
-                                                    Text="To Date"
-                                                    TextColor="{StaticResource TextSecondary}" />
-                                                <Border
-                                                    Padding="8,5"
-                                                    BackgroundColor="{StaticResource CardDark}"
-                                                    Stroke="{StaticResource Gray200}"
-                                                    StrokeShape="RoundRectangle 8"
-                                                    StrokeThickness="1">
-                                                    <DatePicker
-                                                        BackgroundColor="Transparent"
-                                                        Date="{Binding ToDate}"
-                                                        FontSize="12"
-                                                        TextColor="{StaticResource TextPrimary}" />
-                                                </Border>
-                                            </VerticalStackLayout>
+                                            <!--  Divider  -->
+                                            <BoxView
+                                                HeightRequest="1"
+                                                Opacity="0.5"
+                                                Color="{StaticResource Gray200}" />
 
                                             <!--  Quick Filters  -->
-                                            <VerticalStackLayout Spacing="5">
+                                            <VerticalStackLayout Spacing="8">
                                                 <Label
-                                                    FontSize="12"
-                                                    Text="Quick Filters"
+                                                    FontSize="11"
+                                                    Opacity="0.8"
+                                                    Text="QUICK FILTERS"
                                                     TextColor="{StaticResource TextSecondary}" />
-                                                <Button
-                                                    BackgroundColor="{StaticResource CardDark}"
-                                                    BorderColor="{StaticResource Gray200}"
-                                                    BorderWidth="1"
-                                                    Command="{Binding FilterTodayCommand}"
-                                                    CornerRadius="8"
-                                                    FontSize="14"
-                                                    Text="Today"
-                                                    TextColor="{StaticResource TextPrimary}" />
-                                                <Button
-                                                    BackgroundColor="{StaticResource CardDark}"
-                                                    BorderColor="{StaticResource Gray200}"
-                                                    BorderWidth="1"
-                                                    Command="{Binding FilterWeekCommand}"
-                                                    CornerRadius="8"
-                                                    FontSize="14"
-                                                    Text="This Week"
-                                                    TextColor="{StaticResource TextPrimary}" />
-                                                <Button
-                                                    BackgroundColor="{StaticResource CardDark}"
-                                                    BorderColor="{StaticResource Gray200}"
-                                                    BorderWidth="1"
-                                                    Command="{Binding FilterMonthCommand}"
-                                                    CornerRadius="8"
-                                                    FontSize="14"
-                                                    Text="This Month"
-                                                    TextColor="{StaticResource TextPrimary}" />
+
+                                                <Grid
+                                                    ColumnDefinitions="*,*,*"
+                                                    ColumnSpacing="6"
+                                                    RowDefinitions="Auto">
+
+                                                    <Button
+                                                        Grid.Column="0"
+                                                        Padding="8,6"
+                                                        BackgroundColor="{StaticResource CardDark}"
+                                                        BorderColor="{StaticResource Gray200}"
+                                                        BorderWidth="1"
+                                                        Command="{Binding FilterTodayCommand}"
+                                                        CornerRadius="6"
+                                                        FontSize="12"
+                                                        Text="Today"
+                                                        TextColor="{StaticResource TextPrimary}" />
+
+                                                    <Button
+                                                        Grid.Column="1"
+                                                        Padding="8,6"
+                                                        BackgroundColor="{StaticResource CardDark}"
+                                                        BorderColor="{StaticResource Gray200}"
+                                                        BorderWidth="1"
+                                                        Command="{Binding FilterWeekCommand}"
+                                                        CornerRadius="6"
+                                                        FontSize="12"
+                                                        Text="Week"
+                                                        TextColor="{StaticResource TextPrimary}" />
+
+                                                    <Button
+                                                        Grid.Column="2"
+                                                        Padding="8,6"
+                                                        BackgroundColor="{StaticResource CardDark}"
+                                                        BorderColor="{StaticResource Gray200}"
+                                                        BorderWidth="1"
+                                                        Command="{Binding FilterMonthCommand}"
+                                                        CornerRadius="6"
+                                                        FontSize="12"
+                                                        Text="Month"
+                                                        TextColor="{StaticResource TextPrimary}" />
+                                                </Grid>
                                             </VerticalStackLayout>
 
                                             <!--  Generate Button  -->
                                             <Button
+                                                Padding="0,10"
                                                 BackgroundColor="{StaticResource Primary}"
                                                 Command="{Binding GenerateReportCommand}"
                                                 CornerRadius="8"
                                                 FontAttributes="Bold"
-                                                FontSize="16"
+                                                FontSize="14"
                                                 Text="Generate Report"
                                                 TextColor="White" />
                                         </VerticalStackLayout>
@@ -343,6 +380,7 @@
                                                     TextColor="{StaticResource Primary}" />
                                             </VerticalStackLayout>
                                         </Border>
+
 
                                         <!--  Cash Refunded  -->
                                         <Border
@@ -594,78 +632,171 @@
                             <Grid
                                 Grid.Row="1"
                                 ColumnDefinitions="300,*"
-                                ColumnSpacing="10">
+                                ColumnSpacing="20">
 
-                                <!--  Column 1: Filter Form  -->
+                                <!--  UNIFIED FILTER CARD - MENU ITEMS (with Category)  -->
                                 <ScrollView Grid.Column="0">
-                                    <Border Padding="12" Style="{StaticResource CardBorder}">
-
-                                        <VerticalStackLayout Spacing="10">
+                                    <Border
+                                        Padding="16"
+                                        BackgroundColor="{StaticResource SurfaceDark}"
+                                        Stroke="{StaticResource Gray200}"
+                                        StrokeShape="RoundRectangle 12"
+                                        StrokeThickness="1">
+                                        <VerticalStackLayout Spacing="12">
 
                                             <!--  Header  -->
                                             <Label
                                                 FontAttributes="Bold"
-                                                FontSize="14"
-                                                Text="Filters"
+                                                FontSize="15"
+                                                Text="Date Range Filter"
                                                 TextColor="{StaticResource TextPrimary}" />
 
-                                            <!--  Date Range (compact row)  -->
-                                            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                                                <DatePicker Date="{Binding FromDate}" />
-                                                <DatePicker Grid.Column="1" Date="{Binding ToDate}" />
-                                            </Grid>
+                                            <!--  Date Range Section  -->
+                                            <VerticalStackLayout Spacing="10">
 
-                                            <!--  Category  -->
-                                            <Picker
-                                                Title="Category"
-                                                ItemsSource="{Binding Categories}"
-                                                SelectedItem="{Binding SelectedCategory}" />
+                                                <!--  From Date  -->
+                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                                    <Label
+                                                        Grid.Column="0"
+                                                        FontSize="12"
+                                                        Text="From"
+                                                        TextColor="{StaticResource TextSecondary}"
+                                                        VerticalOptions="Center"
+                                                        WidthRequest="40" />
+                                                    <Border
+                                                        Grid.Column="1"
+                                                        Padding="8,4"
+                                                        BackgroundColor="{StaticResource CardDark}"
+                                                        Stroke="{StaticResource Gray200}"
+                                                        StrokeShape="RoundRectangle 6"
+                                                        StrokeThickness="1">
+                                                        <DatePicker
+                                                            BackgroundColor="Transparent"
+                                                            Date="{Binding FromDate}"
+                                                            FontSize="12"
+                                                            TextColor="{StaticResource TextPrimary}" />
+                                                    </Border>
+                                                </Grid>
 
-                                            <!--  Quick Filters (compact buttons)  -->
-                                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6">
-                                                <Button
-                                                    Padding="6"
-                                                    BackgroundColor="{StaticResource CardDark}"
-                                                    BorderColor="{StaticResource Gray200}"
-                                                    BorderWidth="1"
-                                                    Command="{Binding FilterMenuTodayCommand}"
-                                                    CornerRadius="8"
+                                                <!--  To Date  -->
+                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                                    <Label
+                                                        Grid.Column="0"
+                                                        FontSize="12"
+                                                        Text="To"
+                                                        TextColor="{StaticResource TextSecondary}"
+                                                        VerticalOptions="Center"
+                                                        WidthRequest="40" />
+                                                    <Border
+                                                        Grid.Column="1"
+                                                        Padding="8,4"
+                                                        BackgroundColor="{StaticResource CardDark}"
+                                                        Stroke="{StaticResource Gray200}"
+                                                        StrokeShape="RoundRectangle 6"
+                                                        StrokeThickness="1">
+                                                        <DatePicker
+                                                            BackgroundColor="Transparent"
+                                                            Date="{Binding ToDate}"
+                                                            FontSize="12"
+                                                            TextColor="{StaticResource TextPrimary}" />
+                                                    </Border>
+                                                </Grid>
+                                            </VerticalStackLayout>
+
+                                            <!--  Category Picker (ONLY IN MENU ITEMS TAB)  -->
+                                            <VerticalStackLayout Spacing="8">
+                                                <Label
                                                     FontSize="12"
-                                                    Text="Today" />
-
-                                                <Button
-                                                    Grid.Column="1"
-                                                    Padding="6"
+                                                    Text="Category"
+                                                    TextColor="{StaticResource TextSecondary}" />
+                                                <Border
+                                                    Padding="8,4"
                                                     BackgroundColor="{StaticResource CardDark}"
-                                                    BorderColor="{StaticResource Gray200}"
-                                                    BorderWidth="1"
-                                                    Command="{Binding FilterMenuWeekCommand}"
-                                                    CornerRadius="8"
-                                                    FontSize="12"
-                                                    Text="Week" />
+                                                    Stroke="{StaticResource Gray200}"
+                                                    StrokeShape="RoundRectangle 6"
+                                                    StrokeThickness="1">
+                                                    <Picker
+                                                        Title="All Categories"
+                                                        BackgroundColor="Transparent"
+                                                        FontSize="12"
+                                                        ItemsSource="{Binding Categories}"
+                                                        SelectedItem="{Binding SelectedCategory}"
+                                                        TextColor="{StaticResource TextPrimary}" />
+                                                </Border>
+                                            </VerticalStackLayout>
 
-                                                <Button
-                                                    Grid.Column="2"
-                                                    Padding="6"
-                                                    BackgroundColor="{StaticResource CardDark}"
-                                                    BorderColor="{StaticResource Gray200}"
-                                                    BorderWidth="1"
-                                                    Command="{Binding FilterMenuMonthCommand}"
-                                                    CornerRadius="8"
-                                                    FontSize="12"
-                                                    Text="Month" />
-                                            </Grid>
+                                            <!--  Divider  -->
+                                            <BoxView
+                                                HeightRequest="1"
+                                                Opacity="0.5"
+                                                Color="{StaticResource Gray200}" />
 
-                                            <!--  Generate  -->
+                                            <!--  Quick Filters  -->
+                                            <VerticalStackLayout Spacing="8">
+                                                <Label
+                                                    FontSize="11"
+                                                    Opacity="0.8"
+                                                    Text="QUICK FILTERS"
+                                                    TextColor="{StaticResource TextSecondary}" />
+
+                                                <Grid
+                                                    ColumnDefinitions="*,*,*"
+                                                    ColumnSpacing="6"
+                                                    RowDefinitions="Auto">
+
+                                                    <Button
+                                                        Grid.Column="0"
+                                                        Padding="8,6"
+                                                        BackgroundColor="{StaticResource CardDark}"
+                                                        BorderColor="{StaticResource Gray200}"
+                                                        BorderWidth="1"
+                                                        Command="{Binding FilterMenuTodayCommand}"
+                                                        CornerRadius="6"
+                                                        FontSize="12"
+                                                        Text="Today"
+                                                        TextColor="{StaticResource TextPrimary}" />
+
+                                                    <Button
+                                                        Grid.Column="1"
+                                                        Padding="8,6"
+                                                        BackgroundColor="{StaticResource CardDark}"
+                                                        BorderColor="{StaticResource Gray200}"
+                                                        BorderWidth="1"
+                                                        Command="{Binding FilterMenuWeekCommand}"
+                                                        CornerRadius="6"
+                                                        FontSize="12"
+                                                        Text="Week"
+                                                        TextColor="{StaticResource TextPrimary}" />
+
+                                                    <Button
+                                                        Grid.Column="2"
+                                                        Padding="8,6"
+                                                        BackgroundColor="{StaticResource CardDark}"
+                                                        BorderColor="{StaticResource Gray200}"
+                                                        BorderWidth="1"
+                                                        Command="{Binding FilterMenuMonthCommand}"
+                                                        CornerRadius="6"
+                                                        FontSize="12"
+                                                        Text="Month"
+                                                        TextColor="{StaticResource TextPrimary}" />
+                                                </Grid>
+                                            </VerticalStackLayout>
+
+                                            <!--  Generate Button  -->
                                             <Button
-                                                Padding="10"
+                                                Padding="0,10"
                                                 BackgroundColor="{StaticResource Primary}"
                                                 Command="{Binding GenerateMenuReportCommand}"
-                                                FontSize="13"
-                                                Text="Generate"
-                                                TextColor="White" />
-                                            <Label
+                                                CornerRadius="8"
+                                                FontAttributes="Bold"
                                                 FontSize="14"
+                                                Text="Generate Report"
+                                                TextColor="White" />
+
+                                            <!--  Export Link  -->
+                                            <Label
+                                                FontSize="12"
+                                                HorizontalOptions="Center"
                                                 Text="Export to Excel"
                                                 TextColor="{StaticResource TextSecondary}"
                                                 TextDecorations="Underline">
@@ -834,121 +965,178 @@
                         TextColor="{StaticResource TextPrimary}">
 
                         <Grid
-                            Padding="15"
+                            Padding="20"
                             RowDefinitions="Auto,*"
-                            RowSpacing="15">
+                            RowSpacing="20">
 
-                            <VerticalStackLayout Grid.Row="0" Spacing="4">
+                            <VerticalStackLayout Grid.Row="0" Spacing="8">
                                 <Label
                                     FontAttributes="Bold"
-                                    FontSize="20"
+                                    FontSize="Large"
                                     Text="Expenses Report"
                                     TextColor="{StaticResource TextPrimary}" />
                                 <Label
-                                    FontSize="12"
+                                    FontSize="Small"
                                     Text="Track your inventory costs and supplier trends"
                                     TextColor="{StaticResource TextSecondary}" />
                             </VerticalStackLayout>
 
                             <Grid
                                 Grid.Row="1"
-                                ColumnDefinitions="280,*"
-                                ColumnSpacing="15">
+                                ColumnDefinitions="300,*"
+                                ColumnSpacing="20">
 
-                                <Border
-                                    Grid.Column="0"
-                                    Padding="15"
-                                    Style="{StaticResource CardBorder}"
-                                    VerticalOptions="Fill">
-                                    <ScrollView>
-                                        <VerticalStackLayout Spacing="20">
+                                <!--  UNIFIED FILTER CARD - INVENTORY  -->
+                                <ScrollView Grid.Column="0">
+                                    <Border
+                                        Padding="16"
+                                        BackgroundColor="{StaticResource SurfaceDark}"
+                                        Stroke="{StaticResource Gray200}"
+                                        StrokeShape="RoundRectangle 12"
+                                        StrokeThickness="1">
+                                        <VerticalStackLayout Spacing="12">
+
+                                            <!--  Header  -->
+                                            <Label
+                                                FontAttributes="Bold"
+                                                FontSize="15"
+                                                Text="Date Range Filter"
+                                                TextColor="{StaticResource TextPrimary}" />
+
+                                            <!--  Date Range Section  -->
                                             <VerticalStackLayout Spacing="10">
-                                                <Label
-                                                    FontAttributes="Bold"
-                                                    FontSize="14"
-                                                    Text="Date Range"
-                                                    TextColor="{StaticResource TextPrimary}" />
 
-                                                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                                                    <DatePicker Date="{Binding FromDate}" Format="MMM dd" />
-                                                    <DatePicker
+                                                <!--  From Date  -->
+                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                                    <Label
+                                                        Grid.Column="0"
+                                                        FontSize="12"
+                                                        Text="From"
+                                                        TextColor="{StaticResource TextSecondary}"
+                                                        VerticalOptions="Center"
+                                                        WidthRequest="40" />
+                                                    <Border
                                                         Grid.Column="1"
-                                                        Date="{Binding ToDate}"
-                                                        Format="MMM dd" />
+                                                        Padding="8,4"
+                                                        BackgroundColor="{StaticResource CardDark}"
+                                                        Stroke="{StaticResource Gray200}"
+                                                        StrokeShape="RoundRectangle 6"
+                                                        StrokeThickness="1">
+                                                        <DatePicker
+                                                            BackgroundColor="Transparent"
+                                                            Date="{Binding FromDate}"
+                                                            FontSize="12"
+                                                            TextColor="{StaticResource TextPrimary}" />
+                                                    </Border>
                                                 </Grid>
 
-                                                <Label
-                                                    FontAttributes="Bold"
-                                                    FontSize="14"
-                                                    Text="Quick Select"
-                                                    TextColor="{StaticResource TextPrimary}" />
+                                                <!--  To Date  -->
+                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                                    <Label
+                                                        Grid.Column="0"
+                                                        FontSize="12"
+                                                        Text="To"
+                                                        TextColor="{StaticResource TextSecondary}"
+                                                        VerticalOptions="Center"
+                                                        WidthRequest="40" />
+                                                    <Border
+                                                        Grid.Column="1"
+                                                        Padding="8,4"
+                                                        BackgroundColor="{StaticResource CardDark}"
+                                                        Stroke="{StaticResource Gray200}"
+                                                        StrokeShape="RoundRectangle 6"
+                                                        StrokeThickness="1">
+                                                        <DatePicker
+                                                            BackgroundColor="Transparent"
+                                                            Date="{Binding ToDate}"
+                                                            FontSize="12"
+                                                            TextColor="{StaticResource TextPrimary}" />
+                                                    </Border>
+                                                </Grid>
+                                            </VerticalStackLayout>
 
-                                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                                            <!--  Divider  -->
+                                            <BoxView
+                                                HeightRequest="1"
+                                                Opacity="0.5"
+                                                Color="{StaticResource Gray200}" />
+
+                                            <!--  Quick Filters  -->
+                                            <VerticalStackLayout Spacing="8">
+                                                <Label
+                                                    FontSize="11"
+                                                    Opacity="0.8"
+                                                    Text="QUICK FILTERS"
+                                                    TextColor="{StaticResource TextSecondary}" />
+
+                                                <Grid
+                                                    ColumnDefinitions="*,*,*"
+                                                    ColumnSpacing="6"
+                                                    RowDefinitions="Auto">
+
                                                     <Button
-                                                        Padding="0"
+                                                        Grid.Column="0"
+                                                        Padding="8,6"
                                                         BackgroundColor="{StaticResource CardDark}"
                                                         BorderColor="{StaticResource Gray200}"
                                                         BorderWidth="1"
                                                         Command="{Binding FilterExpensesTodayCommand}"
-                                                        CornerRadius="8"
-                                                        FontSize="11"
-                                                        HeightRequest="36"
+                                                        CornerRadius="6"
+                                                        FontSize="12"
                                                         Text="Today"
                                                         TextColor="{StaticResource TextPrimary}" />
 
                                                     <Button
                                                         Grid.Column="1"
-                                                        Padding="0"
+                                                        Padding="8,6"
                                                         BackgroundColor="{StaticResource CardDark}"
                                                         BorderColor="{StaticResource Gray200}"
                                                         BorderWidth="1"
                                                         Command="{Binding FilterExpensesWeekCommand}"
-                                                        CornerRadius="8"
-                                                        FontSize="11"
-                                                        HeightRequest="36"
+                                                        CornerRadius="6"
+                                                        FontSize="12"
                                                         Text="Week"
                                                         TextColor="{StaticResource TextPrimary}" />
 
                                                     <Button
                                                         Grid.Column="2"
-                                                        Padding="0"
+                                                        Padding="8,6"
                                                         BackgroundColor="{StaticResource CardDark}"
                                                         BorderColor="{StaticResource Gray200}"
                                                         BorderWidth="1"
                                                         Command="{Binding FilterExpensesMonthCommand}"
-                                                        CornerRadius="8"
-                                                        FontSize="11"
-                                                        HeightRequest="36"
+                                                        CornerRadius="6"
+                                                        FontSize="12"
                                                         Text="Month"
                                                         TextColor="{StaticResource TextPrimary}" />
                                                 </Grid>
                                             </VerticalStackLayout>
 
-                                            <BoxView HeightRequest="1" Color="{StaticResource Gray200}" />
+                                            <!--  Generate Button  -->
+                                            <Button
+                                                Padding="0,10"
+                                                BackgroundColor="{StaticResource Primary}"
+                                                Command="{Binding GenerateExpensesReportCommand}"
+                                                CornerRadius="8"
+                                                FontAttributes="Bold"
+                                                FontSize="14"
+                                                Text="Generate Report"
+                                                TextColor="White" />
 
-                                            <VerticalStackLayout Spacing="15">
-                                                <Button
-                                                    BackgroundColor="{StaticResource Primary}"
-                                                    Command="{Binding GenerateExpensesReportCommand}"
-                                                    CornerRadius="8"
-                                                    FontAttributes="Bold"
-                                                    HeightRequest="44"
-                                                    Text="Generate Report"
-                                                    TextColor="White" />
-
-                                                <Label
-                                                    HorizontalOptions="Center"
-                                                    Text="Export to Excel"
-                                                    TextColor="{StaticResource TextSecondary}"
-                                                    TextDecorations="Underline">
-                                                    <Label.GestureRecognizers>
-                                                        <TapGestureRecognizer Command="{Binding MenuReportExportToExcelCommand}" />
-                                                    </Label.GestureRecognizers>
-                                                </Label>
-                                            </VerticalStackLayout>
+                                            <!--  Export Link  -->
+                                            <Label
+                                                FontSize="12"
+                                                HorizontalOptions="Center"
+                                                Text="Export to Excel"
+                                                TextColor="{StaticResource TextSecondary}"
+                                                TextDecorations="Underline">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding ExportInventoryToExcelCommand}" />
+                                                </Label.GestureRecognizers>
+                                            </Label>
                                         </VerticalStackLayout>
-                                    </ScrollView>
-                                </Border>
+                                    </Border>
+                                </ScrollView>
 
                                 <Grid
                                     Grid.Column="1"
@@ -963,7 +1151,7 @@
                                             <VerticalStackLayout Grid.Column="0" Spacing="2">
                                                 <Label
                                                     FontSize="12"
-                                                    Text="Total Period Cost"
+                                                    Text="Total Period Expenses"
                                                     TextColor="{StaticResource TextSecondary}" />
                                                 <Label
                                                     FontAttributes="Bold"
@@ -1116,9 +1304,72 @@
                                                 </chart:SfCartesianChart>
                                             </Grid>
                                         </Border>
+                                        <Border Grid.Column="1" Style="{StaticResource CardBorder}">
+                                            <chart:SfCircularChart Margin="-30,0,0,0">
 
+                                                <chart:SfCircularChart.Resources>
+                                                    <DataTemplate x:Key="labelTemplate">
+                                                        <HorizontalStackLayout Spacing="4">
+                                                            <Label
+                                                                FontAttributes="Bold"
+                                                                FontSize="11"
+                                                                Text="{Binding Item.Reason}"
+                                                                TextColor="{StaticResource TextPrimary}" />
+                                                            <Label
+                                                                FontSize="11"
+                                                                Text=":"
+                                                                TextColor="{StaticResource TextPrimary}" />
+                                                            <Label
+                                                                FontSize="11"
+                                                                Text="{Binding Item.QuantityChange, StringFormat='{0:N0}'}"
+                                                                TextColor="{StaticResource TextPrimary}" />
+                                                        </HorizontalStackLayout>
+                                                    </DataTemplate>
+                                                </chart:SfCircularChart.Resources>
+
+                                                <chart:PieSeries
+                                                    EndAngle="360"
+                                                    ItemsSource="{Binding PieChartStockMovement}"
+                                                    LabelTemplate="{StaticResource labelTemplate}"
+                                                    Radius="0.75"
+                                                    ShowDataLabels="True"
+                                                    StartAngle="0"
+                                                    Stroke="{AppThemeBinding Light=White,
+                                                                             Dark=#1E1E1E}"
+                                                    StrokeWidth="1"
+                                                    XBindingPath="Reason"
+                                                    YBindingPath="QuantityChange">
+
+                                                    <chart:PieSeries.DataLabelSettings>
+                                                        <chart:CircularDataLabelSettings
+                                                            LabelPosition="Inside"
+                                                            SmartLabelAlignment="Shift"
+                                                            UseSeriesPalette="True">
+
+                                                            <chart:CircularDataLabelSettings.ConnectorLineSettings>
+                                                                <chart:ConnectorLineStyle Stroke="{AppThemeBinding Light=Gray, Dark=Gray}" StrokeWidth="1" />
+                                                            </chart:CircularDataLabelSettings.ConnectorLineSettings>
+
+                                                        </chart:CircularDataLabelSettings>
+                                                    </chart:PieSeries.DataLabelSettings>
+
+                                                    <chart:PieSeries.PaletteBrushes>
+                                                        <SolidColorBrush Color="#27ae60" />
+                                                        <SolidColorBrush Color="#c0392b" />
+                                                        <SolidColorBrush Color="#f39c12" />
+                                                        <SolidColorBrush Color="#7f8c8d" />
+                                                    </chart:PieSeries.PaletteBrushes>
+
+                                                </chart:PieSeries>
+
+                                                <chart:SfCircularChart.Legend>
+                                                    <chart:ChartLegend IsVisible="True" />
+                                                </chart:SfCircularChart.Legend>
+
+                                            </chart:SfCircularChart>
+                                        </Border>
                                         <Border
-                                            Grid.Column="1"
+                                            Grid.Column="2"
                                             Padding="10"
                                             Style="{StaticResource CardBorder}">
                                             <Grid RowDefinitions="Auto,*">
@@ -1185,8 +1436,17 @@
                                                                         Grid.Column="1"
                                                                         FontSize="11"
                                                                         LineBreakMode="TailTruncation"
-                                                                        Text="{Binding Reason}"
-                                                                        TextColor="{StaticResource TextSecondary}" />
+                                                                        TextColor="{StaticResource TextSecondary}">
+                                                                        <Label.FormattedText>
+                                                                            <FormattedString>
+                                                                                <Span Text="{Binding Reason}" />
+                                                                                <Span Text="(" />
+                                                                                <Span FontSize="8" Text="{Binding Remarks}" />
+                                                                                <Span Text=")" />
+                                                                            </FormattedString>
+                                                                        </Label.FormattedText>
+
+                                                                    </Label>
 
                                                                     <Label
                                                                         Grid.Row="0"
@@ -1218,67 +1478,7 @@
                                                 </sfListView:SfListView>
                                             </Grid>
                                         </Border>
-                                        <Border Grid.Column="2" Style="{StaticResource CardBorder}">
-                                            <chart:SfCircularChart Margin="-30,0,0,0">
 
-                                                <chart:SfCircularChart.Resources>
-                                                    <DataTemplate x:Key="labelTemplate">
-                                                        <HorizontalStackLayout Spacing="4">
-                                                            <Label
-                                                                FontAttributes="Bold"
-                                                                FontSize="11"
-                                                                Text="{Binding Item.Reason}"
-                                                                TextColor="{StaticResource TextPrimary}" />
-                                                            <Label
-                                                                FontSize="11"
-                                                                Text=":"
-                                                                TextColor="{StaticResource TextPrimary}" />
-                                                            <Label
-                                                                FontSize="11"
-                                                                Text="{Binding Item.QuantityChange, StringFormat='{0:N0}'}"
-                                                                TextColor="{StaticResource TextPrimary}" />
-                                                        </HorizontalStackLayout>
-                                                    </DataTemplate>
-                                                </chart:SfCircularChart.Resources>
-
-                                                <chart:PieSeries
-                                                    EndAngle="360"
-                                                    ItemsSource="{Binding PieChartStockMovement}"
-                                                    LabelTemplate="{StaticResource labelTemplate}"
-                                                    Radius="0.75"
-                                                    ShowDataLabels="True"
-                                                    StartAngle="0"
-                                                    Stroke="{AppThemeBinding Light=White,
-                                                                             Dark=#1E1E1E}"
-                                                    StrokeWidth="1"
-                                                    XBindingPath="Reason"
-                                                    YBindingPath="QuantityChange">
-
-                                                    <chart:PieSeries.DataLabelSettings>
-                                                        <chart:CircularDataLabelSettings LabelPosition="Outside" SmartLabelAlignment="Shift">
-
-                                                            <chart:CircularDataLabelSettings.ConnectorLineSettings>
-                                                                <chart:ConnectorLineStyle Stroke="{AppThemeBinding Light=Gray, Dark=Gray}" StrokeWidth="1" />
-                                                            </chart:CircularDataLabelSettings.ConnectorLineSettings>
-
-                                                        </chart:CircularDataLabelSettings>
-                                                    </chart:PieSeries.DataLabelSettings>
-
-                                                    <chart:PieSeries.PaletteBrushes>
-                                                        <SolidColorBrush Color="#27ae60" />
-                                                        <SolidColorBrush Color="#c0392b" />
-                                                        <SolidColorBrush Color="#f39c12" />
-                                                        <SolidColorBrush Color="#7f8c8d" />
-                                                    </chart:PieSeries.PaletteBrushes>
-
-                                                </chart:PieSeries>
-
-                                                <chart:SfCircularChart.Legend>
-                                                    <chart:ChartLegend IsVisible="True" />
-                                                </chart:SfCircularChart.Legend>
-
-                                            </chart:SfCircularChart>
-                                        </Border>
                                     </Grid>
                                 </Grid>
                             </Grid>

@@ -3,6 +3,8 @@
     x:Class="KusinaPOS.Views.DashboardPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
     xmlns:viewmodels="clr-namespace:KusinaPOS.ViewModel"
     BackgroundColor="{StaticResource BackgroundDark}">
 
@@ -253,15 +255,95 @@
                         Padding="15"
                         BackgroundColor="{StaticResource SurfaceDark}"
                         StrokeShape="RoundRectangle 15">
-                        <VerticalStackLayout Spacing="15">
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="12"
-                                Text="DAILY SALES OVERVIEW"
-                                TextColor="{StaticResource TextSecondary}" />
 
-                            <!--  Chart Placeholder - You'll need a charting library like LiveCharts or Microcharts  -->
-                            <Grid RowDefinitions="*,Auto" RowSpacing="10" />
+                        <VerticalStackLayout Spacing="15">
+
+                            <Grid ColumnDefinitions="Auto, Auto">
+                                <Label
+                                    Grid.Column="0"
+                                    FontAttributes="Bold"
+                                    FontSize="14"
+                                    Text="REVENUE TRENDS"
+                                    TextColor="{StaticResource TextSecondary}"
+                                    VerticalOptions="Center" />
+
+                                <buttons:SfRadioGroup
+                                    x:Name="FilterGroup"
+                                    Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    Spacing="15">
+                                    <buttons:SfRadioButton
+                                        StateChanged="OnFilterChanged"
+                                        Text="Hourly"
+                                        TextColor="{StaticResource TextPrimary}" />
+                                    <buttons:SfRadioButton
+                                        IsChecked="True"
+                                        StateChanged="OnFilterChanged"
+                                        Text="Daily"
+                                        TextColor="{StaticResource TextPrimary}" />
+                                    <buttons:SfRadioButton
+                                        StateChanged="OnFilterChanged"
+                                        Text="Weekly"
+                                        TextColor="{StaticResource TextPrimary}" />
+                                    <buttons:SfRadioButton
+                                        StateChanged="OnFilterChanged"
+                                        Text="Monthly"
+                                        TextColor="{StaticResource TextPrimary}" />
+                                </buttons:SfRadioGroup>
+                            </Grid>
+
+                            <chart:SfCartesianChart>
+
+                                <chart:SfCartesianChart.XAxes>
+                                    <chart:CategoryAxis>
+                                        <chart:CategoryAxis.LabelStyle>
+                                            <chart:ChartAxisLabelStyle FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                                        </chart:CategoryAxis.LabelStyle>
+                                        <chart:CategoryAxis.MajorGridLineStyle>
+                                            <chart:ChartLineStyle StrokeWidth="0" />
+                                        </chart:CategoryAxis.MajorGridLineStyle>
+                                    </chart:CategoryAxis>
+                                </chart:SfCartesianChart.XAxes>
+
+                                <chart:SfCartesianChart.YAxes>
+                                    <chart:NumericalAxis>
+                                        <chart:NumericalAxis.LabelStyle>
+                                            <chart:ChartAxisLabelStyle
+                                                FontSize="11"
+                                                LabelFormat="C2"
+                                                TextColor="{StaticResource TextSecondary}" />
+                                        </chart:NumericalAxis.LabelStyle>
+                                        <chart:NumericalAxis.MajorGridLineStyle>
+                                            <chart:ChartLineStyle Stroke="#333333" StrokeWidth="0.5" />
+                                        </chart:NumericalAxis.MajorGridLineStyle>
+                                    </chart:NumericalAxis>
+                                </chart:SfCartesianChart.YAxes>
+
+                                <chart:SfCartesianChart.Series>
+                                    <chart:ColumnSeries
+                                        ItemsSource="{Binding SalesChartData}"
+                                        PaletteBrushes="{Binding CustomBrushes}"
+                                        ShowDataLabels="True"
+                                        XBindingPath="Argument"
+                                        YBindingPath="Value">
+
+                                        <chart:ColumnSeries.CornerRadius>
+                                            <CornerRadius TopLeft="4" TopRight="4" />
+                                        </chart:ColumnSeries.CornerRadius>
+
+                                        <chart:ColumnSeries.DataLabelSettings>
+                                            <chart:CartesianDataLabelSettings LabelPlacement="Inner" UseSeriesPalette="False">
+                                                <chart:CartesianDataLabelSettings.LabelStyle>
+                                                    <chart:ChartDataLabelStyle FontSize="10" TextColor="{StaticResource PrimaryDarkText}" />
+                                                </chart:CartesianDataLabelSettings.LabelStyle>
+                                            </chart:CartesianDataLabelSettings>
+                                        </chart:ColumnSeries.DataLabelSettings>
+
+                                    </chart:ColumnSeries>
+                                </chart:SfCartesianChart.Series>
+
+                            </chart:SfCartesianChart>
+
                         </VerticalStackLayout>
                     </Border>
 

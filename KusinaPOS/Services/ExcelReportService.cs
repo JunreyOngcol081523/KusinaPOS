@@ -169,48 +169,49 @@ namespace KusinaPOS.Services
 
         // In ExcelExportService.cs
 
+        #region Menu excel report
         public async Task ExportMenuPerformanceAsync(
-                        List<AllMenuItemByCategory> volumeData, // Sheet 1 Data
-                        List<Top5MenuItem> salesData,           // Sheet 2 Data
-                        DateTime fromDate,
-                        DateTime toDate,
-                        string storeName = "Kusina POS")
-                            {
-                                await Task.Run(() =>
-                                {
-                                    using (ExcelEngine excelEngine = new ExcelEngine())
-                                    {
-                                        IApplication application = excelEngine.Excel;
-                                        application.DefaultVersion = ExcelVersion.Xlsx;
+                List<AllMenuItemByCategory> volumeData, // Sheet 1 Data
+                List<Top5MenuItem> salesData,           // Sheet 2 Data
+                DateTime fromDate,
+                DateTime toDate,
+                string storeName = "Kusina POS")
+        {
+            await Task.Run(() =>
+            {
+                using (ExcelEngine excelEngine = new ExcelEngine())
+                {
+                    IApplication application = excelEngine.Excel;
+                    application.DefaultVersion = ExcelVersion.Xlsx;
 
-                                        // Create a workbook with 2 Worksheets
-                                        IWorkbook workbook = application.Workbooks.Create(2);
+                    // Create a workbook with 2 Worksheets
+                    IWorkbook workbook = application.Workbooks.Create(2);
 
-                                        // ===========================================
-                                        // SHEET 1: VOLUME REPORT (Quantity)
-                                        // ===========================================
-                                        IWorksheet sheet1 = workbook.Worksheets[0];
-                                        sheet1.Name = "By Quantity"; // Tab Name
-                                        GenerateVolumeSheet(sheet1, volumeData, fromDate, toDate, storeName);
+                    // ===========================================
+                    // SHEET 1: VOLUME REPORT (Quantity)
+                    // ===========================================
+                    IWorksheet sheet1 = workbook.Worksheets[0];
+                    sheet1.Name = "By Quantity"; // Tab Name
+                    GenerateVolumeSheet(sheet1, volumeData, fromDate, toDate, storeName);
 
-                                        // ===========================================
-                                        // SHEET 2: SALES RANKING (Money)
-                                        // ===========================================
-                                        IWorksheet sheet2 = workbook.Worksheets[1];
-                                        sheet2.Name = "By Sales Value"; // Tab Name
-                                        GenerateSalesValueSheet(sheet2, salesData, fromDate, toDate, storeName);
+                    // ===========================================
+                    // SHEET 2: SALES RANKING (Money)
+                    // ===========================================
+                    IWorksheet sheet2 = workbook.Worksheets[1];
+                    sheet2.Name = "By Sales Value"; // Tab Name
+                    GenerateSalesValueSheet(sheet2, salesData, fromDate, toDate, storeName);
 
-                                        // Save
-                                        MemoryStream ms = new MemoryStream();
-                                        workbook.SaveAs(ms);
-                                        ms.Position = 0;
+                    // Save
+                    MemoryStream ms = new MemoryStream();
+                    workbook.SaveAs(ms);
+                    ms.Position = 0;
 
-                                        string fileName = $"MenuReport_Full_{fromDate:yyyyMMdd}-{toDate:yyyyMMdd}.xlsx";
-                                        SaveService saveService = new SaveService();
-                                        saveService.SaveAndView(fileName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", ms);
-                                    }
-                                });
-                            }
+                    string fileName = $"MenuReport_Full_{fromDate:yyyyMMdd}-{toDate:yyyyMMdd}.xlsx";
+                    SaveService saveService = new SaveService();
+                    saveService.SaveAndView(fileName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", ms);
+                }
+            });
+        }
 
         // Helper for Sheet 1 (Volume - What we wrote before)
         private void GenerateVolumeSheet(IWorksheet worksheet, List<AllMenuItemByCategory> data, DateTime fromDate, DateTime toDate, string storeName)
@@ -354,6 +355,147 @@ namespace KusinaPOS.Services
 
             worksheet.UsedRange.AutofitColumns();
             worksheet.Range["B1"].ColumnWidth = 35;
+        }
+        #endregion
+        public async Task ExportInventoryReportAsync(List<InventoryHistoryDto> history, DateTime fromDate, DateTime toDate, string storeName = "Kusina POS")
+        {
+            await Task.Run(() =>
+            {
+                using (ExcelEngine excelEngine = new ExcelEngine())
+                {
+                    IApplication application = excelEngine.Excel;
+                    application.DefaultVersion = ExcelVersion.Xlsx;
+
+                    IWorkbook workbook = application.Workbooks.Create(1);
+                    IWorksheet worksheet = workbook.Worksheets[0];
+                    worksheet.IsGridLinesVisible = false;
+
+                    // --- 1. HEADER INFO ---
+                    worksheet.Range["A1"].Text = storeName;
+                    worksheet.Range["A1"].CellStyle.Font.Bold = true;
+                    worksheet.Range["A1"].CellStyle.Font.Size = 18;
+
+                    worksheet.Range["A2"].Text = "Inventory History Report";
+                    worksheet.Range["A2"].CellStyle.Font.Size = 14;
+                    worksheet.Range["A2"].CellStyle.Font.Bold = true;
+
+                    worksheet.Range["A3"].Text = $"Period: {fromDate:MMM dd, yyyy} - {toDate:MMM dd, yyyy}";
+                    worksheet.Range["A3"].CellStyle.Font.Size = 11;
+
+
+                    // --- 2. TITLE SECTION ---
+                    // Merged across 7 columns (A to G) now
+                    worksheet.Range["A6:G6"].Merge();
+                    worksheet.Range["A6"].Text = "INVENTORY MOVEMENT";
+                    worksheet.Range["A6"].CellStyle.Font.Bold = true;
+                    worksheet.Range["A6"].CellStyle.Font.RGBColor = Color.FromArgb(0, 42, 118, 189);
+                    worksheet.Range["A6"].CellStyle.Font.Size = 20;
+                    worksheet.Range["A6"].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+
+                    // --- 3. SUMMARY SECTION ---
+                    int summaryRow = 8;
+                    worksheet.Range[$"A{summaryRow}"].Text = "Summary";
+                    worksheet.Range[$"A{summaryRow}"].CellStyle.Font.Bold = true;
+                    worksheet.Range[$"A{summaryRow}"].CellStyle.Font.Size = 14;
+
+                    summaryRow++;
+                    worksheet.Range[$"A{summaryRow}"].Text = "Total Transactions:";
+                    worksheet.Range[$"B{summaryRow}"].Number = history.Count;
+                    worksheet.Range[$"A{summaryRow}:B{summaryRow}"].CellStyle.Font.Bold = true;
+
+                    summaryRow++;
+                    worksheet.Range[$"A{summaryRow}"].Text = "Total Value Moved:";
+                    worksheet.Range[$"B{summaryRow}"].Number = (double)history.Sum(x => x.TransactionValue);
+                    worksheet.Range[$"B{summaryRow}"].NumberFormat = "₱#,##0.00";
+                    worksheet.Range[$"A{summaryRow}:B{summaryRow}"].CellStyle.Font.Bold = true;
+
+                    // --- 4. TABLE HEADERS ---
+                    int headerRow = summaryRow + 2;
+
+                    // Define Headers
+                    worksheet.Range[$"A{headerRow}"].Text = "DATE & TIME";
+                    worksheet.Range[$"B{headerRow}"].Text = "ITEM NAME";
+                    worksheet.Range[$"C{headerRow}"].Text = "REASON";
+                    worksheet.Range[$"D{headerRow}"].Text = "QTY CHANGE";
+                    worksheet.Range[$"E{headerRow}"].Text = "UNIT";
+                    worksheet.Range[$"F{headerRow}"].Text = "VALUE";
+                    worksheet.Range[$"G{headerRow}"].Text = "REMARKS"; // Added Remarks
+
+                    // Style Headers
+                    var headerRange = worksheet.Range[$"A{headerRow}:G{headerRow}"];
+                    headerRange.CellStyle.Color = Color.FromArgb(0, 42, 118, 189);
+                    headerRange.CellStyle.Font.Color = ExcelKnownColors.White;
+                    headerRange.CellStyle.Font.Bold = true;
+                    headerRange.CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+                    headerRange.CellStyle.VerticalAlignment = ExcelVAlign.VAlignCenter;
+
+                    worksheet.Range[$"A{headerRow}"].ColumnWidth = 22;
+                    worksheet.Range[$"B{headerRow}"].ColumnWidth = 25;
+                    worksheet.Range[$"G{headerRow}"].ColumnWidth = 30; // Remarks wider
+
+                    // --- 5. DATA ROWS ---
+                    int currentRow = headerRow + 1;
+                    foreach (var item in history)
+                    {
+                        // Col A: Date
+                        worksheet.Range[$"A{currentRow}"].DateTime = item.TransactionDate;
+                        worksheet.Range[$"A{currentRow}"].NumberFormat = "MMM dd, yyyy hh:mm AM/PM";
+
+                        // Col B: Item
+                        worksheet.Range[$"B{currentRow}"].Text = item.ItemName;
+
+                        // Col C: Reason
+                        worksheet.Range[$"C{currentRow}"].Text = item.Reason;
+
+                        // Col D: Qty Change
+                        worksheet.Range[$"D{currentRow}"].Number = (double)item.QuantityChange;
+                        worksheet.Range[$"D{currentRow}"].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+
+                        // Col E: Unit
+                        worksheet.Range[$"E{currentRow}"].Text = item.Unit;
+                        worksheet.Range[$"E{currentRow}"].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+
+                        // Col F: Transaction Value
+                        worksheet.Range[$"F{currentRow}"].Number = (double)item.TransactionValue;
+                        worksheet.Range[$"F{currentRow}"].NumberFormat = "₱#,##0.00";
+
+                        // Col G: Remarks
+                        worksheet.Range[$"G{currentRow}"].Text = item.Remarks ?? "";
+                        worksheet.Range[$"G{currentRow}"].WrapText = true; // Enable wrapping for long remarks
+
+                        currentRow++;
+                    }
+
+                    // --- 6. FINAL FORMATTING ---
+                    int lastDataRow = currentRow - 1;
+
+                    // Apply Borders
+                    var dataRange = worksheet.Range[$"A{headerRow}:G{lastDataRow}"];
+                    dataRange.CellStyle.Borders[ExcelBordersIndex.EdgeTop].LineStyle = ExcelLineStyle.Thin;
+                    dataRange.CellStyle.Borders[ExcelBordersIndex.EdgeBottom].LineStyle = ExcelLineStyle.Thin;
+                    dataRange.CellStyle.Borders[ExcelBordersIndex.EdgeLeft].LineStyle = ExcelLineStyle.Thin;
+                    dataRange.CellStyle.Borders[ExcelBordersIndex.EdgeRight].LineStyle = ExcelLineStyle.Thin;
+                    dataRange.CellStyle.Borders.Color = ExcelKnownColors.Grey_25_percent;
+
+                    // Set Font
+                    worksheet.Range[$"A1:G{lastDataRow}"].CellStyle.Font.FontName = "Arial";
+
+                    // Auto Fit (Except Remarks which we wrapped)
+                    worksheet.Range["A:F"].AutofitColumns();
+
+                    // Save
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        workbook.SaveAs(ms);
+                        ms.Position = 0;
+
+                        string fileName = $"InventoryReport_{fromDate:yyyyMMdd}-{toDate:yyyyMMdd}.xlsx";
+
+                        SaveService saveService = new SaveService();
+                        saveService.SaveAndView(fileName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", ms);
+                    }
+                }
+            });
         }
     }
 }

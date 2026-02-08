@@ -607,6 +607,56 @@ namespace KusinaPOS.ViewModel
             }
         }
         #endregion
+        #region Expenses Report - Excel Export
+        [RelayCommand]
+        private async Task ExportInventoryToExcelAsync()
+        {
+            // 1. Check if there is data to export (Optional: check your UI collection)
+            if (InventoryHistory == null || !InventoryHistory.Any())
+            {
+                await PageHelper.DisplayAlertAsync("No Data", "No inventory records to export.", "OK");
+                return;
+            }
+
+            try
+            {
+                IsBusy = true;
+
+                // 2. Get Store Name
+                var storeName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
+
+                // 3. Fetch the exact data for the report
+                // We re-fetch here to ensure the export matches the Date Range and Filter selected
+                // Note: passing 'SelectedFilterReason' (e.g., "Waste", "Stock In" or null)
+                var reportData = await _inventoryReportService.GetInventoryReportAsync(FromDate, ToDate);
+
+                if (!reportData.Any())
+                {
+                    await PageHelper.DisplayAlertAsync("No Data", "No records found for the selected range.", "OK");
+                    return;
+                }
+
+                // 4. Generate and Open the Excel file
+                await _excelExportService.ExportInventoryReportAsync(
+                    reportData,
+                    FromDate,
+                    ToDate, // Pass this so the Excel header shows "Filter: Waste"
+                    storeName
+                );
+
+                await PageHelper.DisplayAlertAsync("Success", "Inventory report exported successfully!", "OK");
+            }
+            catch (Exception ex)
+            {
+                await PageHelper.DisplayAlertAsync("Error", $"Failed to export: {ex.Message}", "OK");
+                System.Diagnostics.Debug.WriteLine($"Export error: {ex}");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+        #endregion
         #endregion
     }
 }
