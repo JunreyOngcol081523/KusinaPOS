@@ -966,321 +966,229 @@
 
                         <Grid
                             Padding="20"
-                            RowDefinitions="Auto,*"
-                            RowSpacing="20">
+                            RowDefinitions="Auto, Auto, *"
+                            RowSpacing="15">
 
-                            <VerticalStackLayout Grid.Row="0" Spacing="8">
-                                <Label
-                                    FontAttributes="Bold"
-                                    FontSize="Large"
-                                    Text="Expenses Report"
-                                    TextColor="{StaticResource TextPrimary}" />
-                                <Label
-                                    FontSize="Small"
-                                    Text="Track your inventory costs and supplier trends"
-                                    TextColor="{StaticResource TextSecondary}" />
-                            </VerticalStackLayout>
+                            <Border
+                                Grid.Row="0"
+                                Padding="12,8"
+                                BackgroundColor="{StaticResource SurfaceDark}"
+                                Stroke="{StaticResource Gray200}"
+                                StrokeShape="RoundRectangle 8">
+                                <Grid ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="15">
+
+                                    <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="16"
+                                            Text="Expenses &amp; Inventory"
+                                            TextColor="{StaticResource TextPrimary}" />
+                                        <Label
+                                            FontSize="11"
+                                            Text="Track costs &amp; waste"
+                                            TextColor="{StaticResource TextSecondary}" />
+                                    </VerticalStackLayout>
+
+                                    <HorizontalStackLayout
+                                        Grid.Column="1"
+                                        Spacing="10"
+                                        VerticalOptions="Center">
+
+                                        <Border
+                                            Padding="8,0"
+                                            BackgroundColor="{StaticResource CardDark}"
+                                            HeightRequest="35"
+                                            StrokeShape="RoundRectangle 4">
+                                            <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                                                <Label
+                                                    FontSize="11"
+                                                    Text="From:"
+                                                    TextColor="{StaticResource TextSecondary}"
+                                                    VerticalOptions="Center" />
+                                                <DatePicker
+                                                    BackgroundColor="Transparent"
+                                                    Date="{Binding FromDate}"
+                                                    FontSize="12"
+                                                    TextColor="{StaticResource TextPrimary}" />
+                                            </HorizontalStackLayout>
+                                        </Border>
+
+                                        <Border
+                                            Padding="8,0"
+                                            BackgroundColor="{StaticResource CardDark}"
+                                            HeightRequest="35"
+                                            StrokeShape="RoundRectangle 4">
+                                            <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                                                <Label
+                                                    FontSize="11"
+                                                    Text="To:"
+                                                    TextColor="{StaticResource TextSecondary}"
+                                                    VerticalOptions="Center" />
+                                                <DatePicker
+                                                    BackgroundColor="Transparent"
+                                                    Date="{Binding ToDate}"
+                                                    FontSize="12"
+                                                    TextColor="{StaticResource TextPrimary}" />
+                                            </HorizontalStackLayout>
+                                        </Border>
+
+                                        <Button
+                                            Padding="10,0"
+                                            BackgroundColor="{StaticResource CardDark}"
+                                            BorderColor="{StaticResource Gray200}"
+                                            BorderWidth="1"
+                                            Command="{Binding FilterExpensesTodayCommand}"
+                                            CornerRadius="4"
+                                            FontSize="11"
+                                            HeightRequest="35"
+                                            Text="Today"
+                                            TextColor="{StaticResource TextPrimary}" />
+
+                                        <Button
+                                            Padding="10,0"
+                                            BackgroundColor="{StaticResource CardDark}"
+                                            BorderColor="{StaticResource Gray200}"
+                                            BorderWidth="1"
+                                            Command="{Binding FilterExpensesWeekCommand}"
+                                            CornerRadius="4"
+                                            FontSize="11"
+                                            HeightRequest="35"
+                                            Text="Week"
+                                            TextColor="{StaticResource TextPrimary}" />
+
+                                        <Button
+                                            Padding="10,0"
+                                            BackgroundColor="{StaticResource CardDark}"
+                                            BorderColor="{StaticResource Gray200}"
+                                            BorderWidth="1"
+                                            Command="{Binding FilterExpensesMonthCommand}"
+                                            CornerRadius="4"
+                                            FontSize="11"
+                                            HeightRequest="35"
+                                            Text="Month"
+                                            TextColor="{StaticResource TextPrimary}" />
+
+                                        <Button
+                                            Margin="10,0,0,0"
+                                            Padding="15,0"
+                                            BackgroundColor="{StaticResource Primary}"
+                                            Command="{Binding GenerateExpensesReportCommand}"
+                                            CornerRadius="6"
+                                            FontAttributes="Bold"
+                                            FontSize="12"
+                                            HeightRequest="35"
+                                            Text="Generate"
+                                            TextColor="White" />
+                                    </HorizontalStackLayout>
+
+                                    <ImageButton
+                                        Grid.Column="3"
+                                        Command="{Binding ExportInventoryToExcelCommand}"
+                                        HeightRequest="30"
+                                        Source="export_excel.png"
+                                        WidthRequest="30" />
+                                </Grid>
+                            </Border>
 
                             <Grid
                                 Grid.Row="1"
-                                ColumnDefinitions="300,*"
-                                ColumnSpacing="20">
-
-                                <!--  UNIFIED FILTER CARD - INVENTORY  -->
-                                <ScrollView Grid.Column="0">
-                                    <Border
-                                        Padding="16"
-                                        BackgroundColor="{StaticResource SurfaceDark}"
-                                        Stroke="{StaticResource Gray200}"
-                                        StrokeShape="RoundRectangle 12"
-                                        StrokeThickness="1">
-                                        <VerticalStackLayout Spacing="12">
-
-                                            <!--  Header  -->
-                                            <Label
-                                                FontAttributes="Bold"
-                                                FontSize="15"
-                                                Text="Date Range Filter"
-                                                TextColor="{StaticResource TextPrimary}" />
-
-                                            <!--  Date Range Section  -->
-                                            <VerticalStackLayout Spacing="10">
-
-                                                <!--  From Date  -->
-                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                                                    <Label
-                                                        Grid.Column="0"
-                                                        FontSize="12"
-                                                        Text="From"
-                                                        TextColor="{StaticResource TextSecondary}"
-                                                        VerticalOptions="Center"
-                                                        WidthRequest="40" />
-                                                    <Border
-                                                        Grid.Column="1"
-                                                        Padding="8,4"
-                                                        BackgroundColor="{StaticResource CardDark}"
-                                                        Stroke="{StaticResource Gray200}"
-                                                        StrokeShape="RoundRectangle 6"
-                                                        StrokeThickness="1">
-                                                        <DatePicker
-                                                            BackgroundColor="Transparent"
-                                                            Date="{Binding FromDate}"
-                                                            FontSize="12"
-                                                            TextColor="{StaticResource TextPrimary}" />
-                                                    </Border>
-                                                </Grid>
-
-                                                <!--  To Date  -->
-                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                                                    <Label
-                                                        Grid.Column="0"
-                                                        FontSize="12"
-                                                        Text="To"
-                                                        TextColor="{StaticResource TextSecondary}"
-                                                        VerticalOptions="Center"
-                                                        WidthRequest="40" />
-                                                    <Border
-                                                        Grid.Column="1"
-                                                        Padding="8,4"
-                                                        BackgroundColor="{StaticResource CardDark}"
-                                                        Stroke="{StaticResource Gray200}"
-                                                        StrokeShape="RoundRectangle 6"
-                                                        StrokeThickness="1">
-                                                        <DatePicker
-                                                            BackgroundColor="Transparent"
-                                                            Date="{Binding ToDate}"
-                                                            FontSize="12"
-                                                            TextColor="{StaticResource TextPrimary}" />
-                                                    </Border>
-                                                </Grid>
-                                            </VerticalStackLayout>
-
-                                            <!--  Divider  -->
-                                            <BoxView
-                                                HeightRequest="1"
-                                                Opacity="0.5"
-                                                Color="{StaticResource Gray200}" />
-
-                                            <!--  Quick Filters  -->
-                                            <VerticalStackLayout Spacing="8">
-                                                <Label
-                                                    FontSize="11"
-                                                    Opacity="0.8"
-                                                    Text="QUICK FILTERS"
-                                                    TextColor="{StaticResource TextSecondary}" />
-
-                                                <Grid
-                                                    ColumnDefinitions="*,*,*"
-                                                    ColumnSpacing="6"
-                                                    RowDefinitions="Auto">
-
-                                                    <Button
-                                                        Grid.Column="0"
-                                                        Padding="8,6"
-                                                        BackgroundColor="{StaticResource CardDark}"
-                                                        BorderColor="{StaticResource Gray200}"
-                                                        BorderWidth="1"
-                                                        Command="{Binding FilterExpensesTodayCommand}"
-                                                        CornerRadius="6"
-                                                        FontSize="12"
-                                                        Text="Today"
-                                                        TextColor="{StaticResource TextPrimary}" />
-
-                                                    <Button
-                                                        Grid.Column="1"
-                                                        Padding="8,6"
-                                                        BackgroundColor="{StaticResource CardDark}"
-                                                        BorderColor="{StaticResource Gray200}"
-                                                        BorderWidth="1"
-                                                        Command="{Binding FilterExpensesWeekCommand}"
-                                                        CornerRadius="6"
-                                                        FontSize="12"
-                                                        Text="Week"
-                                                        TextColor="{StaticResource TextPrimary}" />
-
-                                                    <Button
-                                                        Grid.Column="2"
-                                                        Padding="8,6"
-                                                        BackgroundColor="{StaticResource CardDark}"
-                                                        BorderColor="{StaticResource Gray200}"
-                                                        BorderWidth="1"
-                                                        Command="{Binding FilterExpensesMonthCommand}"
-                                                        CornerRadius="6"
-                                                        FontSize="12"
-                                                        Text="Month"
-                                                        TextColor="{StaticResource TextPrimary}" />
-                                                </Grid>
-                                            </VerticalStackLayout>
-
-                                            <!--  Generate Button  -->
-                                            <Button
-                                                Padding="0,10"
-                                                BackgroundColor="{StaticResource Primary}"
-                                                Command="{Binding GenerateExpensesReportCommand}"
-                                                CornerRadius="8"
-                                                FontAttributes="Bold"
-                                                FontSize="14"
-                                                Text="Generate Report"
-                                                TextColor="White" />
-
-                                            <!--  Export Link  -->
-                                            <Label
-                                                FontSize="12"
-                                                HorizontalOptions="Center"
-                                                Text="Export to Excel"
-                                                TextColor="{StaticResource TextSecondary}"
-                                                TextDecorations="Underline">
-                                                <Label.GestureRecognizers>
-                                                    <TapGestureRecognizer Command="{Binding ExportInventoryToExcelCommand}" />
-                                                </Label.GestureRecognizers>
-                                            </Label>
-                                        </VerticalStackLayout>
-                                    </Border>
-                                </ScrollView>
-
-                                <Grid
+                                ColumnDefinitions="*,*,*"
+                                ColumnSpacing="15">
+                                <Border
+                                    Grid.Column="0"
+                                    Padding="15"
+                                    BackgroundColor="{StaticResource SurfaceDark}"
+                                    Stroke="{StaticResource Gray200}"
+                                    StrokeShape="RoundRectangle 12">
+                                    <VerticalStackLayout Spacing="5">
+                                        <Label
+                                            FontSize="11"
+                                            Text="TOTAL EXPENSES"
+                                            TextColor="{StaticResource TextSecondary}" />
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="20"
+                                            Text="{Binding TotalInventoryExpense, StringFormat='₱{0:N2}'}"
+                                            TextColor="{StaticResource TextPrimary}" />
+                                    </VerticalStackLayout>
+                                </Border>
+                                <Border
                                     Grid.Column="1"
-                                    RowDefinitions="Auto,*"
-                                    RowSpacing="15">
+                                    Padding="15"
+                                    BackgroundColor="{StaticResource SurfaceDark}"
+                                    Stroke="{StaticResource Gray200}"
+                                    StrokeShape="RoundRectangle 12">
+                                    <VerticalStackLayout Spacing="5">
+                                        <Label
+                                            FontSize="11"
+                                            Text="TOTAL WASTE VALUE"
+                                            TextColor="{StaticResource TextSecondary}" />
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="20"
+                                            Text="{Binding TotalValueOfWasteItems, StringFormat='₱{0:N2}'}"
+                                            TextColor="#D32F2F" />
+                                    </VerticalStackLayout>
+                                </Border>
+                                <Border
+                                    Grid.Column="2"
+                                    Padding="15"
+                                    BackgroundColor="{StaticResource SurfaceDark}"
+                                    Stroke="{StaticResource Gray200}"
+                                    StrokeShape="RoundRectangle 12">
+                                    <VerticalStackLayout Spacing="5">
+                                        <Label
+                                            FontSize="11"
+                                            Text="CRITICAL STOCK ITEMS"
+                                            TextColor="{StaticResource TextSecondary}" />
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="20"
+                                            Text="{Binding LowStockItems.Count, StringFormat='{0} Items'}"
+                                            TextColor="#F57C00" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </Grid>
 
-                                    <Border
-                                        Grid.Row="0"
-                                        Padding="15"
-                                        Style="{StaticResource CardBorder}">
-                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="20">
-                                            <VerticalStackLayout Grid.Column="0" Spacing="4">
-                                                <Label
-                                                    FontSize="12"
-                                                    Text="Total Period Expenses"
-                                                    TextColor="{StaticResource TextSecondary}" />
-                                                <Label
-                                                    Margin="0,0,0,10"
-                                                    FontAttributes="Bold"
-                                                    FontSize="18"
-                                                    Text="{Binding TotalInventoryExpense, StringFormat='₱{0:N2}'}"
-                                                    TextColor="{StaticResource TextPrimary}" />
-                                                <Label
-                                                    FontSize="12"
-                                                    Text="Total Value of Waste Items"
-                                                    TextColor="{StaticResource TextSecondary}" />
-                                                <Label
-                                                    FontAttributes="Bold"
-                                                    FontSize="18"
-                                                    Text="{Binding TotalValueOfWasteItems, StringFormat='₱{0:N2}'}"
-                                                    TextColor="{StaticResource Secondary}" />
-                                            </VerticalStackLayout>
-                                            <VerticalStackLayout
-                                                Grid.Column="1"
-                                                Margin="0,20,0,0"
-                                                Spacing="10">
+                            <tabView:SfTabView
+                                Grid.Row="2"
+                                IndicatorPlacement="Fill"
+                                TabBarHeight="40"
+                                TabBarPlacement="Top">
 
-                                                <Label
-                                                    FontAttributes="Bold"
-                                                    FontSize="16"
-                                                    Text="Low Stock Alerts"
-                                                    TextColor="{StaticResource TextPrimary}" />
-
-                                                <CollectionView
-                                                    HeightRequest="100"
-                                                    ItemsSource="{Binding LowStockItems}"
-                                                    SelectionMode="None">
-
-                                                    <CollectionView.EmptyView>
-                                                        <Label
-                                                            HorizontalOptions="Center"
-                                                            Text="No items are low on stock."
-                                                            TextColor="{StaticResource TextSecondary}"
-                                                            VerticalOptions="Center" />
-                                                    </CollectionView.EmptyView>
-
-                                                    <CollectionView.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <Grid
-                                                                Padding="0,6"
-                                                                ColumnDefinitions="20, *"
-                                                                RowDefinitions="Auto, 1">
-
-                                                                <Label
-                                                                    Grid.Column="0"
-                                                                    FontFamily="MaterialAssets"
-                                                                    FontSize="14"
-                                                                    HorizontalOptions="Start"
-                                                                    Text="&#xe701;"
-                                                                    TextColor="#D32F2F"
-                                                                    VerticalOptions="Center" />
-
-                                                                <Label
-                                                                    Grid.Column="1"
-                                                                    FontSize="12"
-                                                                    LineBreakMode="TailTruncation"
-                                                                    VerticalOptions="Center">
-                                                                    <Label.FormattedText>
-                                                                        <FormattedString>
-                                                                            <Span
-                                                                                FontAttributes="Bold"
-                                                                                Text="{Binding Name}"
-                                                                                TextColor="{StaticResource TextPrimary}" />
-
-                                                                            <Span Text=" - (" TextColor="{StaticResource TextSecondary}" />
-
-                                                                            <Span
-                                                                                FontAttributes="Bold"
-                                                                                Text="{Binding QuantityOnHand, StringFormat='{0:N0}'}"
-                                                                                TextColor="#D32F2F" />
-
-                                                                            <Span Text="{Binding Unit, StringFormat=' {0} left)'}" TextColor="{StaticResource TextSecondary}" />
-                                                                        </FormattedString>
-                                                                    </Label.FormattedText>
-                                                                </Label>
-
-                                                                <BoxView
-                                                                    Grid.Row="1"
-                                                                    Grid.ColumnSpan="2"
-                                                                    Margin="0,4,0,0"
-                                                                    HeightRequest="5"
-                                                                    Color="Black" />
-                                                            </Grid>
-                                                        </DataTemplate>
-                                                    </CollectionView.ItemTemplate>
-                                                </CollectionView>
-                                            </VerticalStackLayout>
-
-                                        </Grid>
-                                    </Border>
-
+                                <tabView:SfTabItem
+                                    FontSize="14"
+                                    Header="Analytics Charts"
+                                    TextColor="{StaticResource TextPrimary}">
                                     <Grid
-                                        Grid.Row="1"
-                                        ColumnDefinitions="*,*,*"
+                                        Padding="0,15,0,0"
+                                        ColumnDefinitions="6*, 4*"
                                         ColumnSpacing="15">
 
                                         <Border
                                             Grid.Column="0"
                                             Padding="10"
-                                            Style="{StaticResource CardBorder}">
-                                            <Grid RowDefinitions="Auto,*">
+                                            BackgroundColor="{StaticResource SurfaceDark}"
+                                            Stroke="{StaticResource Gray200}"
+                                            StrokeShape="RoundRectangle 12">
+                                            <Grid RowDefinitions="Auto, *">
                                                 <Label
                                                     Grid.Row="0"
-                                                    Margin="5,0,0,10"
+                                                    Margin="0,0,0,5"
                                                     FontAttributes="Bold"
-                                                    FontSize="15"
-                                                    Text="Weekly Expenses Trend"
+                                                    FontSize="14"
+                                                    Text="Expenses Trend"
                                                     TextColor="{StaticResource TextPrimary}" />
-
                                                 <chart:SfCartesianChart Grid.Row="1">
-
                                                     <chart:SfCartesianChart.XAxes>
-                                                        <chart:CategoryAxis LabelPlacement="BetweenTicks" ShowMajorGridLines="False">
+                                                        <chart:CategoryAxis ShowMajorGridLines="False">
                                                             <chart:CategoryAxis.LabelStyle>
-                                                                <chart:ChartAxisLabelStyle
-                                                                    FontAttributes="Bold"
-                                                                    FontSize="12"
-                                                                    TextColor="{StaticResource TextSecondary}" />
+                                                                <chart:ChartAxisLabelStyle FontSize="11" TextColor="{StaticResource TextSecondary}" />
                                                             </chart:CategoryAxis.LabelStyle>
                                                         </chart:CategoryAxis>
                                                     </chart:SfCartesianChart.XAxes>
-
                                                     <chart:SfCartesianChart.YAxes>
-                                                        <chart:NumericalAxis Minimum="0" ShowMajorGridLines="True">
+                                                        <chart:NumericalAxis ShowMajorGridLines="True">
                                                             <chart:NumericalAxis.LabelStyle>
                                                                 <chart:ChartAxisLabelStyle
                                                                     FontSize="11"
@@ -1289,99 +1197,70 @@
                                                             </chart:NumericalAxis.LabelStyle>
                                                         </chart:NumericalAxis>
                                                     </chart:SfCartesianChart.YAxes>
-
                                                     <chart:ColumnSeries
-                                                        EnableTooltip="True"
                                                         Fill="{StaticResource Primary}"
                                                         ItemsSource="{Binding TrendData}"
                                                         ShowDataLabels="True"
                                                         XBindingPath="DateLabel"
                                                         YBindingPath="Amount">
-
                                                         <chart:ColumnSeries.DataLabelSettings>
-                                                            <chart:CartesianDataLabelSettings BarAlignment="Top" LabelPlacement="Outer">
-                                                                <chart:CartesianDataLabelSettings.LabelStyle>
-                                                                    <chart:ChartDataLabelStyle
-                                                                        FontSize="10"
-                                                                        LabelFormat="C0"
-                                                                        TextColor="{StaticResource TextSecondary}" />
-                                                                </chart:CartesianDataLabelSettings.LabelStyle>
-                                                            </chart:CartesianDataLabelSettings>
+                                                            <chart:CartesianDataLabelSettings LabelPlacement="Outer" />
                                                         </chart:ColumnSeries.DataLabelSettings>
-
                                                     </chart:ColumnSeries>
                                                 </chart:SfCartesianChart>
                                             </Grid>
                                         </Border>
-                                        <Border Grid.Column="1" Style="{StaticResource CardBorder}">
-                                            <chart:SfCircularChart Margin="-30,0,0,0">
 
-                                                <chart:SfCircularChart.Resources>
-                                                    <DataTemplate x:Key="labelTemplate">
-                                                        <HorizontalStackLayout Spacing="4">
-                                                            <Label
-                                                                FontAttributes="Bold"
-                                                                FontSize="11"
-                                                                Text="{Binding Item.Reason}"
-                                                                TextColor="{StaticResource TextPrimary}" />
-                                                            <Label
-                                                                FontSize="11"
-                                                                Text=":"
-                                                                TextColor="{StaticResource TextPrimary}" />
-                                                            <Label
-                                                                FontSize="11"
-                                                                Text="{Binding Item.QuantityChange, StringFormat='{0:N0}'}"
-                                                                TextColor="{StaticResource TextPrimary}" />
-                                                        </HorizontalStackLayout>
-                                                    </DataTemplate>
-                                                </chart:SfCircularChart.Resources>
-
-                                                <chart:PieSeries
-                                                    EndAngle="360"
-                                                    ItemsSource="{Binding PieChartStockMovement}"
-                                                    LabelTemplate="{StaticResource labelTemplate}"
-                                                    Radius="0.75"
-                                                    ShowDataLabels="True"
-                                                    StartAngle="0"
-                                                    Stroke="{AppThemeBinding Light=White,
-                                                                             Dark=#1E1E1E}"
-                                                    StrokeWidth="1"
-                                                    XBindingPath="Reason"
-                                                    YBindingPath="QuantityChange">
-
-                                                    <chart:PieSeries.DataLabelSettings>
-                                                        <chart:CircularDataLabelSettings
-                                                            LabelPosition="Inside"
-                                                            SmartLabelAlignment="Shift"
-                                                            UseSeriesPalette="True">
-
-                                                            <chart:CircularDataLabelSettings.ConnectorLineSettings>
-                                                                <chart:ConnectorLineStyle Stroke="{AppThemeBinding Light=Gray, Dark=Gray}" StrokeWidth="1" />
-                                                            </chart:CircularDataLabelSettings.ConnectorLineSettings>
-
-                                                        </chart:CircularDataLabelSettings>
-                                                    </chart:PieSeries.DataLabelSettings>
-
-                                                    <chart:PieSeries.PaletteBrushes>
-                                                        <SolidColorBrush Color="#27ae60" />
-                                                        <SolidColorBrush Color="#c0392b" />
-                                                        <SolidColorBrush Color="#f39c12" />
-                                                        <SolidColorBrush Color="#7f8c8d" />
-                                                    </chart:PieSeries.PaletteBrushes>
-
-                                                </chart:PieSeries>
-
-                                                <chart:SfCircularChart.Legend>
-                                                    <chart:ChartLegend IsVisible="True" />
-                                                </chart:SfCircularChart.Legend>
-
-                                            </chart:SfCircularChart>
-                                        </Border>
                                         <Border
-                                            Grid.Column="2"
+                                            Grid.Column="1"
                                             Padding="10"
-                                            Style="{StaticResource CardBorder}">
-                                            <Grid RowDefinitions="Auto,*">
+                                            BackgroundColor="{StaticResource SurfaceDark}"
+                                            Stroke="{StaticResource Gray200}"
+                                            StrokeShape="RoundRectangle 12">
+                                            <Grid RowDefinitions="Auto, *">
+                                                <Label
+                                                    Grid.Row="0"
+                                                    Margin="0,0,0,5"
+                                                    FontAttributes="Bold"
+                                                    FontSize="14"
+                                                    Text="Stock Movement Distribution"
+                                                    TextColor="{StaticResource TextPrimary}" />
+                                                <chart:SfCircularChart Grid.Row="1">
+                                                    <chart:PieSeries
+                                                        ItemsSource="{Binding PieChartStockMovement}"
+                                                        Radius="0.8"
+                                                        ShowDataLabels="True"
+                                                        XBindingPath="Reason"
+                                                        YBindingPath="QuantityChange">
+                                                        <chart:PieSeries.DataLabelSettings>
+                                                            <chart:CircularDataLabelSettings LabelPosition="Outside" SmartLabelAlignment="Shift" />
+                                                        </chart:PieSeries.DataLabelSettings>
+                                                    </chart:PieSeries>
+                                                    <chart:SfCircularChart.Legend>
+                                                        <chart:ChartLegend Placement="Bottom" />
+                                                    </chart:SfCircularChart.Legend>
+                                                </chart:SfCircularChart>
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+                                </tabView:SfTabItem>
+
+                                <tabView:SfTabItem
+                                    FontSize="14"
+                                    Header="Transaction Records"
+                                    TextColor="{StaticResource TextPrimary}">
+                                    <Grid
+                                        Padding="0,15,0,0"
+                                        ColumnDefinitions="7*, 3*"
+                                        ColumnSpacing="15">
+
+                                        <Border
+                                            Grid.Column="0"
+                                            Padding="10"
+                                            BackgroundColor="{StaticResource SurfaceDark}"
+                                            Stroke="{StaticResource Gray200}"
+                                            StrokeShape="RoundRectangle 12">
+                                            <Grid RowDefinitions="Auto, *">
                                                 <Label
                                                     Grid.Row="0"
                                                     Margin="5,0,0,10"
@@ -1389,7 +1268,6 @@
                                                     FontSize="15"
                                                     Text="Recent Transactions"
                                                     TextColor="{StaticResource TextPrimary}" />
-
                                                 <sfListView:SfListView
                                                     Grid.Row="1"
                                                     ItemSpacing="5"
@@ -1400,24 +1278,21 @@
                                                             <Border
                                                                 Margin="0,0,0,5"
                                                                 Padding="10,8"
-                                                                BackgroundColor="{AppThemeBinding Light=#F5F5F5,
-                                                                                                  Dark=#2C2C2C}"
+                                                                BackgroundColor="{StaticResource CardDark}"
                                                                 StrokeThickness="0">
                                                                 <Border.StrokeShape>
                                                                     <RoundRectangle CornerRadius="6" />
                                                                 </Border.StrokeShape>
-
                                                                 <Grid
                                                                     ColumnDefinitions="Auto, *, Auto"
                                                                     RowDefinitions="Auto, Auto"
                                                                     RowSpacing="2">
-
                                                                     <Border
                                                                         Grid.RowSpan="2"
                                                                         Grid.Column="0"
                                                                         Margin="0,0,10,0"
                                                                         Padding="8,4"
-                                                                        BackgroundColor="{StaticResource CardDark}"
+                                                                        BackgroundColor="{StaticResource SurfaceDark}"
                                                                         StrokeThickness="0"
                                                                         VerticalOptions="Center">
                                                                         <Border.StrokeShape>
@@ -1430,7 +1305,6 @@
                                                                             Text="{Binding TransactionDate, StringFormat='{0:MMM dd}'}"
                                                                             TextColor="{StaticResource TextSecondary}" />
                                                                     </Border>
-
                                                                     <Label
                                                                         Grid.Row="0"
                                                                         Grid.Column="1"
@@ -1439,7 +1313,6 @@
                                                                         LineBreakMode="TailTruncation"
                                                                         Text="{Binding ItemName}"
                                                                         TextColor="{StaticResource TextPrimary}" />
-
                                                                     <Label
                                                                         Grid.Row="1"
                                                                         Grid.Column="1"
@@ -1449,14 +1322,12 @@
                                                                         <Label.FormattedText>
                                                                             <FormattedString>
                                                                                 <Span Text="{Binding Reason}" />
-                                                                                <Span Text="(" />
-                                                                                <Span FontSize="8" Text="{Binding Remarks}" />
+                                                                                <Span Text=" (" />
+                                                                                <Span FontSize="10" Text="{Binding Remarks}" />
                                                                                 <Span Text=")" />
                                                                             </FormattedString>
                                                                         </Label.FormattedText>
-
                                                                     </Label>
-
                                                                     <Label
                                                                         Grid.Row="0"
                                                                         Grid.Column="2"
@@ -1465,7 +1336,6 @@
                                                                         HorizontalOptions="End"
                                                                         Text="{Binding TransactionValue, StringFormat='₱{0:N2}'}"
                                                                         TextColor="{StaticResource TextPrimary}" />
-
                                                                     <Label
                                                                         Grid.Row="1"
                                                                         Grid.Column="2"
@@ -1488,9 +1358,66 @@
                                             </Grid>
                                         </Border>
 
+                                        <Border
+                                            Grid.Column="1"
+                                            Padding="10"
+                                            BackgroundColor="{StaticResource SurfaceDark}"
+                                            Stroke="{StaticResource Gray200}"
+                                            StrokeShape="RoundRectangle 12">
+                                            <Grid RowDefinitions="Auto, *">
+                                                <Label
+                                                    Grid.Row="0"
+                                                    Margin="0,0,0,10"
+                                                    FontAttributes="Bold"
+                                                    FontSize="14"
+                                                    Text="Low Stock Alerts"
+                                                    TextColor="#D32F2F" />
+                                                <sfListView:SfListView
+                                                    Grid.Row="1"
+                                                    ItemSize="35"
+                                                    ItemsSource="{Binding LowStockItems}"
+                                                    SelectionMode="None">
+                                                    <sfListView:SfListView.ItemsLayout>
+                                                        <sfListView:GridLayout SpanCount="2" />
+                                                    </sfListView:SfListView.ItemsLayout>
+                                                    <sfListView:SfListView.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Border
+                                                                Margin="2"
+                                                                Padding="8,0"
+                                                                BackgroundColor="{StaticResource CardDark}"
+                                                                StrokeThickness="0">
+                                                                <Border.StrokeShape>
+                                                                    <RoundRectangle CornerRadius="4" />
+                                                                </Border.StrokeShape>
+                                                                <Label
+                                                                    FontSize="11"
+                                                                    LineBreakMode="TailTruncation"
+                                                                    VerticalOptions="Center">
+                                                                    <Label.FormattedText>
+                                                                        <FormattedString>
+                                                                            <Span Text="{Binding Name}" TextColor="{StaticResource TextPrimary}" />
+                                                                            <Span Text=" (" TextColor="#D32F2F" />
+                                                                            <Span
+                                                                                FontAttributes="Bold"
+                                                                                Text="{Binding QuantityOnHand}"
+                                                                                TextColor="#D32F2F" />
+                                                                            <Span Text=")" TextColor="#D32F2F" />
+                                                                        </FormattedString>
+                                                                    </Label.FormattedText>
+                                                                </Label>
+                                                            </Border>
+                                                        </DataTemplate>
+                                                    </sfListView:SfListView.ItemTemplate>
+                                                </sfListView:SfListView>
+                                            </Grid>
+                                        </Border>
+
                                     </Grid>
-                                </Grid>
-                            </Grid>
+                                </tabView:SfTabItem>
+
+                            </tabView:SfTabView>
+
                         </Grid>
                     </tabView:SfTabItem>
                     <!--#endregion-->
