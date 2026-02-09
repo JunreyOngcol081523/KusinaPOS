@@ -3,6 +3,7 @@ using KusinaPOS.Helpers;
 using KusinaPOS.Services;
 using KusinaPOS.ViewModel;
 using KusinaPOS.Views;
+using KusinaPOS.Views.Controls;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Core.Hosting;
 using System.Diagnostics;
@@ -68,6 +69,8 @@ namespace KusinaPOS
             builder.Services.AddTransient<ReportPage>();
             builder.Services.AddSingleton<ReportViewModel>();
             builder.Services.AddSingleton<RefundSaleViewModel>();
+            builder.Services.AddSingleton<HeaderViewModel>();
+            builder.Services.AddTransient<AppHeaderView>();
             return builder.Build();
         }
     }

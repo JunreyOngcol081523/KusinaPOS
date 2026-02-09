@@ -112,6 +112,11 @@ namespace KusinaPOS.ViewModel
 
             
         }
+
+        public SettingsViewModel(SettingsService settingsService)
+        {
+            _settingsService = settingsService;
+        }
         #endregion
         #region category settings
         private async void LoadCategories()

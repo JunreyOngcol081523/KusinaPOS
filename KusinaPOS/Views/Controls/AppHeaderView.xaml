@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="KusinaPOS.Views.Controls.AppHeaderView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:sfpopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+    xmlns:viewmodels="clr-namespace:KusinaPOS.ViewModel"
+    Loaded="ContentView_Loaded">
+
+
+    <Grid Margin="0,0,0,5" ColumnDefinitions="*,Auto,Auto">
+        <ActivityIndicator
+            Grid.RowSpan="4"
+            HeightRequest="50"
+            HorizontalOptions="Center"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="Center"
+            WidthRequest="50"
+            ZIndex="1"
+            Color="{StaticResource Primary}" />
+        <Grid
+            Grid.Column="0"
+            BackgroundColor="Transparent"
+            ColumnDefinitions="Auto,Auto"
+            ColumnSpacing="10">
+            <Image
+                Grid.Column="0"
+                HeightRequest="20"
+                HorizontalOptions="Start"
+                Source="{Binding AppLogo}"
+                VerticalOptions="Start" />
+            <Label
+                Grid.Column="1"
+                FontSize="15"
+                HorizontalOptions="Start"
+                Text="{Binding AppTitle}"
+                TextColor="{StaticResource TextPrimary}"
+                VerticalOptions="Start"
+                VerticalTextAlignment="Start" />
+        </Grid>
+
+        <Label
+            Grid.Column="1"
+            Margin="0,0,20,0"
+            FontSize="12"
+            Text="{Binding CurrentDateTime}"
+            TextColor="{StaticResource TextSecondary}"
+            VerticalOptions="Center" />
+
+        <HorizontalStackLayout
+            Grid.Column="2"
+            Spacing="10"
+            VerticalOptions="Center">
+            <Label
+                FontSize="12"
+                Text="{Binding LoggedInUserName}"
+                TextColor="{StaticResource TextSecondary}"
+                VerticalOptions="Center" />
+
+            <Border BackgroundColor="Transparent">
+                <Image
+                    HeightRequest="18"
+                    HorizontalOptions="Center"
+                    Source="popup_menu.png"
+                    VerticalOptions="Center"
+                    WidthRequest="18" />
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnUserMenuTapped" />
+                </Border.GestureRecognizers>
+            </Border>
+        </HorizontalStackLayout>
+        <sfpopup:SfPopup
+            x:Name="UserMenuPopup"
+            AnimationMode="Zoom"
+            AutoSizeMode="Height"
+            ShowHeader="False"
+            StaysOpen="False"
+            WidthRequest="220">
+            <sfpopup:SfPopup.PopupStyle>
+                <sfpopup:PopupStyle
+                    CornerRadius="8"
+                    MessageBackground="{StaticResource SurfaceDark}"
+                    Stroke="{StaticResource Gray200}"
+                    StrokeThickness="1" />
+            </sfpopup:SfPopup.PopupStyle>
+
+            <sfpopup:SfPopup.ContentTemplate>
+                <DataTemplate>
+                    <VerticalStackLayout Padding="0" Spacing="0">
+
+                        <Border
+                            Padding="15,12"
+                            BackgroundColor="Transparent"
+                            StrokeThickness="0">
+                            <Grid ColumnDefinitions="30, *">
+                                <Image
+                                    Grid.Column="0"
+                                    HeightRequest="18"
+                                    HorizontalOptions="Start"
+                                    Source="database.png"
+                                    WidthRequest="18" />
+                                <Label
+                                    Grid.Column="1"
+                                    FontSize="13"
+                                    Text="Quick DB Backup"
+                                    TextColor="{StaticResource TextPrimary}"
+                                    VerticalOptions="Center" />
+                            </Grid>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding BackupDatabaseCommand}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+
+                        <BoxView
+                            Margin="10,0"
+                            HeightRequest="1"
+                            Opacity="0.3"
+                            Color="{StaticResource Gray200}" />
+
+                        <Border
+                            Padding="15,12"
+                            BackgroundColor="Transparent"
+                            IsVisible="{Binding IsAdmin}"
+                            StrokeThickness="0">
+                            <Grid ColumnDefinitions="30, *">
+                                <Image
+                                    Grid.Column="0"
+                                    HeightRequest="18"
+                                    HorizontalOptions="Start"
+                                    Source="settings.png"
+                                    WidthRequest="18" />
+                                <Label
+                                    Grid.Column="1"
+                                    FontSize="13"
+                                    Text="Full Settings"
+                                    TextColor="{StaticResource TextPrimary}"
+                                    VerticalOptions="Center" />
+                            </Grid>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenSettingsCommand}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+
+                        <Border
+                            Padding="15,12"
+                            BackgroundColor="Transparent"
+                            StrokeThickness="0">
+                            <Grid ColumnDefinitions="30, *">
+                                <Image
+                                    Grid.Column="0"
+                                    HeightRequest="18"
+                                    HorizontalOptions="Start"
+                                    Source="logout.png"
+                                    WidthRequest="18" />
+                                <Label
+                                    Grid.Column="1"
+                                    FontSize="13"
+                                    Text="Logout"
+                                    TextColor="{StaticResource TextPrimary}"
+                                    VerticalOptions="Center" />
+                            </Grid>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding LogoutCommand}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+
+                        <BoxView
+                            Margin="10,0"
+                            HeightRequest="1"
+                            Opacity="0.3"
+                            Color="{StaticResource Gray200}" />
+
+                        <Border
+                            Padding="15,12"
+                            BackgroundColor="Transparent"
+                            StrokeThickness="0">
+                            <Grid ColumnDefinitions="30, *">
+                                <Image
+                                    Grid.Column="0"
+                                    HeightRequest="18"
+                                    HorizontalOptions="Start"
+                                    Source="power_off.png"
+                                    WidthRequest="18" />
+                                <Label
+                                    Grid.Column="1"
+                                    FontSize="13"
+                                    Text="Exit Application"
+                                    TextColor="#D32F2F"
+                                    VerticalOptions="Center" />
+                            </Grid>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ExitApplicationCommand}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </sfpopup:SfPopup.ContentTemplate>
+        </sfpopup:SfPopup>
+    </Grid>
+</ContentView>

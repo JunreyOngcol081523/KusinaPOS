@@ -6,6 +6,7 @@ using KusinaPOS.Services;
 using KusinaPOS.Views;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace KusinaPOS.ViewModel
@@ -17,6 +18,7 @@ namespace KusinaPOS.ViewModel
         private readonly IDateTimeService? _dateTimeService;
         private readonly SalesService? _salesService;
         private readonly InventoryItemService? _inventoryItemService;
+        private readonly InventoryReportService? _inventoryReportService;
         private readonly SettingsService? _settingsService;
         private bool _isInitialized = false;
 
@@ -41,6 +43,7 @@ namespace KusinaPOS.ViewModel
 
         [ObservableProperty]
         private string todaySalesTotal;
+        private Decimal todaySalesTotalDecimal;
 
         [ObservableProperty]
         private string todayTransactionsCount;
@@ -58,14 +61,21 @@ namespace KusinaPOS.ViewModel
         private string appTitle = "Kusina POS"; // Default immediately
 
         [ObservableProperty]
-        private bool isLoading = true;
+        private bool isLoading = false;
         [ObservableProperty]
         private int totalVoidedTransactions;
         [ObservableProperty]
         private int totalRefundedTransactions;
         [ObservableProperty]
         private int totalLowStocksItems;
+        [ObservableProperty]
+        private decimal _totalExpenses;
 
+        [ObservableProperty]
+        private decimal _netIncomeTotal;
+
+        [ObservableProperty]
+        private Color _netIncomeColor = Colors.White;
         // 1. Property for the Chart
         public ObservableCollection<SalesChartDto> SalesChartData { get; set; } = new ObservableCollection<SalesChartDto>();
 
@@ -80,7 +90,8 @@ namespace KusinaPOS.ViewModel
             IDateTimeService dateTimeService,
             SalesService salesService,
             SettingsService settingsService,
-            InventoryItemService? inventoryItemService)
+            InventoryItemService? inventoryItemService,
+            InventoryReportService? inventoryReportService)
         {
             try
             {
@@ -100,6 +111,7 @@ namespace KusinaPOS.ViewModel
                 FilterChartCommand = new Command<string>(async (type) => await LoadSalesChartAsync(type));
                 // Load default (e.g., "Daily")
                 LoadSalesChartAsync("Daily");
+
                 Debug.WriteLine("DashboardViewModel constructor completed");
             }
             catch (Exception ex)
@@ -108,110 +120,42 @@ namespace KusinaPOS.ViewModel
             }
 
             _inventoryItemService = inventoryItemService;
+            _inventoryReportService = inventoryReportService;
         }
 
         #endregion
 
-        #region Initialization and Cleanup
-
-        /// <summary>
-        /// Call this from OnAppearing in the page
-        /// </summary>
-        public async Task InitializeAsync()
-        {
-            if (_isInitialized) return;
-
-            try
-            {
-                Debug.WriteLine("DashboardViewModel initialization started");
-                IsLoading = true;
-
-                // Load data in background
-                await Task.Run(() =>
-                {
-                    try
-                    {
-                        // Load preferences safely
-                        var storeNamePref = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
-                        var userIdPref = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
-                        var userNamePref = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
-                        // Use 'await' to extract the actual decimal/int from the Task
-                        // Get logo path safely
-                        var logoPath = _settingsService?.GetStoreLogo ?? "kusinaposlogo.png";
-                        var title = _settingsService?.GetAppTitle ?? "Kusina POS";
-
-                        // Update on main thread
-                        MainThread.BeginInvokeOnMainThread(() =>
-                        {
-
-
-                            Debug.WriteLine($"todaysales: {TodaySalesTotal}");
-                            Debug.WriteLine($"todaysalestransaction: {TodayTransactionsCount}");
-                            StoreName = storeNamePref;
-                            LoggedInUserId = userIdPref;
-                            LoggedInUserName = userNamePref;
-
-                            // Validate logo path exists before setting
-                            if (!string.IsNullOrEmpty(logoPath) && File.Exists(logoPath))
-                            {
-                                AppLogo = logoPath;
-                            }
-
-                            AppTitle = title;
-
-                            Debug.WriteLine($"Loaded: Store={StoreName}, User={LoggedInUserName}, Logo={AppLogo}");
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error loading preferences: {ex.Message}");
-                    }
-                });
-
-                // Subscribe to datetime updates AFTER everything is loaded
-                if (_dateTimeService != null)
-                {
-                    _dateTimeService.DateTimeChanged += OnDateTimeChanged;
-                    CurrentDateTime = _dateTimeService.CurrentDateTime;
-                    Debug.WriteLine("DateTime service subscribed");
-                }
-
-                _isInitialized = true;
-                Debug.WriteLine("DashboardViewModel initialization completed");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error in InitializeAsync: {ex.Message}");
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        }
-
-        /// <summary>
-        /// Call this from OnDisappearing in the page
-        /// </summary>
-        public void Cleanup()
-        {
-            try
-            {
-                if (_dateTimeService != null)
-                {
-                    _dateTimeService.DateTimeChanged -= OnDateTimeChanged;
-                    Debug.WriteLine("DateTime service unsubscribed");
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error in cleanup: {ex.Message}");
-            }
-        }
-
-        #endregion
 
         #region Data Loading
+        public async Task CalculateNetIncome()
+        {
+            // 1. Get current values
+            decimal gross = todaySalesTotalDecimal; // You already have this property
+            decimal expenses = await _inventoryReportService.GetTotalInventoryExpensesAsync(DateTime.Today, DateTime.Today);
+            // 2. Fetch Expenses (You might need to pull this from your database)
+            // For now, I'll use a dummy value or the one from your expense service
+            TotalExpenses = expenses;
 
+            // 3. Calculate Net
+            NetIncomeTotal = gross - TotalExpenses;
+
+            // 4. Determine Color
+            if (NetIncomeTotal > 0)
+            {
+                // Profitable = Green
+                NetIncomeColor = Color.FromArgb("#4CAF50");
+            }
+            else if (NetIncomeTotal < 0)
+            {
+                // Loss = Red
+                NetIncomeColor = Color.FromArgb("#D32F2F");
+            }
+            else
+            {
+                // Break Even = Gray/White
+                NetIncomeColor = Colors.White;
+            }
+        }
         private async Task LoadSales()
         {
             var fromDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
@@ -230,6 +174,7 @@ namespace KusinaPOS.ViewModel
             TodayTransactionsCount = $"Today's Transaction: {todayCount}";
 
             TodaySalesTotal = $"₱{todaysls:N2}";
+            todaySalesTotalDecimal = todaysls; // Store the decimal value for net income calculation
             WeeklySalesTotal = $"₱{weeksls:N2}";
             TotalVoidedTransactions = await _salesService.GetSalesCountByStatusAsync("Voided");
             TotalRefundedTransactions = await _salesService.GetSalesCountByStatusAsync("Refunded");
@@ -237,8 +182,21 @@ namespace KusinaPOS.ViewModel
             var lowStock = allitems.Where(i => i.IsLowStock).ToList();
             var lowStockList = new ObservableCollection<InventoryItem>(lowStock);
             TotalLowStocksItems = lowStockList.Count;
+            await CalculateNetIncome();
         }
+        [RelayCommand]
+        private async Task RefreshTransactionCounterAsync()
+        {
+            // Turn it on
+            IsLoading = true;
 
+            // Simulate work or wait for 1000ms
+            await Task.Delay(1000);
+            await LoadSales();
+            // Turn it off
+            IsLoading = false;
+
+        }
         public async Task LoadSalesChartAsync(string filterType)
         {
             try

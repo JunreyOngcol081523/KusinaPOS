@@ -6,535 +6,512 @@
     xmlns:badgeView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
     xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
     xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+    xmlns:controls="clr-namespace:KusinaPOS.Views.Controls"
+    xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
     xmlns:viewmodels="clr-namespace:KusinaPOS.ViewModel"
     BackgroundColor="{StaticResource BackgroundDark}">
+    <Grid>
+        <ScrollView>
+            <Grid Padding="15">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-    <ScrollView>
-        <Grid Padding="15">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+                <!--  Top Header  -->
+                <controls:AppHeaderView Grid.Row="0" />
 
-            <!--  Top Header  -->
-            <Grid
-                Grid.Row="0"
-                Margin="0,0,0,5"
-                ColumnDefinitions="*,Auto,Auto">
+                <!--  Main Content  -->
                 <Grid
-                    Grid.Column="0"
-                    ColumnDefinitions="Auto,Auto"
-                    ColumnSpacing="10">
-                    <Image
-                        Grid.Column="0"
-                        HeightRequest="20"
-                        HorizontalOptions="Start"
-                        Source="{Binding AppLogo}"
-                        VerticalOptions="Start" />
-                    <Label
-                        Grid.Column="1"
-                        FontSize="15"
-                        HorizontalOptions="Start"
-                        Text="{Binding AppTitle}"
-                        TextColor="{StaticResource TextPrimary}"
-                        VerticalOptions="Start"
-                        VerticalTextAlignment="Start" />
-                </Grid>
+                    Grid.Row="1"
+                    RowDefinitions="Auto,*"
+                    RowSpacing="10">
 
-                <Label
-                    Grid.Column="1"
-                    Margin="0,0,20,0"
-                    FontSize="12"
-                    Text="{Binding CurrentDateTime}"
-                    TextColor="{StaticResource TextSecondary}"
-                    VerticalOptions="Center" />
+                    <!--  Top Cards Row  -->
+                    <Grid
+                        Grid.Row="0"
+                        ColumnDefinitions="*,*,*,*"
+                        ColumnSpacing="8">
 
-                <HorizontalStackLayout
-                    Grid.Column="2"
-                    Spacing="10"
-                    VerticalOptions="Center">
-                    <Label
-                        FontSize="12"
-                        Text="{Binding LoggedInUserName}"
-                        TextColor="{StaticResource TextSecondary}"
-                        VerticalOptions="Center" />
-                    <Border
-                        BackgroundColor="{StaticResource Primary}"
-                        HeightRequest="20"
-                        StrokeShape="RoundRectangle 15"
-                        WidthRequest="20">
-                        <Label
-                            FontSize="14"
-                            HorizontalOptions="Center"
-                            Text="⚙"
-                            TextColor="White"
-                            VerticalOptions="Center">
-                            <!--  tapped event below  -->
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding OpenSettingsCommand}" />
-                            </Label.GestureRecognizers>
-                        </Label>
-                    </Border>
-                </HorizontalStackLayout>
-            </Grid>
+                        <!--  Today's Sales Card  -->
+                        <Border
+                            Grid.Column="0"
+                            Padding="15"
+                            BackgroundColor="{StaticResource SurfaceDark}"
+                            StrokeShape="RoundRectangle 15">
+                            <VerticalStackLayout Spacing="8">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="12"
+                                    Text="TODAY'S SALES"
+                                    TextColor="{StaticResource TextSecondary}" />
 
-            <!--  Main Content  -->
-            <Grid
-                Grid.Row="1"
-                RowDefinitions="Auto,*"
-                RowSpacing="10">
-
-                <!--  Top Cards Row  -->
-                <Grid
-                    Grid.Row="0"
-                    ColumnDefinitions="*,*,*,*"
-                    ColumnSpacing="8">
-
-                    <!--  Today's Sales Card  -->
-                    <Border
-                        Grid.Column="0"
-                        Padding="15"
-                        BackgroundColor="{StaticResource SurfaceDark}"
-                        StrokeShape="RoundRectangle 15">
-                        <VerticalStackLayout Spacing="8">
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="12"
-                                Text="TODAY'S SALES"
-                                TextColor="{StaticResource TextSecondary}" />
-
-                            <Label
-                                FontSize="35"
-                                HorizontalOptions="Start"
-                                Text="💰" />
-
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="25"
-                                Text="{Binding TodaySalesTotal}"
-                                TextColor="{StaticResource Primary}" />
-
-                            <Label
-                                FontSize="12"
-                                Text="{Binding TodayTransactionsCount}"
-                                TextColor="{StaticResource TextSecondary}" />
-                        </VerticalStackLayout>
-                    </Border>
-
-                    <!--  Inventory Status Card  -->
-                    <Border
-                        Grid.Column="1"
-                        Padding="15"
-                        BackgroundColor="{StaticResource SurfaceDark}"
-                        StrokeShape="RoundRectangle 15">
-                        <VerticalStackLayout Spacing="8">
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="12"
-                                Text="WEEKLY SALES"
-                                TextColor="{StaticResource TextSecondary}" />
-
-                            <Label
-                                FontSize="35"
-                                HorizontalOptions="Start"
-                                Text="💰" />
-
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="25"
-                                Text="{Binding WeeklySalesTotal}"
-                                TextColor="{StaticResource Primary}" />
-
-                            <Label
-                                FontSize="12"
-                                Text="{Binding WeeklyTransactionsCount}"
-                                TextColor="{StaticResource TextSecondary}" />
-                        </VerticalStackLayout>
-                    </Border>
-
-                    <!--  Top Selling Items Card  -->
-                    <Border
-                        Grid.Column="2"
-                        Padding="15"
-                        BackgroundColor="{StaticResource SurfaceDark}"
-                        StrokeShape="RoundRectangle 15">
-                        <VerticalStackLayout Spacing="8">
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="12"
-                                Text="TODAY'S TRANSACTION COUNTER"
-                                TextColor="{StaticResource TextSecondary}" />
-
-                            <VerticalStackLayout HorizontalOptions="Start" Spacing="2">
-                                <badgeView:SfBadgeView
-                                    BadgeText="{Binding TotalRefundedTransactions}"
+                                <Label
+                                    FontSize="35"
                                     HorizontalOptions="Start"
-                                    VerticalOptions="Center">
-                                    <badgeView:SfBadgeView.Content>
-                                        <Border Padding="5" Style="{StaticResource CardBorder}">
-                                            <Label
-                                                FontSize="13"
-                                                LineBreakMode="WordWrap"
-                                                Text="Refunded Transactions Count"
-                                                TextColor="White" />
-                                        </Border>
-                                    </badgeView:SfBadgeView.Content>
-                                    <badgeView:SfBadgeView.BadgeSettings>
-                                        <badgeView:BadgeSettings Type="Info" />
-                                    </badgeView:SfBadgeView.BadgeSettings>
-                                </badgeView:SfBadgeView>
-                                <badgeView:SfBadgeView
-                                    BadgeText="{Binding TotalVoidedTransactions}"
-                                    HorizontalOptions="Start"
-                                    VerticalOptions="Center">
-                                    <badgeView:SfBadgeView.Content>
-                                        <Border Padding="5" Style="{StaticResource CardBorder}">
-                                            <Label
-                                                FontSize="13"
-                                                LineBreakMode="WordWrap"
-                                                Text="Voided Transactions Count"
-                                                TextColor="White" />
-                                        </Border>
-                                    </badgeView:SfBadgeView.Content>
-                                    <badgeView:SfBadgeView.BadgeSettings>
-                                        <badgeView:BadgeSettings Type="Info" />
-                                    </badgeView:SfBadgeView.BadgeSettings>
-                                </badgeView:SfBadgeView>
-                                <badgeView:SfBadgeView
-                                    BadgeText="{Binding TotalLowStocksItems}"
-                                    HorizontalOptions="Start"
-                                    VerticalOptions="Center">
-                                    <badgeView:SfBadgeView.Content>
-                                        <Border Padding="5" Style="{StaticResource CardBorder}">
-                                            <Label
-                                                FontSize="13"
-                                                LineBreakMode="WordWrap"
-                                                Text="Low Stocks Count"
-                                                TextColor="White" />
-                                        </Border>
-                                    </badgeView:SfBadgeView.Content>
-                                    <badgeView:SfBadgeView.BadgeSettings>
-                                        <badgeView:BadgeSettings Type="Error" />
-                                    </badgeView:SfBadgeView.BadgeSettings>
-                                </badgeView:SfBadgeView>
+                                    Text="💰" />
+
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="25"
+                                    Text="{Binding TodaySalesTotal}"
+                                    TextColor="{StaticResource Primary}" />
+
+                                <Label
+                                    FontSize="12"
+                                    Text="{Binding TodayTransactionsCount}"
+                                    TextColor="{StaticResource TextSecondary}" />
                             </VerticalStackLayout>
-                        </VerticalStackLayout>
-                    </Border>
+                        </Border>
 
-                    <!--  Cashier Performance Card  -->
-                    <Border
-                        Grid.Column="3"
-                        Padding="20"
-                        BackgroundColor="{StaticResource SurfaceDark}"
-                        StrokeShape="RoundRectangle 15">
-                        <VerticalStackLayout Spacing="8">
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="12"
-                                Text="CASHIER PERFORMANCE"
-                                TextColor="{StaticResource TextSecondary}" />
+                        <!--  Inventory Status Card  -->
+                        <Border
+                            Grid.Column="1"
+                            Padding="15"
+                            BackgroundColor="{StaticResource SurfaceDark}"
+                            StrokeShape="RoundRectangle 15">
+                            <VerticalStackLayout Spacing="8">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="12"
+                                    Text="WEEKLY SALES"
+                                    TextColor="{StaticResource TextSecondary}" />
 
+                                <Label
+                                    FontSize="35"
+                                    HorizontalOptions="Start"
+                                    Text="💰" />
+
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="25"
+                                    Text="{Binding WeeklySalesTotal}"
+                                    TextColor="{StaticResource Primary}" />
+
+                                <Label
+                                    FontSize="12"
+                                    Text="{Binding WeeklyTransactionsCount}"
+                                    TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!--  Transaction Counter Card  -->
+                        <Border
+                            Grid.Column="2"
+                            Padding="15"
+                            BackgroundColor="{StaticResource SurfaceDark}"
+                            StrokeShape="RoundRectangle 15">
                             <VerticalStackLayout Spacing="8">
                                 <HorizontalStackLayout Spacing="8">
                                     <Label
-                                        FontSize="13"
-                                        Text="1. 🥇 Sarah J. ($750.00)"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                </HorizontalStackLayout>
-                                <HorizontalStackLayout Spacing="8">
+                                        FontAttributes="Bold"
+                                        FontSize="12"
+                                        Text="TODAY'S TRANSACTION COUNTER"
+                                        TextColor="{StaticResource TextSecondary}" />
                                     <Label
-                                        FontSize="13"
-                                        Text="2. 🥈 Michael B. ($520.50)"
-                                        TextColor="{StaticResource TextPrimary}" />
+                                        FontFamily="MauiMaterialAssets.ttf"
+                                        FontSize="20"
+                                        Text="&#xe7a2;"
+                                        TextColor="{StaticResource TextSecondary}">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding RefreshTransactionCounterCommand}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
                                 </HorizontalStackLayout>
-                                <HorizontalStackLayout Spacing="8">
-                                    <Label
-                                        FontSize="13"
-                                        Text="3. 🥉 David L. ($415.00)"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                </HorizontalStackLayout>
-                                <HorizontalStackLayout Spacing="8">
-                                    <Label
-                                        FontSize="13"
-                                        Text="4. 👤 Emily R. ($160.00)"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                </HorizontalStackLayout>
+                                <VerticalStackLayout HorizontalOptions="Start" Spacing="2">
+                                    <badgeView:SfBadgeView
+                                        BadgeText="{Binding TotalRefundedTransactions}"
+                                        HorizontalOptions="Start"
+                                        VerticalOptions="Center">
+                                        <badgeView:SfBadgeView.Content>
+                                            <Border Padding="5" Style="{StaticResource CardBorder}">
+                                                <Label
+                                                    FontSize="13"
+                                                    LineBreakMode="WordWrap"
+                                                    Text="Refunded Transactions Count"
+                                                    TextColor="White" />
+                                            </Border>
+                                        </badgeView:SfBadgeView.Content>
+                                        <badgeView:SfBadgeView.BadgeSettings>
+                                            <badgeView:BadgeSettings Type="Info" />
+                                        </badgeView:SfBadgeView.BadgeSettings>
+                                    </badgeView:SfBadgeView>
+                                    <badgeView:SfBadgeView
+                                        BadgeText="{Binding TotalVoidedTransactions}"
+                                        HorizontalOptions="Start"
+                                        VerticalOptions="Center">
+                                        <badgeView:SfBadgeView.Content>
+                                            <Border Padding="5" Style="{StaticResource CardBorder}">
+                                                <Label
+                                                    FontSize="13"
+                                                    LineBreakMode="WordWrap"
+                                                    Text="Voided Transactions Count"
+                                                    TextColor="White" />
+                                            </Border>
+                                        </badgeView:SfBadgeView.Content>
+                                        <badgeView:SfBadgeView.BadgeSettings>
+                                            <badgeView:BadgeSettings Type="Info" />
+                                        </badgeView:SfBadgeView.BadgeSettings>
+                                    </badgeView:SfBadgeView>
+                                    <badgeView:SfBadgeView
+                                        BadgeText="{Binding TotalLowStocksItems}"
+                                        HorizontalOptions="Start"
+                                        VerticalOptions="Center">
+                                        <badgeView:SfBadgeView.Content>
+                                            <Border Padding="5" Style="{StaticResource CardBorder}">
+                                                <Label
+                                                    FontSize="13"
+                                                    LineBreakMode="WordWrap"
+                                                    Text="Low Stocks Count"
+                                                    TextColor="White" />
+                                            </Border>
+                                        </badgeView:SfBadgeView.Content>
+                                        <badgeView:SfBadgeView.BadgeSettings>
+                                            <badgeView:BadgeSettings Type="Error" />
+                                        </badgeView:SfBadgeView.BadgeSettings>
+                                    </badgeView:SfBadgeView>
+                                </VerticalStackLayout>
                             </VerticalStackLayout>
-                        </VerticalStackLayout>
-                    </Border>
+                        </Border>
 
-                </Grid>
+                        <!--  NET INCOME Card  -->
+                        <Border
+                            Grid.Column="3"
+                            Padding="15"
+                            BackgroundColor="{StaticResource SurfaceDark}"
+                            StrokeShape="RoundRectangle 15">
 
-                <!--  Bottom Section  -->
-                <Grid
-                    Grid.Row="1"
-                    ColumnDefinitions="*,*"
-                    ColumnSpacing="8">
+                            <VerticalStackLayout Spacing="5" VerticalOptions="Start">
 
-                    <!--  Daily Sales Overview Chart  -->
-                    <Border
-                        Grid.Column="0"
-                        Padding="15"
-                        BackgroundColor="{StaticResource SurfaceDark}"
-                        StrokeShape="RoundRectangle 15">
-
-                        <VerticalStackLayout Spacing="15">
-
-                            <Grid ColumnDefinitions="Auto, Auto">
                                 <Label
-                                    Grid.Column="0"
                                     FontAttributes="Bold"
-                                    FontSize="14"
-                                    Text="REVENUE TRENDS"
-                                    TextColor="{StaticResource TextSecondary}"
-                                    VerticalOptions="Center" />
+                                    FontSize="12"
+                                    Text="NET INCOME (TODAY)"
+                                    TextColor="{StaticResource TextSecondary}" />
 
-                                <buttons:SfRadioGroup
-                                    x:Name="FilterGroup"
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="32"
+                                    HorizontalOptions="Start"
+                                    Text="{Binding NetIncomeTotal, StringFormat='{0:C}'}"
+                                    TextColor="{Binding NetIncomeColor}" />
+
+                                <BoxView
+                                    Margin="0,5"
+                                    HeightRequest="1"
+                                    Opacity="0.2"
+                                    Color="{StaticResource Gray200}" />
+
+                                <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="5">
+
+                                    <VerticalStackLayout Grid.Column="0">
+                                        <Label
+                                            FontSize="10"
+                                            Text="Gross"
+                                            TextColor="{StaticResource TextSecondary}" />
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="12"
+                                            Text="{Binding TodaySalesTotal, StringFormat='{0:C}'}"
+                                            TextColor="{StaticResource TextPrimary}" />
+                                    </VerticalStackLayout>
+
+                                    <Label
+                                        Grid.Column="1"
+                                        Text="-"
+                                        TextColor="{StaticResource TextSecondary}"
+                                        VerticalOptions="Center" />
+
+                                    <VerticalStackLayout Grid.Column="2">
+                                        <Label
+                                            FontSize="10"
+                                            Text="Expenses"
+                                            TextColor="{StaticResource TextSecondary}" />
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="12"
+                                            Text="{Binding TotalExpenses, StringFormat='{0:C}'}"
+                                            TextColor="#D32F2F" />
+                                    </VerticalStackLayout>
+                                </Grid>
+
+                            </VerticalStackLayout>
+                        </Border>
+
+                    </Grid>
+
+                    <!--  Bottom Section  -->
+                    <Grid
+                        Grid.Row="1"
+                        ColumnDefinitions="*,*"
+                        ColumnSpacing="8">
+
+                        <!--  Daily Sales Overview Chart  -->
+                        <Border
+                            Grid.Column="0"
+                            Padding="15"
+                            BackgroundColor="{StaticResource SurfaceDark}"
+                            StrokeShape="RoundRectangle 15">
+
+                            <VerticalStackLayout Spacing="15">
+
+                                <Grid ColumnDefinitions="Auto, Auto">
+                                    <Label
+                                        Grid.Column="0"
+                                        FontAttributes="Bold"
+                                        FontSize="14"
+                                        Text="REVENUE TRENDS"
+                                        TextColor="{StaticResource TextSecondary}"
+                                        VerticalOptions="Center" />
+
+                                    <buttons:SfRadioGroup
+                                        x:Name="FilterGroup"
+                                        Grid.Column="1"
+                                        Orientation="Horizontal"
+                                        Spacing="15">
+                                        <buttons:SfRadioButton
+                                            StateChanged="OnFilterChanged"
+                                            Text="Hourly"
+                                            TextColor="{StaticResource TextPrimary}" />
+                                        <buttons:SfRadioButton
+                                            IsChecked="True"
+                                            StateChanged="OnFilterChanged"
+                                            Text="Daily"
+                                            TextColor="{StaticResource TextPrimary}" />
+                                        <buttons:SfRadioButton
+                                            StateChanged="OnFilterChanged"
+                                            Text="Weekly"
+                                            TextColor="{StaticResource TextPrimary}" />
+                                        <buttons:SfRadioButton
+                                            StateChanged="OnFilterChanged"
+                                            Text="Monthly"
+                                            TextColor="{StaticResource TextPrimary}" />
+                                    </buttons:SfRadioGroup>
+                                </Grid>
+
+                                <chart:SfCartesianChart>
+
+                                    <chart:SfCartesianChart.XAxes>
+                                        <chart:CategoryAxis>
+                                            <chart:CategoryAxis.LabelStyle>
+                                                <chart:ChartAxisLabelStyle FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                                            </chart:CategoryAxis.LabelStyle>
+                                            <chart:CategoryAxis.MajorGridLineStyle>
+                                                <chart:ChartLineStyle StrokeWidth="0" />
+                                            </chart:CategoryAxis.MajorGridLineStyle>
+                                        </chart:CategoryAxis>
+                                    </chart:SfCartesianChart.XAxes>
+
+                                    <chart:SfCartesianChart.YAxes>
+                                        <chart:NumericalAxis>
+                                            <chart:NumericalAxis.LabelStyle>
+                                                <chart:ChartAxisLabelStyle
+                                                    FontSize="11"
+                                                    LabelFormat="C2"
+                                                    TextColor="{StaticResource TextSecondary}" />
+                                            </chart:NumericalAxis.LabelStyle>
+                                            <chart:NumericalAxis.MajorGridLineStyle>
+                                                <chart:ChartLineStyle Stroke="#333333" StrokeWidth="0.5" />
+                                            </chart:NumericalAxis.MajorGridLineStyle>
+                                        </chart:NumericalAxis>
+                                    </chart:SfCartesianChart.YAxes>
+
+                                    <chart:SfCartesianChart.Series>
+                                        <chart:ColumnSeries
+                                            ItemsSource="{Binding SalesChartData}"
+                                            PaletteBrushes="{Binding CustomBrushes}"
+                                            ShowDataLabels="True"
+                                            XBindingPath="Argument"
+                                            YBindingPath="Value">
+
+                                            <chart:ColumnSeries.CornerRadius>
+                                                <CornerRadius TopLeft="4" TopRight="4" />
+                                            </chart:ColumnSeries.CornerRadius>
+
+                                            <chart:ColumnSeries.DataLabelSettings>
+                                                <chart:CartesianDataLabelSettings LabelPlacement="Inner" UseSeriesPalette="False">
+                                                    <chart:CartesianDataLabelSettings.LabelStyle>
+                                                        <chart:ChartDataLabelStyle FontSize="10" TextColor="{StaticResource PrimaryDarkText}" />
+                                                    </chart:CartesianDataLabelSettings.LabelStyle>
+                                                </chart:CartesianDataLabelSettings>
+                                            </chart:ColumnSeries.DataLabelSettings>
+
+                                        </chart:ColumnSeries>
+                                    </chart:SfCartesianChart.Series>
+
+                                </chart:SfCartesianChart>
+
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!--  Action Buttons  -->
+                        <Grid
+                            Grid.Column="1"
+                            RowDefinitions="*,*,*"
+                            RowSpacing="15">
+
+                            <!--  Row 1  -->
+                            <Grid
+                                Grid.Row="0"
+                                ColumnDefinitions="*,*"
+                                ColumnSpacing="15">
+                                <Border
+                                    Grid.Column="0"
+                                    Padding="15"
+                                    BackgroundColor="{StaticResource SurfaceDark}"
+                                    Stroke="{StaticResource Primary}"
+                                    StrokeShape="RoundRectangle 15"
+                                    StrokeThickness="2">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding OpenMenuManagementCommand}" />
+                                    </Border.GestureRecognizers>
+                                    <VerticalStackLayout
+                                        HorizontalOptions="Center"
+                                        Spacing="10"
+                                        VerticalOptions="Center">
+                                        <Image HeightRequest="40" Source="menu.png" />
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="12"
+                                            HorizontalOptions="Center"
+                                            Text="MANAGE MENU"
+                                            TextColor="{StaticResource TextPrimary}" />
+                                    </VerticalStackLayout>
+                                </Border>
+
+                                <Border
                                     Grid.Column="1"
-                                    Orientation="Horizontal"
-                                    Spacing="15">
-                                    <buttons:SfRadioButton
-                                        StateChanged="OnFilterChanged"
-                                        Text="Hourly"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                    <buttons:SfRadioButton
-                                        IsChecked="True"
-                                        StateChanged="OnFilterChanged"
-                                        Text="Daily"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                    <buttons:SfRadioButton
-                                        StateChanged="OnFilterChanged"
-                                        Text="Weekly"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                    <buttons:SfRadioButton
-                                        StateChanged="OnFilterChanged"
-                                        Text="Monthly"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                </buttons:SfRadioGroup>
+                                    Padding="15"
+                                    BackgroundColor="{StaticResource SurfaceDark}"
+                                    Stroke="{StaticResource Primary}"
+                                    StrokeShape="RoundRectangle 15"
+                                    StrokeThickness="2">
+                                    <VerticalStackLayout
+                                        HorizontalOptions="Center"
+                                        Spacing="10"
+                                        VerticalOptions="Center">
+                                        <Image HeightRequest="40" Source="weighingscale.png" />
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="12"
+                                            HorizontalOptions="Center"
+                                            Text="MANAGE PER SERVING"
+                                            TextColor="{StaticResource TextPrimary}" />
+                                    </VerticalStackLayout>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding OpenRecipeManagementCommand}" />
+                                    </Border.GestureRecognizers>
+                                </Border>
                             </Grid>
 
-                            <chart:SfCartesianChart>
-
-                                <chart:SfCartesianChart.XAxes>
-                                    <chart:CategoryAxis>
-                                        <chart:CategoryAxis.LabelStyle>
-                                            <chart:ChartAxisLabelStyle FontSize="11" TextColor="{StaticResource TextSecondary}" />
-                                        </chart:CategoryAxis.LabelStyle>
-                                        <chart:CategoryAxis.MajorGridLineStyle>
-                                            <chart:ChartLineStyle StrokeWidth="0" />
-                                        </chart:CategoryAxis.MajorGridLineStyle>
-                                    </chart:CategoryAxis>
-                                </chart:SfCartesianChart.XAxes>
-
-                                <chart:SfCartesianChart.YAxes>
-                                    <chart:NumericalAxis>
-                                        <chart:NumericalAxis.LabelStyle>
-                                            <chart:ChartAxisLabelStyle
-                                                FontSize="11"
-                                                LabelFormat="C2"
-                                                TextColor="{StaticResource TextSecondary}" />
-                                        </chart:NumericalAxis.LabelStyle>
-                                        <chart:NumericalAxis.MajorGridLineStyle>
-                                            <chart:ChartLineStyle Stroke="#333333" StrokeWidth="0.5" />
-                                        </chart:NumericalAxis.MajorGridLineStyle>
-                                    </chart:NumericalAxis>
-                                </chart:SfCartesianChart.YAxes>
-
-                                <chart:SfCartesianChart.Series>
-                                    <chart:ColumnSeries
-                                        ItemsSource="{Binding SalesChartData}"
-                                        PaletteBrushes="{Binding CustomBrushes}"
-                                        ShowDataLabels="True"
-                                        XBindingPath="Argument"
-                                        YBindingPath="Value">
-
-                                        <chart:ColumnSeries.CornerRadius>
-                                            <CornerRadius TopLeft="4" TopRight="4" />
-                                        </chart:ColumnSeries.CornerRadius>
-
-                                        <chart:ColumnSeries.DataLabelSettings>
-                                            <chart:CartesianDataLabelSettings LabelPlacement="Inner" UseSeriesPalette="False">
-                                                <chart:CartesianDataLabelSettings.LabelStyle>
-                                                    <chart:ChartDataLabelStyle FontSize="10" TextColor="{StaticResource PrimaryDarkText}" />
-                                                </chart:CartesianDataLabelSettings.LabelStyle>
-                                            </chart:CartesianDataLabelSettings>
-                                        </chart:ColumnSeries.DataLabelSettings>
-
-                                    </chart:ColumnSeries>
-                                </chart:SfCartesianChart.Series>
-
-                            </chart:SfCartesianChart>
-
-                        </VerticalStackLayout>
-                    </Border>
-
-                    <!--  Action Buttons  -->
-                    <Grid
-                        Grid.Column="1"
-                        RowDefinitions="*,*,*"
-                        RowSpacing="15">
-
-                        <!--  Row 1  -->
-                        <Grid
-                            Grid.Row="0"
-                            ColumnDefinitions="*,*"
-                            ColumnSpacing="15">
-                            <Border
-                                Grid.Column="0"
-                                Padding="15"
-                                BackgroundColor="{StaticResource SurfaceDark}"
-                                Stroke="{StaticResource Primary}"
-                                StrokeShape="RoundRectangle 15"
-                                StrokeThickness="2">
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding OpenMenuManagementCommand}" />
-                                </Border.GestureRecognizers>
-                                <VerticalStackLayout
-                                    HorizontalOptions="Center"
-                                    Spacing="10"
-                                    VerticalOptions="Center">
-                                    <Image HeightRequest="40" Source="menu.png" />
-                                    <Label
-                                        FontAttributes="Bold"
-                                        FontSize="12"
+                            <!--  Row 2  -->
+                            <Grid
+                                Grid.Row="1"
+                                ColumnDefinitions="*,*"
+                                ColumnSpacing="15">
+                                <Border
+                                    Grid.Column="0"
+                                    Padding="15"
+                                    BackgroundColor="{StaticResource SurfaceDark}"
+                                    Stroke="{StaticResource Primary}"
+                                    StrokeShape="RoundRectangle 15"
+                                    StrokeThickness="2">
+                                    <VerticalStackLayout
                                         HorizontalOptions="Center"
-                                        Text="MANAGE MENU"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                </VerticalStackLayout>
-                            </Border>
+                                        Spacing="10"
+                                        VerticalOptions="Center">
+                                        <Image HeightRequest="40" Source="inventory.png" />
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="12"
+                                            HorizontalOptions="Center"
+                                            Text="INVENTORY"
+                                            TextColor="{StaticResource TextPrimary}" />
+                                    </VerticalStackLayout>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding OpenInventoryManagementCommand}" />
+                                    </Border.GestureRecognizers>
+                                </Border>
 
-                            <Border
-                                Grid.Column="1"
-                                Padding="15"
-                                BackgroundColor="{StaticResource SurfaceDark}"
-                                Stroke="{StaticResource Primary}"
-                                StrokeShape="RoundRectangle 15"
-                                StrokeThickness="2">
-                                <VerticalStackLayout
-                                    HorizontalOptions="Center"
-                                    Spacing="10"
-                                    VerticalOptions="Center">
-                                    <Image HeightRequest="40" Source="weighingscale.png" />
-                                    <Label
-                                        FontAttributes="Bold"
-                                        FontSize="12"
+                                <Border
+                                    Grid.Column="1"
+                                    Padding="15"
+                                    BackgroundColor="{StaticResource SurfaceDark}"
+                                    Stroke="{StaticResource Primary}"
+                                    StrokeShape="RoundRectangle 15"
+                                    StrokeThickness="2">
+                                    <VerticalStackLayout
                                         HorizontalOptions="Center"
-                                        Text="MANAGE PER SERVING"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                </VerticalStackLayout>
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding OpenRecipeManagementCommand}" />
-                                </Border.GestureRecognizers>
-                            </Border>
-                        </Grid>
+                                        Spacing="10"
+                                        VerticalOptions="Center">
+                                        <Image HeightRequest="40" Source="chart.png" />
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="12"
+                                            HorizontalOptions="Center"
+                                            Text="REPORTS"
+                                            TextColor="{StaticResource TextPrimary}" />
+                                    </VerticalStackLayout>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding OpenReportsCommand}" />
+                                    </Border.GestureRecognizers>
+                                </Border>
+                            </Grid>
 
-                        <!--  Row 2  -->
-                        <Grid
-                            Grid.Row="1"
-                            ColumnDefinitions="*,*"
-                            ColumnSpacing="15">
-                            <Border
-                                Grid.Column="0"
-                                Padding="15"
-                                BackgroundColor="{StaticResource SurfaceDark}"
-                                Stroke="{StaticResource Primary}"
-                                StrokeShape="RoundRectangle 15"
-                                StrokeThickness="2">
-                                <VerticalStackLayout
-                                    HorizontalOptions="Center"
-                                    Spacing="10"
-                                    VerticalOptions="Center">
-                                    <Image HeightRequest="40" Source="inventory.png" />
-                                    <Label
-                                        FontAttributes="Bold"
-                                        FontSize="12"
+                            <!--  Row 3  -->
+                            <Grid
+                                Grid.Row="2"
+                                ColumnDefinitions="*,*"
+                                ColumnSpacing="15">
+                                <Border
+                                    Grid.Column="0"
+                                    Padding="15"
+                                    BackgroundColor="{StaticResource SurfaceDark}"
+                                    Stroke="{StaticResource Primary}"
+                                    StrokeShape="RoundRectangle 15"
+                                    StrokeThickness="2">
+                                    <VerticalStackLayout
                                         HorizontalOptions="Center"
-                                        Text="INVENTORY"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                </VerticalStackLayout>
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding OpenInventoryManagementCommand}" />
-                                </Border.GestureRecognizers>
-                            </Border>
+                                        Spacing="10"
+                                        VerticalOptions="Center">
+                                        <Image HeightRequest="40" Source="usersettings.png" />
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="12"
+                                            HorizontalOptions="Center"
+                                            Text="USER"
+                                            TextColor="{StaticResource TextPrimary}" />
+                                    </VerticalStackLayout>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding OpenUserManagementCommand}" />
+                                    </Border.GestureRecognizers>
+                                </Border>
 
-                            <Border
-                                Grid.Column="1"
-                                Padding="15"
-                                BackgroundColor="{StaticResource SurfaceDark}"
-                                Stroke="{StaticResource Primary}"
-                                StrokeShape="RoundRectangle 15"
-                                StrokeThickness="2">
-                                <VerticalStackLayout
-                                    HorizontalOptions="Center"
-                                    Spacing="10"
-                                    VerticalOptions="Center">
-                                    <Image HeightRequest="40" Source="chart.png" />
-                                    <Label
-                                        FontAttributes="Bold"
-                                        FontSize="12"
+                                <Border
+                                    Grid.Column="1"
+                                    Padding="15"
+                                    BackgroundColor="{StaticResource SurfaceDark}"
+                                    Stroke="{StaticResource Primary}"
+                                    StrokeShape="RoundRectangle 15"
+                                    StrokeThickness="2">
+                                    <VerticalStackLayout
                                         HorizontalOptions="Center"
-                                        Text="REPORTS"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                </VerticalStackLayout>
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding OpenReportsCommand}" />
-                                </Border.GestureRecognizers>
-                            </Border>
-                        </Grid>
+                                        Spacing="10"
+                                        VerticalOptions="Center">
+                                        <Image HeightRequest="40" Source="settings.png" />
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="12"
+                                            HorizontalOptions="Center"
+                                            Text="SETTINGS"
+                                            TextColor="{StaticResource TextPrimary}" />
+                                    </VerticalStackLayout>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding OpenSettingsCommand}" />
+                                    </Border.GestureRecognizers>
+                                </Border>
+                            </Grid>
 
-                        <!--  Row 3  -->
-                        <Grid
-                            Grid.Row="2"
-                            ColumnDefinitions="*,*"
-                            ColumnSpacing="15">
-                            <Border
-                                Grid.Column="0"
-                                Padding="15"
-                                BackgroundColor="{StaticResource SurfaceDark}"
-                                Stroke="{StaticResource Primary}"
-                                StrokeShape="RoundRectangle 15"
-                                StrokeThickness="2">
-                                <VerticalStackLayout
-                                    HorizontalOptions="Center"
-                                    Spacing="10"
-                                    VerticalOptions="Center">
-                                    <Image HeightRequest="40" Source="usersettings.png" />
-                                    <Label
-                                        FontAttributes="Bold"
-                                        FontSize="12"
-                                        HorizontalOptions="Center"
-                                        Text="USER"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                </VerticalStackLayout>
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding OpenUserManagementCommand}" />
-                                </Border.GestureRecognizers>
-                            </Border>
-
-                            <Border
-                                Grid.Column="1"
-                                Padding="15"
-                                BackgroundColor="{StaticResource SurfaceDark}"
-                                Stroke="{StaticResource Primary}"
-                                StrokeShape="RoundRectangle 15"
-                                StrokeThickness="2">
-                                <VerticalStackLayout
-                                    HorizontalOptions="Center"
-                                    Spacing="10"
-                                    VerticalOptions="Center">
-                                    <Image HeightRequest="40" Source="settings.png" />
-                                    <Label
-                                        FontAttributes="Bold"
-                                        FontSize="12"
-                                        HorizontalOptions="Center"
-                                        Text="SETTINGS"
-                                        TextColor="{StaticResource TextPrimary}" />
-                                </VerticalStackLayout>
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding OpenSettingsCommand}" />
-                                </Border.GestureRecognizers>
-                            </Border>
                         </Grid>
 
                     </Grid>
@@ -543,7 +520,12 @@
 
             </Grid>
 
-        </Grid>
-    </ScrollView>
+        </ScrollView>
+
+        <core:SfBusyIndicator
+            x:Name="busyIndicator"
+            AnimationType="CircularMaterial"
+            IsRunning="{Binding IsLoading}" />
+    </Grid>
 
 </ContentPage>

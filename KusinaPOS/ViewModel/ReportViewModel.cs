@@ -179,7 +179,7 @@ namespace KusinaPOS.ViewModel
                     .ToList();
 
                 TotalSales = filteredSales.Sum(s => s.TotalAmount);
-                TotalTransactions = filteredSales.Count;
+                TotalTransactions = await _salesService.GetSalesCountByStatusAsync("Completed",startOfDay, endOfDay);
                 CashRefunded = await _salesService.GetRefundTotalByDateAsync(startOfDay, endOfDay);
                 AverageSale = TotalTransactions > 0 ? TotalSales / TotalTransactions : 0;
 

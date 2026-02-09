@@ -56,39 +56,6 @@ namespace KusinaPOS.Views
             }
         }
 
-        protected override async void OnAppearing()
-        {
-            base.OnAppearing();
-
-            Debug.WriteLine("DashboardPage OnAppearing started");
-
-            if (!_hasAppeared)
-            {
-                _hasAppeared = true;
-                await InitializePageAsync();
-            }
-        }
-
-        private async Task InitializePageAsync()
-        {
-            try
-            {
-                Debug.WriteLine("Initializing dashboard page...");
-
-                // Small delay to let page render
-                await Task.Delay(100);
-
-                // Initialize ViewModel
-                await _viewModel.InitializeAsync();
-
-                Debug.WriteLine("Dashboard page initialized successfully");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error initializing dashboard: {ex.Message}");
-                AlertHelper.ShowToast($"Dashboard Initialization Failed{ ex.Message}");
-            }
-        }
         private async void OnFilterChanged(object sender, StateChangedEventArgs e)
         {
             // 1. Only react when a button is CHECKED (ignore the uncheck event)
@@ -107,20 +74,11 @@ namespace KusinaPOS.Views
                 }
             }
         }
-
-        protected override void OnDisappearing()
+        protected override bool OnBackButtonPressed()
         {
-            base.OnDisappearing();
-
-            try
-            {
-                Debug.WriteLine("DashboardPage OnDisappearing");
-                _viewModel?.Cleanup();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error in OnDisappearing: {ex.Message}");
-            }
+            // Return true to "consume" the event (stop the back action)
+            // Return false to allow the OS to go back
+            return true;
         }
     }
 }

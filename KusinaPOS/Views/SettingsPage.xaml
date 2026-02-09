@@ -5,67 +5,18 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:badgeView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
     xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:controls="clr-namespace:KusinaPOS.Views.Controls"
     xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
     xmlns:syncfusionex="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
     xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
     xmlns:viewmodel="clr-namespace:KusinaPOS.ViewModel"
     xmlns:views="clr-namespace:KusinaPOS.Views"
     Title="Settings"
-    BackgroundColor="{StaticResource CardBackground}">
+    BackgroundColor="{StaticResource BackgroundDark}">
 
     <Grid Padding="16" RowDefinitions="Auto,*">
         <!--  Top Header  -->
-        <Grid
-            Grid.Row="0"
-            Margin="0,0,0,8"
-            ColumnDefinitions="Auto,*,Auto,Auto">
-            <ImageButton
-                Grid.Column="0"
-                Margin="0,0,15,0"
-                BackgroundColor="Transparent"
-                Command="{Binding GoBackCommand}"
-                HeightRequest="10"
-                Source="arrowback.png"
-                WidthRequest="10" />
-            <Label
-                Grid.Column="1"
-                FontAttributes="Bold"
-                FontSize="15"
-                Text="{Binding StoreName, StringFormat='App Settings - {0}'}"
-                TextColor="{StaticResource TextPrimary}"
-                VerticalOptions="Center" />
-
-            <Label
-                Grid.Column="2"
-                Margin="0,0,15,0"
-                FontSize="12"
-                Text="{Binding CurrentDateTime}"
-                TextColor="{StaticResource TextSecondary}"
-                VerticalOptions="Center" />
-
-            <HorizontalStackLayout
-                Grid.Column="3"
-                Spacing="8"
-                VerticalOptions="Center">
-                <Label
-                    FontSize="12"
-                    Text="{Binding LoggedInUserName}"
-                    TextColor="{StaticResource TextSecondary}"
-                    VerticalOptions="Center" />
-                <Border
-                    BackgroundColor="{StaticResource Primary}"
-                    HeightRequest="30"
-                    StrokeShape="RoundRectangle 15"
-                    WidthRequest="30">
-                    <Label
-                        FontSize="16"
-                        HorizontalOptions="Center"
-                        Text="⚙"
-                        TextColor="White"
-                        VerticalOptions="Center" />
-                </Border>
-            </HorizontalStackLayout>
-        </Grid>
+        <controls:AppHeaderView Grid.Row="0" BackgroundColor="Transparent" />
         <tabView:SfTabView
             x:Name="settingTabView"
             Grid.Row="1"
@@ -1352,6 +1303,7 @@
                 <!--#region about settings-->
                 <!--  ================= ABOUT SETTINGS =================  -->
                 <tabView:SfTabItem
+                    BackgroundColor="{StaticResource CardBackground}"
                     FontSize="12"
                     Header="About"
                     ImagePosition="Left"

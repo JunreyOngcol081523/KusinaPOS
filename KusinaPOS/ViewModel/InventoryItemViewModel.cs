@@ -247,6 +247,12 @@ namespace KusinaPOS.ViewModel
             try
             {
                 // Validation checks
+                bool confirm = await PageHelper.DisplayConfirmAsync(
+                    "Confirm Save",
+                    "Are you sure you want to save changes to this inventory item?",
+                    "Yes",
+                    "No");
+                if(!confirm) return;
                 if (string.IsNullOrWhiteSpace(EditingName) ||
                     string.IsNullOrWhiteSpace(EditingUnit))
                 {

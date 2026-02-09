@@ -11,6 +11,7 @@ namespace KusinaPOS.Helpers
         public const string DatabaseFileName = "kusinapos.db3";
         public const string LoggedInUserNameKey = "LoggedInUserName";
         public const string LoggedInUserIdKey = "LoggedInIdName";
+        public const string UserRoleKey = "UserRoleKey";
         public const string StoreNameKey = "StoreNameKey";
         public const string StoreAddressKey = "StoreAddressKey";
         public const string BackupLocationKey = "BackupLocationKey";

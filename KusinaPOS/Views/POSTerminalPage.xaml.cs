@@ -76,5 +76,11 @@ namespace KusinaPOS.Views
                 Debug.WriteLine($"Error in OnDisappearing: {ex.Message}");
             }
         }
+        protected override bool OnBackButtonPressed()
+        {
+            // Return true to "consume" the event (stop the back action)
+            // Return false to allow the OS to go back
+            return true;
+        }
     }
 }

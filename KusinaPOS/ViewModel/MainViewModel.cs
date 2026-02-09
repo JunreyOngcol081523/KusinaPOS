@@ -179,6 +179,7 @@ namespace KusinaPOS.ViewModel
             );
             Preferences.Set(DatabaseConstants.LoggedInUserIdKey, user.Id);
             Preferences.Set(DatabaseConstants.LoggedInUserNameKey, user.Name);
+            Preferences.Set(DatabaseConstants.UserRoleKey, user.Role);
             if(SelectedUserType == "Administrator")
             {
                 await Shell.Current.GoToAsync(nameof(DashboardPage));
