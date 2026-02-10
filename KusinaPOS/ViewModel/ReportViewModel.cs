@@ -412,14 +412,14 @@ namespace KusinaPOS.ViewModel
                     await PageHelper.DisplayAlertAsync("Invalid Date", "From Date cannot be later than To Date", "OK");
                     return;
                 }
-
+                var _toDate = ToDate.Date.AddDays(1).AddTicks(-1); // Sets time to 23:59:59.999
                 string categoryFilter = SelectedCategory ?? "All";
 
                 // 1. Fetch VOLUME Data (Qty)
-                var volumeData = await _menuReportService.GetAllMenuSalesForExportAsync(categoryFilter, FromDate, ToDate);
+                var volumeData = await _menuReportService.GetAllMenuSalesForExportAsync(categoryFilter, FromDate, _toDate);
 
                 // 2. Fetch SALES VALUE Data (Money)
-                var salesData = await _menuReportService.GetAllMenuSalesRankingsAsync(categoryFilter, FromDate, ToDate);
+                var salesData = await _menuReportService.GetAllMenuSalesRankingsAsync(categoryFilter, FromDate, _toDate);
 
                 // 3. Check if empty (check both to be safe)
                 if ((volumeData == null || !volumeData.Any()) && (salesData == null || !salesData.Any()))

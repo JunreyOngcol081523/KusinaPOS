@@ -234,10 +234,8 @@
                                             TextColor="#D32F2F" />
                                     </VerticalStackLayout>
                                 </Grid>
-
                             </VerticalStackLayout>
                         </Border>
-
                     </Grid>
 
                     <!--  Bottom Section  -->
@@ -324,10 +322,6 @@
                                             XBindingPath="Argument"
                                             YBindingPath="Value">
 
-                                            <chart:ColumnSeries.CornerRadius>
-                                                <CornerRadius TopLeft="4" TopRight="4" />
-                                            </chart:ColumnSeries.CornerRadius>
-
                                             <chart:ColumnSeries.DataLabelSettings>
                                                 <chart:CartesianDataLabelSettings LabelPlacement="Inner" UseSeriesPalette="False">
                                                     <chart:CartesianDataLabelSettings.LabelStyle>
@@ -335,12 +329,9 @@
                                                     </chart:CartesianDataLabelSettings.LabelStyle>
                                                 </chart:CartesianDataLabelSettings>
                                             </chart:ColumnSeries.DataLabelSettings>
-
                                         </chart:ColumnSeries>
                                     </chart:SfCartesianChart.Series>
-
                                 </chart:SfCartesianChart>
-
                             </VerticalStackLayout>
                         </Border>
 
@@ -511,15 +502,10 @@
                                     </Border.GestureRecognizers>
                                 </Border>
                             </Grid>
-
                         </Grid>
-
                     </Grid>
-
                 </Grid>
-
             </Grid>
-
         </ScrollView>
 
         <core:SfBusyIndicator
@@ -527,5 +513,4 @@
             AnimationType="CircularMaterial"
             IsRunning="{Binding IsLoading}" />
     </Grid>
-
 </ContentPage>
