@@ -1,4 +1,5 @@
-﻿using KusinaPOS.Models;
+﻿using KusinaPOS.Helpers;
+using KusinaPOS.Models;
 using SQLite;
 using System.Diagnostics;
 
@@ -18,6 +19,11 @@ namespace KusinaPOS.Services
             try
             {
                 await _db.CreateTableAsync<Category>();
+                var count = await _db.Table<Category>().CountAsync();
+                if (count == 0)
+                {
+                    await InsertDefaultCategories();
+                }
             }
             catch (Exception ex)
             {
@@ -25,7 +31,10 @@ namespace KusinaPOS.Services
                 throw;
             }
         }
+        private async Task InsertDefaultCategories()
+        {
 
+        }
         public async Task AddCategoryAsync(string name)
         {
             try
@@ -147,10 +156,17 @@ namespace KusinaPOS.Services
             try
             {
                 await InitializeAsync();
+                var count = await _db.Table<Category>().CountAsync();
+                if (count <= 1)
+                {
+                    await PageHelper.DisplayAlertAsync("Deletion Error", "At least one category must exist. Deletion aborted.", "OK");
+                    return;
+                }
                 int categoryId = category.Id;
                 var existingCategory = await _db.Table<Category>()
                                         .Where(c => c.Id == categoryId)
                                         .FirstOrDefaultAsync();
+                
                 if (existingCategory != null)
                 {
                     await _db.DeleteAsync(existingCategory);

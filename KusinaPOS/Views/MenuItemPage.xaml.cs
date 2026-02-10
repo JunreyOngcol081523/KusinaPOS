@@ -10,15 +10,15 @@ public partial class MenuItemPage : ContentPage
 {
     private MenuItemService _menuItemService;
     private MenuItemViewModel _menuItemViewModel;
-    private IDateTimeService? _dateTimeService = null;
-    public MenuItemPage(MenuItemViewModel vm, MenuItemService menuItemService, IDateTimeService dts)
-	{
-		InitializeComponent();
-		BindingContext = vm;
+
+    public MenuItemPage(MenuItemViewModel vm, MenuItemService menuItemService)
+    {
+        InitializeComponent();
+        BindingContext = vm;
         _menuItemService = menuItemService;
         _menuItemViewModel = vm;
-        _dateTimeService = dts;
     }
+
     private async void SfSwitch_StateChanged(object sender, SwitchStateChangedEventArgs e)
     {
         if (sender is SfSwitch sw && sw.BindingContext is Models.MenuItem menuItem)
@@ -26,7 +26,6 @@ public partial class MenuItemPage : ContentPage
             try
             {
                 await _menuItemService.UpdateMenuItemAsync(menuItem);
-                // No need to reload all categories
             }
             catch (Exception ex)
             {
@@ -36,30 +35,16 @@ public partial class MenuItemPage : ContentPage
             }
         }
     }
-    private void CategorySegment_SelectionChanged(object sender, Syncfusion.Maui.Buttons.SelectionChangedEventArgs e)
-    {
-        if (_menuItemViewModel.Categories.Count == 0) return;
 
-        var selectedIndex = (sender as Syncfusion.Maui.Buttons.SfSegmentedControl)?.SelectedIndex ?? 0;
-        _menuItemViewModel.SelectedSegmentCategory = _menuItemViewModel.Categories[selectedIndex];
-
-        // Reset paging
-        _menuItemViewModel.ResetPaging();
-        _menuItemViewModel.HideBorder();
-        // Load first page
-        _ = _menuItemViewModel.LoadMoreMenuItemsAsync();
-    }
-
+    // REMOVED: CategorySegment_SelectionChanged 
+    // Logic is now handled by OnSelectedSegmentCategoryChanged in the ViewModel
 
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        if (_menuItemViewModel.Categories.Any())
-        {
-            _menuItemViewModel.SelectedSegmentCategory = _menuItemViewModel.Categories[0];
-            _menuItemViewModel.ResetPaging();
-            _ = _menuItemViewModel.LoadMoreMenuItemsAsync();
-        }
-    }
 
+        // We trigger the initial load via the ViewModel command
+        // This ensures the database seeding and category loading happen correctly
+        _ = _menuItemViewModel.LoadCategoriesAsync();
+    }
 }

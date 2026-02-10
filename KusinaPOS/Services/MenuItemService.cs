@@ -80,5 +80,52 @@ namespace KusinaPOS.Services
                 .Take(pageSize)
                 .ToListAsync();
         }
+        public List<MenuItem> GenerateMenuItems(List<Category> categories)
+        {
+            var items = new List<MenuItem>();
+            var random = new Random();
+
+            var categoryTemplates = new Dictionary<string, (string prefix, string type, decimal minPrice, decimal maxPrice)>
+            {
+                ["Appetizers"] = ("Appetizer", "Recipe-Based", 120, 280),
+                ["Main Courses"] = ("Main Dish", "Recipe-Based", 250, 650),
+                ["Beer Products"] = ("Beer", "Unit-Based", 80, 180),
+                ["Hard Drinks"] = ("Hard Drink", "Unit-Based", 150, 450),
+                ["Pulutan"] = ("Pulutan", "Recipe-Based", 90, 250),
+                ["Soup"] = ("Soup", "Recipe-Based", 120, 320),
+                ["Pasta"] = ("Pasta", "Recipe-Based", 220, 520),
+                ["Snacks"] = ("Snack", "Recipe-Based", 60, 180),
+                ["Beverages"] = ("Beverage", "Unit-Based", 50, 160)
+            };
+
+            foreach (var category in categories)
+            {
+                if (!categoryTemplates.ContainsKey(category.Name))
+                    continue;
+
+                var template = categoryTemplates[category.Name];
+
+                for (int i = 1; i <= 50; i++)
+                {
+                    var price = Math.Round(
+                        (decimal)(random.NextDouble() *
+                        (double)(template.maxPrice - template.minPrice))
+                        + template.minPrice, 2);
+
+                    items.Add(new MenuItem
+                    {
+                        Name = $"{template.prefix} {i}",
+                        Description = $"Sample {template.prefix.ToLower()} item {i}",
+                        Price = price,
+                        Category = category.Name,
+                        Type = template.type,
+                        IsActive = true
+                    });
+                }
+            }
+
+            return items;
+        }
+
     }
 }

@@ -35,12 +35,6 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty] private bool isUnitBasedVisible;
         #endregion
 
-        #region Header
-        [ObservableProperty] private string currentDateTime = string.Empty;
-        [ObservableProperty] private string loggedInUserName = string.Empty;
-        [ObservableProperty] private string loggedInUserId = string.Empty;
-        [ObservableProperty] private string storeName = "Kusina POS";
-        #endregion
 
         #region Collections
         [ObservableProperty] private ObservableCollection<Category> categories = new();
@@ -48,15 +42,10 @@ namespace KusinaPOS.ViewModel
         #endregion
 
         #region Selection
-        [ObservableProperty] private int selectedCategoryIndex;
-        // Only for SegmentedControl filtering
-        [ObservableProperty]
-        private Category? selectedSegmentCategory;
-
         // Only for ComboBox editing
         [ObservableProperty]
         private Category? selectedCategoryForEdit;
-
+        [ObservableProperty] private Category? selectedCategory;
         #endregion
 
         #region Form Fields
@@ -72,8 +61,7 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty] private decimal reOrderLevel;
 
         [ObservableProperty] private string labelText = "Add New Menu Item";
-        [ObservableProperty] private List<SfSegmentItem> segmentItems = new();
-
+        [ObservableProperty] private int itemCount = 0;
         #endregion
 
         #region Dropdown Sources
@@ -116,81 +104,48 @@ namespace KusinaPOS.ViewModel
             _dateTimeService = dateTimeService;
             _db = databaseService.GetConnection();
 
-            LoadPreferences();
             UnitMeasurements = UnitMeasurementService.AllUnits;
-
-            _dateTimeService.DateTimeChanged += (s, e) => CurrentDateTime = e;
             _ = InitializeAsync();
-        }
-
-        private void LoadPreferences()
-        {
-            LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
-            LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
-            StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
-            CurrentDateTime = _dateTimeService.CurrentDateTime;
         }
 
         private async Task InitializeAsync()
         {
             await LoadCategoriesAsync();
             await ReloadMenuItemsAsync();
+            //await SeedMenuItemsAsync();
         }
 
         #region Categories
-        private void UpdateSegmentItems()
+        partial void OnSelectedCategoryChanged(Category? value)
         {
-            SegmentItems.Clear();
-
-            foreach (var cat in Categories)
+            if (value != null)
             {
-                SegmentItems.Add(new SfSegmentItem
-                {
-                    Text = cat.Name
-                    // Optional: add icon with ImageSource if you want
-                });
+                Debug.WriteLine($"Category selected: {value.Name}");
+                //PageHelper.DisplayAlertAsync("Category Selected", $"You selected: {value.Name}", "OK");
+                ResetPaging(); // Clear current list and reset page index
+                _ = ReloadMenuItemsAsync();
             }
-
-            OnPropertyChanged(nameof(SegmentItems));
         }
-
         [RelayCommand]
         public async Task LoadCategoriesAsync()
         {
             var list = await _categoryService.GetActiveCategoriesAsync();
 
-            // Ensure UI thread
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                Categories = new ObservableCollection<Category>(list);
-
-                if (Categories.Any() && SelectedSegmentCategory == null)
+                Categories.Clear();
+                foreach (var category in list)
                 {
-                    SelectedSegmentCategory = Categories[0];
+                    Categories.Add(category);
+                }
+
+                // Auto-select the first category if none is selected
+                if (Categories.Any() && SelectedCategory == null)
+                {
+                    SelectedCategory = Categories[0];
                 }
             });
-            UpdateSegmentItems();
         }
-
-
-        partial void OnSelectedCategoryIndexChanged(int value)
-        {
-            if (value >= 0 && value < Categories.Count)
-            {
-                SelectedSegmentCategory = Categories[value];
-               // _ = ReloadMenuItemsAsync(); // Only reload menu items for the segment
-            }
-        }
-        partial void OnSelectedSegmentCategoryChanged(Category? value)
-        {
-            Debug.WriteLine($"SelectedSegmentCategory changed to: {value?.Name}");
-            if (value != null)
-            {
-                _ = ReloadMenuItemsAsync();
-            }
-        }
-
-
         #endregion
 
         #region Menu Items Paging
@@ -205,15 +160,15 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         public async Task LoadMoreMenuItemsAsync()
         {
-            if (IsBusy || !_hasMoreItems || SelectedSegmentCategory == null) return;
+            if (IsBusy || !_hasMoreItems || SelectedCategory == null) return;
 
             IsBusy = true;
 
             var items = await _menuItemService.GetMenuItemsByCategoryPagedAsync(
-                SelectedSegmentCategory.Name,
+                SelectedCategory.Name,
                 _currentPage,
                 PageSize);
-
+            ItemCount = items.Count;
             foreach (var item in items)
                 FilteredMenuItems.Add(item);
 
@@ -299,7 +254,9 @@ namespace KusinaPOS.ViewModel
                 {
                     InventoryItemId = inv.Id,
                     QuantityChange = InitialStock,
-                    Reason = "Initial Stock",
+                    CostAtTransaction = inv.CostPerUnit,
+                    Reason = "Stock In",
+                    Remarks = $"Initial stock for {item.Name}",
                     TransactionDate = DateTime.Now
                 });
             }
@@ -441,6 +398,21 @@ namespace KusinaPOS.ViewModel
                 "Unit-Based: Items sold by unit (e.g., pieces, bottles).\n\n" +
                 "Recipe-Based: Items made from ingredients (e.g., dishes, meals).",
                 "OK");
+        }
+        //seed items for testing
+        [RelayCommand]
+        public async Task SeedMenuItemsAsync()
+        {
+            var categories = await _categoryService.GetActiveCategoriesAsync();
+            var sampleItems = _menuItemService.GenerateMenuItems(categories);
+
+            // Save to DB
+            foreach (var item in sampleItems)
+            {
+                await _menuItemService.AddMenuItemAsync(item);
+            }
+
+            await ReloadMenuItemsAsync();
         }
     }
 }

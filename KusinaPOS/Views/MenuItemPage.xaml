@@ -16,8 +16,6 @@
     xmlns:viewmodels="clr-namespace:KusinaPOS.ViewModel"
     BackgroundColor="{StaticResource BackgroundDark}">
 
-
-
     <Grid Padding="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -54,24 +52,28 @@
 
                         <!--  Segmented Control for Categories  -->
 
-                        <buttons:SfSegmentedControl
-                            x:Name="categorySegment"
-                            Grid.Row="0"
-                            Margin="10,5"
-                            AutoScrollToSelectedSegment="True"
-                            CornerRadius="5"
-                            ItemsSource="{Binding SegmentItems}"
-                            SelectedIndex="{Binding SelectedCategoryIndex, Mode=TwoWay}"
-                            SelectionChanged="CategorySegment_SelectionChanged"
-                            VisibleSegmentsCount="4">
-                            <buttons:SfSegmentedControl.TextStyle>
-                                <buttons:SegmentTextStyle
-                                    FontAttributes="Italic"
-                                    FontSize="12"
-                                    TextColor="{StaticResource TextPrimary}" />
-                            </buttons:SfSegmentedControl.TextStyle>
-                        </buttons:SfSegmentedControl>
+                        <CollectionView
+                                        Grid.Row="0"
+                                        HeightRequest="60"
+                                        ItemsSource="{Binding Categories}"
+                                        SelectionMode="Single"
+                                        SelectedItem="{Binding SelectedCategory}"
+                                        ItemsLayout="HorizontalList">
 
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Category">
+                                    <Grid Padding="5">
+
+                                        <Border Style="{StaticResource CardBorder}" Padding="10">
+                                            <Label Text="{Binding Name}" 
+                                        VerticalOptions="Center" 
+                                        HorizontalOptions="Center" />
+                                        </Border>
+
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
 
                         <!--  Menu Items ListView  -->
                         <sfListView:SfListView
@@ -191,10 +193,8 @@
                                         TextColor="{StaticResource Gray500}" />
                                 </VerticalStackLayout>
                             </sfListView:SfListView.EmptyView>
-
                         </sfListView:SfListView>
                     </Grid>
-
 
                     <!--  Add New Item Button  -->
                     <Button
@@ -208,7 +208,6 @@
                         FontSize="12"
                         Text="ADD NEW ITEM"
                         TextColor="{StaticResource Primary}" />
-
                 </Grid>
             </Border>
 
@@ -477,7 +476,6 @@
                                                 WidthRequest="100" />
                                         </Border>
 
-
                                         <Border
                                             Grid.Column="1"
                                             Padding="15"
@@ -498,16 +496,11 @@
                                                 <TapGestureRecognizer Command="{Binding UploadImageCommand}" />
                                             </Border.GestureRecognizers>
                                         </Border>
-
                                     </Grid>
                                 </VerticalStackLayout>
-
                             </Grid>
-
                         </VerticalStackLayout>
                     </ScrollView>
-
-
 
                     <!--  Action Buttons  -->
                     <Grid
@@ -538,12 +531,8 @@
                             Text="SAVE CHANGES"
                             TextColor="White" />
                     </Grid>
-
                 </Grid>
             </Border>
-
         </Grid>
-
     </Grid>
-
 </ContentPage>
