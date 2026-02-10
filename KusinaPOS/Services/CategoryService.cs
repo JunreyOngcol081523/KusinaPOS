@@ -33,7 +33,20 @@ namespace KusinaPOS.Services
         }
         private async Task InsertDefaultCategories()
         {
-
+            //seed default categories
+            var defaultCategories = new List<Category>
+            {
+                new Category { Name = "Beverages", IsActive = true },
+                new Category { Name = "Appetizers", IsActive = true },
+                new Category { Name = "Main Courses", IsActive = true },
+                new Category { Name = "Beer Products", IsActive = true },
+                new Category { Name = "Hard Drinks", IsActive = true },
+                new Category { Name = "Pulutan", IsActive = true },
+                new Category { Name = "Snacks", IsActive = true },
+                new Category { Name = "Soup", IsActive = true },
+                new Category { Name = "Pasta", IsActive = true }
+            };
+            await _db.InsertAllAsync(defaultCategories);
         }
         public async Task AddCategoryAsync(string name)
         {
