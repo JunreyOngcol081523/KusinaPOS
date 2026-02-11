@@ -28,6 +28,8 @@ namespace KusinaPOS.Models
         public decimal AmountPaid { get; set; }
 
         public decimal ChangeAmount { get; set; }
+        public string PaymentMethod { get; set; } = string.Empty; // "Cash", "GCash", "Card"
+        public string CashLessReference { get; set; } = string.Empty; // For GCASH/CARD: e.g., transaction ID or last 4 digits
 
         // Status: "Completed", "Voided", "Refunded"
         [NotNull, Indexed]

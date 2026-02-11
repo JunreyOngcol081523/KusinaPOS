@@ -21,9 +21,12 @@ namespace KusinaPOS.ViewModel
 
         [ObservableProperty]
         private bool isLoading = true;
-
+        [ObservableProperty]
+        private string gcashRefNumber;
         [ObservableProperty]
         private bool isProcessing = false;
+        [ObservableProperty]
+        private bool isCompleteOrderPopupOpen = false;
 
         private readonly CategoryService categoryService;
         private readonly MenuItemService menuItemService;
@@ -626,7 +629,7 @@ namespace KusinaPOS.ViewModel
             {
                 // 1. Calculate Subtotal
                 subtotal = OrderItems.Sum(o => o.Subtotal);
-                SubtotalAmount = $"₱{subtotal:F2}";
+                SubtotalAmount = subtotal.ToString();
 
                 // 2. Get Discount Settings from Preferences
                 bool allowDiscount = Preferences.Get(SettingsConstants.AllowDiscountKey, false);
@@ -652,7 +655,7 @@ namespace KusinaPOS.ViewModel
 
                 // 4. Calculate Discounted Amount
                 discountValue = subtotal - discountAmount;
-                DiscountedAmount = $"₱{discountValue:F2}";
+                DiscountedAmount = discountValue.ToString();
 
                 // 5. Get VAT Settings from Preferences
                 bool allowVAT = Preferences.Get(SettingsConstants.AllowVATKey, false);
@@ -665,11 +668,11 @@ namespace KusinaPOS.ViewModel
                     vatAmount = discountValue * (vatSettingValue / 100);
                 }
                 vatValue = vatAmount;
-                VATAmount = $"₱{vatValue:F2}";
+                VATAmount = vatValue.ToString();
 
                 // 7. Calculate Total Payable
                 totalPayable = discountValue + vatValue;
-                TotalPayableAmount = $"₱{totalPayable:F2}";
+                TotalPayableAmount = totalPayable.ToString();
 
                 // 8. Calculate change if cash tendered
                 CalculateChange();
@@ -699,22 +702,34 @@ namespace KusinaPOS.ViewModel
                 if (decimal.TryParse(CashTenderedAmount, out decimal cashTendered))
                 {
                     var change = cashTendered - totalPayable;
-                    ChangeAmount = change >= 0 ? $"₱{change:F2}" : "₱0.00";
+                    ChangeAmount = change >= 0 ? change.ToString() : "0.00";
                 }
                 else
                 {
-                    ChangeAmount = "₱0.00";
+                    ChangeAmount = "0.00";
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error calculating change: {ex.Message}");
-                ChangeAmount = "₱0.00";
+                ChangeAmount = "0.00";
             }
         }
-
         [RelayCommand]
-        private async Task CompleteOrder()
+        private async Task CompleteOrderAsync()
+        {
+            if (OrderItems.Count == 0)
+            {
+                await PageHelper.DisplayAlertAsync(
+                    "Empty Order",
+                    "Please add items to the order before checkout.",
+                    "OK");
+                return;
+            }
+            IsCompleteOrderPopupOpen = true;
+        }
+        [RelayCommand]
+        private async Task ConfirmPaymentAsync()
         {
 
             if (IsProcessing) return;
@@ -840,7 +855,8 @@ namespace KusinaPOS.ViewModel
                             Tax = vatValue,
                             TotalAmount = totalPayable,
                             AmountPaid = cashTendered,
-                            ChangeAmount = change
+                            ChangeAmount = change,
+                            PaymentMethod= "Cash"
                         };
 
                         var saleItems = OrderItemMapper.ToSaleItems(OrderItems);
@@ -891,11 +907,102 @@ namespace KusinaPOS.ViewModel
             finally
             {
                 IsProcessing = false;
+                IsCompleteOrderPopupOpen = false;
             }
         }
 
+        [RelayCommand]
+        private async Task ConfirmGcashPaymentAsync()
+        {
+            if (IsProcessing) return;
 
+            // 1. GCash Specific Validation
+            if (string.IsNullOrWhiteSpace(GcashRefNumber) || GcashRefNumber.Length < 13)
+            {
+                await PageHelper.DisplayAlertAsync("Invalid Reference",
+                    "Please enter a valid 13-digit GCash reference number.", "OK");
+                return;
+            }
 
+            // 2. Call the shared processing logic, passing "GCash" as the method
+            await ProcessOrderCheckoutAsync(paymentMethod: "GCash", reference: GcashRefNumber);
+        }
+        private async Task ProcessOrderCheckoutAsync(string paymentMethod, string reference = "")
+        {
+            IsProcessing = true;
+            try
+            {
+                // --- 1. PRE-CHECK ---
+                if (OrderItems.Count == 0) return;
+
+                bool confirm = await PageHelper.DisplayConfirmAsync("Confirm Checkout",
+                    $"Complete this {paymentMethod} order?", "Yes", "No");
+                if (!confirm) return;
+
+                // --- 2. INVENTORY VALIDATION (Copy your existing foreach loops here) ---
+                // [Insert your existing 'foreach (var orderItem in OrderItems)' block here]
+                // This ensures inventory is checked exactly the same way for GCash.
+
+                // --- 3. PROCESS SALE ---
+                var receiptNo = await Task.Run(async () =>
+                {
+                    try
+                    {
+                        var newReceiptNo = await salesService.GenerateReceiptNoAsync();
+
+                        var sale = new Sale
+                        {
+                            SaleDate = DateTime.Now,
+                            ReceiptNo = newReceiptNo,
+                            SubTotal = subtotal,
+                            Discount = subtotal - discountValue, // Based on your math
+                            Tax = vatValue,
+                            TotalAmount = totalPayable,
+
+                            // GCash Logic: Paid is always Total, Change is always 0
+                            AmountPaid = paymentMethod == "GCash" ? totalPayable : decimal.Parse(CashTenderedAmount),
+                            ChangeAmount = paymentMethod == "GCash" ? 0 : (decimal.Parse(CashTenderedAmount) - totalPayable),
+
+                            PaymentMethod = paymentMethod,
+                            CashLessReference = reference // Add this property to your Sale model if not there
+                        };
+
+                        var saleItems = OrderItemMapper.ToSaleItems(OrderItems);
+                        int result = await salesService.CompleteSaleAsync(sale, saleItems);
+
+                        return result > 0 ? sale.ReceiptNo : null;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex.Message);
+                        return null;
+                    }
+                });
+
+                // --- 4. SUCCESS UI UPDATE ---
+                if (receiptNo != null)
+                {
+                    await MainThread.InvokeOnMainThreadAsync(() =>
+                    {
+                        OrderItems.Clear();
+                        CashTenderedAmount = string.Empty;
+                        GcashRefNumber = string.Empty; // Clear GCash specific field
+                        CalculateTotals();
+                    });
+
+                    await PageHelper.DisplayAlertAsync("Success", $"Order completed!\nReceipt: {receiptNo}", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error: {ex.Message}");
+            }
+            finally
+            {
+                IsProcessing = false;
+                IsCompleteOrderPopupOpen = false;
+            }
+        }
 
         [RelayCommand]
         public async Task GoBackAsync()
