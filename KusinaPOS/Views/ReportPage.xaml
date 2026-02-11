@@ -12,6 +12,7 @@
     xmlns:sfpopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
     xmlns:syncfusion="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
     xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
     Title="ReportPage"
     BackgroundColor="{StaticResource BackgroundDark}">
     <Grid>
@@ -87,7 +88,6 @@
                                     MappingName="LineTotal" />
                             </syncfusion:SfDataGrid.Columns>
                         </syncfusion:SfDataGrid>
-
                     </Grid>
                 </DataTemplate>
             </sfpopup:SfPopup.ContentTemplate>
@@ -328,7 +328,6 @@
                                             </VerticalStackLayout>
                                         </Border>
 
-
                                         <!--  Cash Refunded  -->
                                         <Border
                                             Grid.Column="2"
@@ -419,91 +418,103 @@
                                                     <!--  In the CollectionView.ItemTemplate  -->
                                                     <DataTemplate>
                                                         <Border
-                                                            Margin="0,0,0,10"
-                                                            Padding="12,8"
-                                                            BackgroundColor="{StaticResource CardDark}"
-                                                            Stroke="{StaticResource Gray200}"
-                                                            StrokeShape="RoundRectangle 8"
-                                                            StrokeThickness="1">
+                        BackgroundColor="{StaticResource CardDark}"
+                        Margin="0,0,0,10"
+                        Padding="12,10"
+                        Stroke="{StaticResource Gray200}"
+                        StrokeShape="RoundRectangle 8"
+                        StrokeThickness="1">
 
                                                             <Grid
-                                                                ColumnDefinitions="*,Auto"
-                                                                RowDefinitions="Auto,Auto"
-                                                                RowSpacing="4">
+            ColumnDefinitions="*,Auto"
+            RowDefinitions="Auto,Auto,Auto"
+            RowSpacing="4">
 
                                                                 <Label
-                                                                    Grid.Row="0"
-                                                                    Grid.Column="0"
-                                                                    FontAttributes="Bold"
-                                                                    FontSize="14"
-                                                                    LineBreakMode="TailTruncation"
-                                                                    Text="{Binding ReceiptNo}"
-                                                                    TextColor="{StaticResource TextPrimary}" />
+                Grid.Row="0"
+                Grid.Column="0"
+                FontAttributes="Bold"
+                FontSize="14"
+                LineBreakMode="TailTruncation"
+                Text="{Binding ReceiptNo}"
+                TextColor="{StaticResource TextPrimary}" />
 
                                                                 <Label
-                                                                    Grid.Row="0"
-                                                                    Grid.RowSpan="2"
-                                                                    Grid.Column="1"
-                                                                    FontAttributes="Bold"
-                                                                    FontSize="16"
-                                                                    HorizontalOptions="End"
-                                                                    Text="{Binding TotalAmount, StringFormat='₱{0:N2}'}"
-                                                                    TextColor="{StaticResource Primary}"
-                                                                    VerticalOptions="Center" />
+                Grid.Row="0"
+                Grid.Column="1"
+                Grid.RowSpan="2"
+                FontAttributes="Bold"
+                FontSize="18"
+                HorizontalOptions="End"
+                Text="{Binding TotalAmount, StringFormat='₱{0:N2}'}"
+                TextColor="{StaticResource Primary}"
+                VerticalOptions="Start" />
 
                                                                 <HorizontalStackLayout
-                                                                    Grid.Row="1"
-                                                                    Grid.Column="0"
-                                                                    Spacing="8">
+                Grid.Row="1"
+                Grid.Column="0"
+                Spacing="8">
 
                                                                     <Label
-                                                                        FontAttributes="Bold"
-                                                                        FontSize="11"
-                                                                        Text="{Binding Status}"
-                                                                        VerticalOptions="Center">
+                    FontAttributes="Bold"
+                    FontSize="12"
+                    Text="{Binding PaymentMethod}"
+                    TextColor="{StaticResource TextPrimary}"
+                    VerticalOptions="Center" />
+
+                                                                    <Label
+                    FontSize="12"
+                    Text="•"
+                    TextColor="{StaticResource TextSecondary}"
+                    VerticalOptions="Center" />
+
+                                                                    <Label
+                    FontAttributes="Bold"
+                    FontSize="11"
+                    Text="{Binding Status}"
+                    VerticalOptions="Center">
                                                                         <Label.Triggers>
-                                                                            <DataTrigger
-                                                                                Binding="{Binding Status}"
-                                                                                TargetType="Label"
-                                                                                Value="Completed">
+                                                                            <DataTrigger Binding="{Binding Status}" TargetType="Label" Value="Completed">
                                                                                 <Setter Property="TextColor" Value="{StaticResource Primary}" />
                                                                             </DataTrigger>
-
-                                                                            <DataTrigger
-                                                                                Binding="{Binding Status}"
-                                                                                TargetType="Label"
-                                                                                Value="Voided">
+                                                                            <DataTrigger Binding="{Binding Status}" TargetType="Label" Value="Voided">
                                                                                 <Setter Property="TextColor" Value="#FF453A" />
                                                                             </DataTrigger>
-
-                                                                            <DataTrigger
-                                                                                Binding="{Binding Status}"
-                                                                                TargetType="Label"
-                                                                                Value="Refund">
+                                                                            <DataTrigger Binding="{Binding Status}" TargetType="Label" Value="Refund">
                                                                                 <Setter Property="TextColor" Value="#FF9F0A" />
                                                                             </DataTrigger>
-                                                                            <DataTrigger
-                                                                                Binding="{Binding Status}"
-                                                                                TargetType="Label"
-                                                                                Value="Refunded">
+                                                                            <DataTrigger Binding="{Binding Status}" TargetType="Label" Value="Refunded">
                                                                                 <Setter Property="TextColor" Value="#FF9F0A" />
                                                                             </DataTrigger>
                                                                         </Label.Triggers>
                                                                     </Label>
-
-                                                                    <Label
-                                                                        FontSize="11"
-                                                                        Text="|"
-                                                                        TextColor="{StaticResource TextSecondary}"
-                                                                        VerticalOptions="Center" />
-
-                                                                    <Label
-                                                                        FontSize="11"
-                                                                        Text="{Binding SaleDate, StringFormat='{0:MMM dd, hh:mm tt}'}"
-                                                                        TextColor="{StaticResource TextSecondary}"
-                                                                        VerticalOptions="Center" />
-
                                                                 </HorizontalStackLayout>
+
+                                                                <Grid
+                Grid.Row="2"
+                Grid.ColumnSpan="2"
+                ColumnDefinitions="Auto,*"
+                Margin="0,2,0,0">
+
+                                                                    <HorizontalStackLayout Grid.Column="0" Spacing="4">
+                                                                        <Label
+                        FontSize="11"
+                        Text="Ref:"
+                        TextColor="{StaticResource TextSecondary}" />
+                                                                        <Label
+                        FontSize="11"
+                        FontAttributes="Italic"
+                        Text="{Binding CashLessReference, TargetNullValue='N/A'}"
+                        TextColor="{StaticResource TextSecondary}" />
+                                                                    </HorizontalStackLayout>
+
+                                                                    <Label
+                    Grid.Column="1"
+                    FontSize="11"
+                    HorizontalOptions="End"
+                    Text="{Binding SaleDate, StringFormat='{0:MMM dd, hh:mm tt}'}"
+                    TextColor="{StaticResource TextSecondary}" />
+                                                                </Grid>
                                                             </Grid>
                                                         </Border>
                                                     </DataTemplate>
@@ -538,12 +549,8 @@
                                             </CollectionView>
                                         </Grid>
                                     </Border>
-
                                 </Grid>
-
                             </Grid>
-
-
                         </Grid>
                     </tabView:SfTabItem>
                     <!--#endregion-->
@@ -755,7 +762,6 @@
                                     </Border>
                                 </ScrollView>
 
-
                                 <!--  Column 2: Menu Items Report + Charts  -->
                                 <Grid Grid.Column="1">
                                     <core:SfBusyIndicator
@@ -891,12 +897,9 @@
                                                 </Grid>
                                             </tabView:SfTabItem.Content>
                                         </tabView:SfTabItem>
-
                                     </tabView:SfTabView>
                                 </Grid>
-
                             </Grid>
-
                         </Grid>
                     </tabView:SfTabItem>
 
@@ -1359,20 +1362,14 @@
                                                 </sfListView:SfListView>
                                             </Grid>
                                         </Border>
-
                                     </Grid>
                                 </tabView:SfTabItem>
-
                             </tabView:SfTabView>
-
                         </Grid>
                     </tabView:SfTabItem>
                     <!--#endregion-->
                 </tabView:SfTabView.Items>
             </tabView:SfTabView>
-
-
-
         </Grid>
     </Grid>
 </ContentPage>

@@ -3,13 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using KusinaPOS.Helpers;
 using KusinaPOS.Models;
 using KusinaPOS.Services;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using MenuItem = KusinaPOS.Models.MenuItem;
 
 namespace KusinaPOS.ViewModel
@@ -32,7 +27,6 @@ namespace KusinaPOS.ViewModel
         private readonly MenuItemService menuItemService;
         private readonly MenuItemIngredientService menuItemIngredientService;
         private readonly SalesService salesService;
-        private readonly IDateTimeService _dateTimeService;
         private readonly InventoryItemService inventoryItemService;
         [ObservableProperty]
         private string selectedCategoryName = "All";
@@ -42,28 +36,29 @@ namespace KusinaPOS.ViewModel
 
         [ObservableProperty]
         private ObservableCollection<MenuItem> filteredMenuItems = new();
-
+        [ObservableProperty]
+        private ImageSource? gcashQrSource;
         // ORDER MANAGEMENT
         [ObservableProperty]
         private ObservableCollection<OrderItem> orderItems = new();
 
         [ObservableProperty]
-        private string subtotalAmount = "₱0.00";
+        private string subtotalAmount = "0.00";
 
         [ObservableProperty]
-        private string discountedAmount = "₱0.00";
+        private string discountedAmount = "0.00";
 
         [ObservableProperty]
-        private string vATAmount = "₱0.00";
+        private string vATAmount = "0.00";
 
         [ObservableProperty]
-        private string totalPayableAmount = "₱0.00";
+        private string totalPayableAmount = "0.00";
 
         [ObservableProperty]
         private string cashTenderedAmount = string.Empty;
 
         [ObservableProperty]
-        private string changeAmount = "₱0.00";
+        private string changeAmount = "0.00";
 
         private decimal subtotal = 0;
         private decimal discountValue = 0;
@@ -93,7 +88,6 @@ namespace KusinaPOS.ViewModel
             MenuItemService menuItemService,
             MenuItemIngredientService menuItemIngredientService,
             SalesService salesService,
-            IDateTimeService dateTimeService,
             InventoryItemService inventoryItemService)
         {
             try
@@ -104,7 +98,6 @@ namespace KusinaPOS.ViewModel
                 this.menuItemService = menuItemService;
                 this.menuItemIngredientService = menuItemIngredientService;
                 this.salesService = salesService;
-                _dateTimeService = dateTimeService;
 
                 // Initialize with default values immediately
                 MenuCategories = new ObservableCollection<Category>
@@ -121,10 +114,7 @@ namespace KusinaPOS.ViewModel
                 LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
                 StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
 
-                // Subscribe to datetime updates
-                _dateTimeService.DateTimeChanged += OnDateTimeChanged;
-                CurrentDateTime = _dateTimeService.CurrentDateTime ?? DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-
+                LoadSavedQrCode();
                 Debug.WriteLine("=== POSTerminalViewModel Constructor Completed ===");
             }
             catch (Exception ex)
@@ -157,7 +147,14 @@ namespace KusinaPOS.ViewModel
                 _initLock.Release();
             }
         }
-
+        private void LoadSavedQrCode()
+        {
+            var savedPath = Preferences.Get(SettingsConstants.GCashQRCodeKey, string.Empty);
+            if (!string.IsNullOrEmpty(savedPath) && File.Exists(savedPath))
+            {
+                GcashQrSource = ImageSource.FromFile(savedPath);
+            }
+        }
         // ======================
         // INITIALIZATION
         // ======================
@@ -248,20 +245,6 @@ namespace KusinaPOS.ViewModel
             }
         }
 
-        private void OnDateTimeChanged(object? sender, string dateTime)
-        {
-            try
-            {
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    CurrentDateTime = dateTime;
-                });
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error in OnDateTimeChanged: {ex.Message}");
-            }
-        }
 
         private async Task LoadMenuItemsAsync()
         {
@@ -856,7 +839,7 @@ namespace KusinaPOS.ViewModel
                             TotalAmount = totalPayable,
                             AmountPaid = cashTendered,
                             ChangeAmount = change,
-                            PaymentMethod= "Cash"
+                            PaymentMethod = "Cash"
                         };
 
                         var saleItems = OrderItemMapper.ToSaleItems(OrderItems);
@@ -1017,24 +1000,7 @@ namespace KusinaPOS.ViewModel
             }
         }
 
-        /// <summary>
-        /// Cleanup method - call from page OnDisappearing
-        /// </summary>
-        public void Cleanup()
-        {
-            try
-            {
-                if (_dateTimeService != null)
-                {
-                    _dateTimeService.DateTimeChanged -= OnDateTimeChanged;
-                }
-                Debug.WriteLine("=== POSTerminalViewModel cleaned up ===");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error in cleanup: {ex.Message}");
-            }
-        }
+
         [RelayCommand]
         private void NumberPad(string number)
         {

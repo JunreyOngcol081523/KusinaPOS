@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace KusinaPOS.Helpers
+﻿namespace KusinaPOS.Helpers
 {
     public static class SettingsConstants
     {
@@ -15,7 +11,8 @@ namespace KusinaPOS.Helpers
         // VAT Settings Keys
         public const string AllowVATKey = "AllowVATKey";
         public const string VATValueKey = "VATValueKey";
-
+        //GCASH QR Code Settings Keys
+        public const string GCashQRCodeKey = "GCashQRCodeKey";
         // Printer Settings Keys
         public const string AllowPrintKey = "AllowPrintKey";
         public const string SelectedPrinterKey = "SelectedPrinterKey";

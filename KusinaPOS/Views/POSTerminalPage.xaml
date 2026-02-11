@@ -6,9 +6,9 @@
     xmlns:controls="clr-namespace:KusinaPOS.Views.Controls"
     xmlns:converters="clr-namespace:KusinaPOS.Converters"
     xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+    xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
     xmlns:sfButtons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
     xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
-    xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
     xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
     xmlns:viewmodel="clr-namespace:KusinaPOS.ViewModel"
     BackgroundColor="{StaticResource BackgroundDark}">
@@ -197,244 +197,460 @@
 
             <!--  CURRENT ORDER PANEL  -->
             <Border
-    Grid.Column="2"
-    Padding="5"
-    BackgroundColor="{StaticResource SurfaceDark}"
-    Stroke="{StaticResource Gray300}"
-    StrokeThickness="1">
+                Grid.Column="2"
+                Padding="5"
+                BackgroundColor="{StaticResource SurfaceDark}"
+                Stroke="{StaticResource Gray300}"
+                StrokeThickness="1">
 
                 <Grid RowDefinitions="Auto,*,Auto,Auto" RowSpacing="5">
 
                     <Label
-            Grid.Row="0"
-            FontAttributes="Bold"
-            FontSize="15"
-            Text="Current Order"
-            TextColor="{StaticResource TextPrimary}" />
+                        Grid.Row="0"
+                        FontAttributes="Bold"
+                        FontSize="15"
+                        Text="Current Order"
+                        TextColor="{StaticResource TextPrimary}" />
 
                     <sfList:SfListView
-            Grid.Row="1"
-            ItemsSource="{Binding OrderItems}"
-            SelectionMode="None">
+                        Grid.Row="1"
+                        ItemsSource="{Binding OrderItems}"
+                        SelectionMode="None">
                         <sfList:SfListView.ItemTemplate>
                             <DataTemplate>
                                 <Grid
-                        Padding="0,8"
-                        ColumnDefinitions="*,60,Auto,Auto"
-                        ColumnSpacing="8">
+                                    Padding="0,8"
+                                    ColumnDefinitions="*,60,Auto,Auto"
+                                    ColumnSpacing="8">
 
                                     <VerticalStackLayout Grid.Column="0">
                                         <Label
-                                FontAttributes="Bold"
-                                FontSize="14"
-                                Text="{Binding Name}"
-                                TextColor="{StaticResource TextPrimary}" />
+                                            FontAttributes="Bold"
+                                            FontSize="14"
+                                            Text="{Binding Name}"
+                                            TextColor="{StaticResource TextPrimary}" />
                                         <Label
-                                FontSize="12"
-                                Text="{Binding Price, StringFormat='₱{0:F2}'}"
-                                TextColor="{StaticResource TextSecondary}" />
+                                            FontSize="12"
+                                            Text="{Binding Price, StringFormat='₱{0:F2}'}"
+                                            TextColor="{StaticResource TextSecondary}" />
                                     </VerticalStackLayout>
 
                                     <Label
-                            Grid.Column="1"
-                            FontAttributes="Bold"
-                            FontSize="14"
-                            HorizontalTextAlignment="Center"
-                            Text="{Binding Quantity, StringFormat='x{0}'}"
-                            TextColor="{StaticResource TextPrimary}"
-                            VerticalTextAlignment="Center" />
+                                        Grid.Column="1"
+                                        FontAttributes="Bold"
+                                        FontSize="14"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding Quantity, StringFormat='x{0}'}"
+                                        TextColor="{StaticResource TextPrimary}"
+                                        VerticalTextAlignment="Center" />
 
                                     <Button
-                            Grid.Column="2"
-                            BackgroundColor="{StaticResource Gray200}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:POSTerminalViewModel}}, Path=DecreaseOrderItemQuantityCommand}"
-                            CommandParameter="{Binding .}"
-                            CornerRadius="6"
-                            FontAttributes="Bold"
-                            FontSize="Medium"
-                            HeightRequest="36"
-                            Text="-"
-                            TextColor="{StaticResource TextPrimary}"
-                            WidthRequest="36" />
+                                        Grid.Column="2"
+                                        BackgroundColor="{StaticResource Gray200}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:POSTerminalViewModel}}, Path=DecreaseOrderItemQuantityCommand}"
+                                        CommandParameter="{Binding .}"
+                                        CornerRadius="6"
+                                        FontAttributes="Bold"
+                                        FontSize="Medium"
+                                        HeightRequest="36"
+                                        Text="-"
+                                        TextColor="{StaticResource TextPrimary}"
+                                        WidthRequest="36" />
 
                                     <Button
-                            Grid.Column="3"
-                            BackgroundColor="{StaticResource Primary}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:POSTerminalViewModel}}, Path=IncreaseOrderItemQuantityCommand}"
-                            CommandParameter="{Binding .}"
-                            CornerRadius="6"
-                            FontAttributes="Bold"
-                            FontSize="Medium"
-                            HeightRequest="36"
-                            Text="+"
-                            TextColor="{StaticResource White}"
-                            WidthRequest="36" />
+                                        Grid.Column="3"
+                                        BackgroundColor="{StaticResource Primary}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:POSTerminalViewModel}}, Path=IncreaseOrderItemQuantityCommand}"
+                                        CommandParameter="{Binding .}"
+                                        CornerRadius="6"
+                                        FontAttributes="Bold"
+                                        FontSize="Medium"
+                                        HeightRequest="36"
+                                        Text="+"
+                                        TextColor="{StaticResource White}"
+                                        WidthRequest="36" />
                                 </Grid>
                             </DataTemplate>
                         </sfList:SfListView.ItemTemplate>
                     </sfList:SfListView>
 
-                    <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Padding="5,10">
-                        <Label Text="Subtotal" FontSize="14" TextColor="{StaticResource TextSecondary}" VerticalTextAlignment="Center" />
+                    <Grid
+                        Grid.Row="2"
+                        Padding="5,10"
+                        ColumnDefinitions="*,Auto">
                         <Label
-                Grid.Column="1"
-                FontSize="20"
-                FontAttributes="Bold"
-                Text="{Binding SubtotalAmount, StringFormat='₱{0:N2}'}"
-                TextColor="{StaticResource TextPrimary}" />
+                            FontSize="14"
+                            Text="Subtotal"
+                            TextColor="{StaticResource TextSecondary}"
+                            VerticalTextAlignment="Center" />
+                        <Label
+                            Grid.Column="1"
+                            FontAttributes="Bold"
+                            FontSize="20"
+                            Text="{Binding SubtotalAmount, StringFormat='₱{0:N2}'}"
+                            TextColor="{StaticResource TextPrimary}" />
                     </Grid>
 
                     <Button
-            Grid.Row="3"
-            BackgroundColor="{StaticResource Primary}"
-            Command="{Binding CompleteOrderCommand}"
-            CornerRadius="12"
-            HeightRequest="60"
-            FontSize="18"
-            FontAttributes="Bold"
-            Text="COMPLETE ORDER"
-            TextColor="{StaticResource White}" />
+                        Grid.Row="3"
+                        BackgroundColor="{StaticResource Primary}"
+                        Command="{Binding CompleteOrderCommand}"
+                        CornerRadius="12"
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        HeightRequest="60"
+                        Text="COMPLETE ORDER"
+                        TextColor="{StaticResource White}" />
 
                 </Grid>
             </Border>
 
         </Grid>
-        <popup:SfPopup x:Name="completeOrderPopup"
-               IsOpen="{Binding IsCompleteOrderPopupOpen}"     
-               HeaderTitle="Complete Order"
-               WidthRequest="450"
-               HeightRequest="600"
-               ShowFooter="False"
-               Grid.RowSpan="2"
-               StaysOpen="True">
+        <popup:SfPopup
+            x:Name="completeOrderPopup"
+            Grid.RowSpan="2"
+            HeaderTitle="Complete Order"
+            HeightRequest="650"
+            IsOpen="{Binding IsCompleteOrderPopupOpen}"
+            ShowCloseButton="True"
+            ShowFooter="False"
+            StaysOpen="True"
+            WidthRequest="450">
             <popup:SfPopup.PopupStyle>
-                <popup:PopupStyle 
-        HeaderBackground="{StaticResource SurfaceDark}"
-        MessageBackground="{StaticResource SurfaceDark}"
-        Stroke="{StaticResource Gray300}"
-        HeaderTextColor="{StaticResource TextPrimary}" />
+                <popup:PopupStyle
+                    HeaderBackground="{StaticResource SurfaceDark}"
+                    HeaderTextColor="{StaticResource TextPrimary}"
+                    MessageBackground="{StaticResource SurfaceDark}"
+                    Stroke="{StaticResource Gray300}" />
             </popup:SfPopup.PopupStyle>
             <popup:SfPopup.ContentTemplate>
                 <DataTemplate>
-                    <Grid BackgroundColor="{StaticResource SurfaceDark}" Padding="10">
-                        <tabView:SfTabView x:Name="paymentTabView" 
-                               IndicatorPlacement="Top">
+                    <Grid Padding="10" BackgroundColor="{StaticResource SurfaceDark}">
+                        <ScrollView>
+                            <tabView:SfTabView x:Name="paymentTabView" IndicatorPlacement="Top">
 
-                            <tabView:SfTabItem Header="Cash" BackgroundColor="{StaticResource CardBackground}" TextColor="{StaticResource TextPrimary}">
-                                <tabView:SfTabItem.Content>
-                                    <VerticalStackLayout Padding="20" Spacing="15">
-
-                                        <Grid ColumnDefinitions="*,Auto">
-                                            <Label Text="Subtotal:" TextColor="{StaticResource TextSecondary}"/>
-                                            <Label Grid.Column="1" Text="{Binding SubtotalAmount, StringFormat='₱{0:N2}'}" FontAttributes="Bold"/>
-                                        </Grid>
-
-                                        <Grid ColumnDefinitions="*,Auto">
-                                            <Label Text="Discounted:" TextColor="{StaticResource TextSecondary}"/>
-                                            <Label Grid.Column="1" Text="{Binding DiscountedAmount, StringFormat='₱{0:N2}'}" TextColor="{StaticResource TextSecondary}"/>
-                                        </Grid>
-
-                                        <Grid ColumnDefinitions="*,Auto">
-                                            <Label Text="VAT (12%):" TextColor="{StaticResource TextSecondary}"/>
-                                            <Label Grid.Column="1" Text="{Binding VATAmount, StringFormat='₱{0:N2}'}"/>
-                                        </Grid>
-
-                                        <BoxView HeightRequest="1" Color="{StaticResource Gray300}" Margin="0,10"/>
-
-                                        <Grid ColumnDefinitions="*,Auto">
-                                            <Label Text="Total Amount:" FontSize="20" FontAttributes="Bold"/>
-                                            <Label Grid.Column="1" Text="{Binding TotalPayableAmount, StringFormat='₱{0:N2}'}" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
-                                        </Grid>
-
-                                        <VerticalStackLayout Spacing="5" Margin="0,20,0,0">
-                                            <Label Text="Cash Tendered:" FontAttributes="Bold"/>
-                                            <Entry Text="{Binding CashTenderedAmount}" 
-                                       Keyboard="Numeric" 
-                                       FontSize="24" 
-                                       HorizontalTextAlignment="End"
-                                       Placeholder="0.00"/>
-                                        </VerticalStackLayout>
-
-                                        <Grid ColumnDefinitions="*,Auto">
-                                            <Label Text="Change:" FontSize="18"/>
-                                            <Label Grid.Column="1" Text="{Binding ChangeAmount, StringFormat='₱{0:N2}'}" FontSize="18" TextColor="#28a745" FontAttributes="Bold"/>
-                                        </Grid>
-
-                                        <Button Text="CONFIRM CASH PAYMENT" 
-                                    Margin="0,20,0,0"
-                                    HeightRequest="50"
-                                    BackgroundColor="{StaticResource Primary}"
-                                    Command="{Binding ConfirmPaymentCommand}"/>
-                                    </VerticalStackLayout>
-                                </tabView:SfTabItem.Content>
-                            </tabView:SfTabItem>
-
-                            <tabView:SfTabItem Header="GCash" BackgroundColor="{StaticResource CardBackground}" TextColor="{StaticResource TextPrimary}">
-                                <tabView:SfTabItem.Content>
-                                    <ScrollView>
+                                <!--#region CASH-->
+                                <tabView:SfTabItem
+                                    BackgroundColor="{StaticResource CardBackground}"
+                                    Header="Cash"
+                                    TextColor="{StaticResource TextPrimary}">
+                                    <tabView:SfTabItem.Content>
                                         <VerticalStackLayout Padding="20" Spacing="15">
 
-                                            <VerticalStackLayout Spacing="8" Margin="0,0,0,10">
-                                                <Grid ColumnDefinitions="*,Auto">
-                                                    <Label Text="Subtotal:" TextColor="{StaticResource TextSecondary}"/>
-                                                    <Label Grid.Column="1" Text="{Binding SubtotalAmount, StringFormat='₱{0:N2}'}" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
-                                                </Grid>
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <Label Text="Subtotal:" TextColor="{StaticResource TextSecondary}" />
+                                                <Label
+                                                    Grid.Column="1"
+                                                    FontAttributes="Bold"
+                                                    Text="{Binding SubtotalAmount, StringFormat='₱{0:N2}'}" />
+                                            </Grid>
 
-                                                <Grid ColumnDefinitions="*,Auto">
-                                                    <Label Text="Discounted:" TextColor="{StaticResource TextSecondary}"/>
-                                                    <Label Grid.Column="1" Text="{Binding DiscountedAmount, StringFormat='₱{0:N2}'}" TextColor="{StaticResource TextSecondary}"/>
-                                                </Grid>
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <Label Text="Discounted:" TextColor="{StaticResource TextSecondary}" />
+                                                <Label
+                                                    Grid.Column="1"
+                                                    Text="{Binding DiscountedAmount, StringFormat='₱{0:N2}'}"
+                                                    TextColor="{StaticResource TextSecondary}" />
+                                            </Grid>
 
-                                                <Grid ColumnDefinitions="*,Auto">
-                                                    <Label Text="VAT (12%):" TextColor="{StaticResource TextSecondary}"/>
-                                                    <Label Grid.Column="1" Text="{Binding VATAmount, StringFormat='₱{0:N2}'}" TextColor="{StaticResource TextPrimary}"/>
-                                                </Grid>
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <Label Text="VAT (12%):" TextColor="{StaticResource TextSecondary}" />
+                                                <Label Grid.Column="1" Text="{Binding VATAmount, StringFormat='₱{0:N2}'}" />
+                                            </Grid>
 
-                                                <BoxView HeightRequest="1" Color="{StaticResource Gray300}" Margin="0,5"/>
+                                            <BoxView
+                                                Margin="0,10"
+                                                HeightRequest="1"
+                                                Color="{StaticResource Gray300}" />
 
-                                                <Grid ColumnDefinitions="*,Auto">
-                                                    <Label Text="Total Amount:" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
-                                                    <Label Grid.Column="1" Text="{Binding TotalPayableAmount, StringFormat='₱{0:N2}'}" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
-                                                </Grid>
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <Label
+                                                    FontAttributes="Bold"
+                                                    FontSize="20"
+                                                    Text="Total Amount:" />
+                                                <Label
+                                                    Grid.Column="1"
+                                                    FontAttributes="Bold"
+                                                    FontSize="20"
+                                                    Text="{Binding TotalPayableAmount, StringFormat='₱{0:N2}'}"
+                                                    TextColor="{StaticResource Primary}" />
+                                            </Grid>
+
+                                            <VerticalStackLayout Margin="0,20,0,0" Spacing="5">
+                                                <Label FontAttributes="Bold" Text="Cash Tendered:" />
+                                                <Label
+                                                    FontSize="20"
+                                                    HorizontalTextAlignment="Center"
+                                                    Text="{Binding CashTenderedAmount, StringFormat='₱{0:N2}'}"
+                                                    TextColor="{StaticResource TextPrimary}" />
+                                            </VerticalStackLayout>
+                                            <!--  Compact Horizontal Number Pad  -->
+                                            <VerticalStackLayout Margin="0,10,0,0" Spacing="5">
+
+                                                <!--  Row 1  -->
+                                                <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
+                                                    <Button
+                                                        Padding="0"
+                                                        BackgroundColor="{StaticResource BackgroundDark}"
+                                                        Command="{Binding NumberPadCommand}"
+                                                        CommandParameter="1"
+                                                        FontAttributes="Bold"
+                                                        FontSize="12"
+                                                        HeightRequest="35"
+                                                        Text="1"
+                                                        WidthRequest="35" />
+
+                                                    <Button
+                                                        Padding="0"
+                                                        BackgroundColor="{StaticResource BackgroundDark}"
+                                                        Command="{Binding NumberPadCommand}"
+                                                        CommandParameter="2"
+                                                        FontAttributes="Bold"
+                                                        FontSize="12"
+                                                        HeightRequest="35"
+                                                        Text="2"
+                                                        WidthRequest="35" />
+
+                                                    <Button
+                                                        Padding="0"
+                                                        BackgroundColor="{StaticResource BackgroundDark}"
+                                                        Command="{Binding NumberPadCommand}"
+                                                        CommandParameter="3"
+                                                        FontAttributes="Bold"
+                                                        FontSize="12"
+                                                        HeightRequest="35"
+                                                        Text="3"
+                                                        WidthRequest="35" />
+
+                                                    <Button
+                                                        Padding="0"
+                                                        BackgroundColor="{StaticResource BackgroundDark}"
+                                                        Command="{Binding NumberPadCommand}"
+                                                        CommandParameter="4"
+                                                        FontAttributes="Bold"
+                                                        FontSize="12"
+                                                        HeightRequest="35"
+                                                        Text="4"
+                                                        WidthRequest="35" />
+
+                                                    <Button
+                                                        Padding="0"
+                                                        BackgroundColor="{StaticResource BackgroundDark}"
+                                                        Command="{Binding NumberPadCommand}"
+                                                        CommandParameter="5"
+                                                        FontAttributes="Bold"
+                                                        FontSize="12"
+                                                        HeightRequest="35"
+                                                        Text="5"
+                                                        WidthRequest="35" />
+
+                                                    <Button
+                                                        Padding="0"
+                                                        BackgroundColor="{StaticResource BackgroundDark}"
+                                                        Command="{Binding NumberPadCommand}"
+                                                        CommandParameter="6"
+                                                        FontAttributes="Bold"
+                                                        FontSize="12"
+                                                        HeightRequest="35"
+                                                        Text="6"
+                                                        WidthRequest="35" />
+                                                </HorizontalStackLayout>
+
+                                                <!--  Row 2  -->
+                                                <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
+                                                    <Button
+                                                        Padding="0"
+                                                        BackgroundColor="{StaticResource BackgroundDark}"
+                                                        Command="{Binding NumberPadCommand}"
+                                                        CommandParameter="7"
+                                                        FontAttributes="Bold"
+                                                        FontSize="12"
+                                                        HeightRequest="35"
+                                                        Text="7"
+                                                        WidthRequest="35" />
+
+                                                    <Button
+                                                        Padding="0"
+                                                        BackgroundColor="{StaticResource BackgroundDark}"
+                                                        Command="{Binding NumberPadCommand}"
+                                                        CommandParameter="8"
+                                                        FontAttributes="Bold"
+                                                        FontSize="12"
+                                                        HeightRequest="35"
+                                                        Text="8"
+                                                        WidthRequest="35" />
+
+                                                    <Button
+                                                        Padding="0"
+                                                        BackgroundColor="{StaticResource BackgroundDark}"
+                                                        Command="{Binding NumberPadCommand}"
+                                                        CommandParameter="9"
+                                                        FontAttributes="Bold"
+                                                        FontSize="12"
+                                                        HeightRequest="35"
+                                                        Text="9"
+                                                        WidthRequest="35" />
+
+                                                    <Button
+                                                        Padding="0"
+                                                        BackgroundColor="{StaticResource BackgroundDark}"
+                                                        Command="{Binding NumberPadCommand}"
+                                                        CommandParameter="0"
+                                                        FontAttributes="Bold"
+                                                        FontSize="12"
+                                                        HeightRequest="35"
+                                                        Text="0"
+                                                        WidthRequest="35" />
+
+                                                    <Button
+                                                        Padding="0"
+                                                        BackgroundColor="#dc3545"
+                                                        Command="{Binding BackspaceCommand}"
+                                                        FontAttributes="Bold"
+                                                        FontSize="12"
+                                                        HeightRequest="35"
+                                                        Text="⌫"
+                                                        TextColor="White"
+                                                        WidthRequest="50" />
+                                                </HorizontalStackLayout>
+
                                             </VerticalStackLayout>
 
-                                            <BoxView HeightRequest="1" Color="{StaticResource Gray300}" />
 
-                                            <Label Text="Scan to Pay via GCash" HorizontalOptions="Center" FontAttributes="Bold" Margin="0,10,0,0" TextColor="{StaticResource TextPrimary}"/>
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <Label FontSize="18" Text="Change:" />
+                                                <Label
+                                                    Grid.Column="1"
+                                                    FontAttributes="Bold"
+                                                    FontSize="18"
+                                                    Text="{Binding ChangeAmount, StringFormat='₱{0:N2}'}"
+                                                    TextColor="#28a745" />
+                                            </Grid>
 
-                                            <Border StrokeThickness="1" Stroke="{StaticResource Gray300}" Padding="5" HorizontalOptions="Center">
-                                                <Image Source="gcash_qr_placeholder.png" 
-                           HeightRequest="200" 
-                           WidthRequest="200"
-                           Aspect="AspectFit"/>
-                                            </Border>
-
-                                            <VerticalStackLayout Spacing="5" WidthRequest="300" HorizontalOptions="Center">
-                                                <Label Text="Reference Number:" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
-                                                <Entry Placeholder="Enter 13-digit Ref #" 
-                           Text="{Binding GcashRefNumber}"
-                           Keyboard="Numeric"
-                           MaxLength="13"
-                           FontSize="18"
-                           HorizontalTextAlignment="Center"
-                           BackgroundColor="{StaticResource Gray200}"
-                           TextColor="{StaticResource TextPrimary}"/>
-                                            </VerticalStackLayout>
-
-                                            <Button Text="CONFIRM GCASH PAYMENT" 
-                        HeightRequest="55"
-                        WidthRequest="300"
-                        HorizontalOptions="Center"
-                        BackgroundColor="#28a745"
-                        FontSize="16"
-                        FontAttributes="Bold"
-                        Command="{Binding ConfirmGcashPaymentCommand}"/>
+                                            <Button
+                                                Margin="0,20,0,0"
+                                                BackgroundColor="{StaticResource Primary}"
+                                                Command="{Binding ConfirmPaymentCommand}"
+                                                HeightRequest="50"
+                                                Text="CONFIRM CASH PAYMENT" />
                                         </VerticalStackLayout>
-                                    </ScrollView>
-                                </tabView:SfTabItem.Content>
-                            </tabView:SfTabItem>
+                                    </tabView:SfTabItem.Content>
+                                </tabView:SfTabItem>
+                                <!--#endregion-->
 
-                        </tabView:SfTabView>
+                                <!--#region GCASH-->
+                                <tabView:SfTabItem
+                                    BackgroundColor="{StaticResource CardBackground}"
+                                    Header="GCash"
+                                    TextColor="{StaticResource TextPrimary}">
+                                    <tabView:SfTabItem.Content>
+                                        <ScrollView>
+                                            <VerticalStackLayout Padding="20" Spacing="15">
+
+                                                <VerticalStackLayout Margin="0,0,0,10" Spacing="8">
+                                                    <Grid ColumnDefinitions="*,Auto">
+                                                        <Label Text="Subtotal:" TextColor="{StaticResource TextSecondary}" />
+                                                        <Label
+                                                            Grid.Column="1"
+                                                            FontAttributes="Bold"
+                                                            Text="{Binding SubtotalAmount, StringFormat='₱{0:N2}'}"
+                                                            TextColor="{StaticResource TextPrimary}" />
+                                                    </Grid>
+
+                                                    <Grid ColumnDefinitions="*,Auto">
+                                                        <Label Text="Discounted:" TextColor="{StaticResource TextSecondary}" />
+                                                        <Label
+                                                            Grid.Column="1"
+                                                            Text="{Binding DiscountedAmount, StringFormat='₱{0:N2}'}"
+                                                            TextColor="{StaticResource TextSecondary}" />
+                                                    </Grid>
+
+                                                    <Grid ColumnDefinitions="*,Auto">
+                                                        <Label Text="VAT (12%):" TextColor="{StaticResource TextSecondary}" />
+                                                        <Label
+                                                            Grid.Column="1"
+                                                            Text="{Binding VATAmount, StringFormat='₱{0:N2}'}"
+                                                            TextColor="{StaticResource TextPrimary}" />
+                                                    </Grid>
+
+                                                    <BoxView
+                                                        Margin="0,5"
+                                                        HeightRequest="1"
+                                                        Color="{StaticResource Gray300}" />
+
+                                                    <Grid ColumnDefinitions="*,Auto">
+                                                        <Label
+                                                            FontAttributes="Bold"
+                                                            FontSize="18"
+                                                            Text="Total Amount:"
+                                                            TextColor="{StaticResource TextPrimary}" />
+                                                        <Label
+                                                            Grid.Column="1"
+                                                            FontAttributes="Bold"
+                                                            FontSize="20"
+                                                            Text="{Binding TotalPayableAmount, StringFormat='₱{0:N2}'}"
+                                                            TextColor="{StaticResource Primary}" />
+                                                    </Grid>
+                                                </VerticalStackLayout>
+
+                                                <BoxView HeightRequest="1" Color="{StaticResource Gray300}" />
+
+                                                <Label
+                                                    Margin="0,10,0,0"
+                                                    FontAttributes="Bold"
+                                                    HorizontalOptions="Center"
+                                                    Text="Scan to Pay via GCash"
+                                                    TextColor="{StaticResource TextPrimary}" />
+
+                                                <Border
+                                                    Padding="5"
+                                                    HorizontalOptions="Center"
+                                                    Stroke="{StaticResource Gray300}"
+                                                    StrokeThickness="1">
+                                                    <Image
+                                                        Aspect="AspectFit"
+                                                        HeightRequest="200"
+                                                        Source="{Binding GcashQrSource}"
+                                                        WidthRequest="200" />
+                                                </Border>
+
+                                                <VerticalStackLayout
+                                                    HorizontalOptions="Center"
+                                                    Spacing="5"
+                                                    WidthRequest="300">
+                                                    <Label
+                                                        FontAttributes="Bold"
+                                                        Text="Reference Number:"
+                                                        TextColor="{StaticResource TextPrimary}" />
+                                                    <Entry
+                                                        BackgroundColor="{StaticResource Gray200}"
+                                                        FontSize="18"
+                                                        HorizontalTextAlignment="Center"
+                                                        Keyboard="Numeric"
+                                                        MaxLength="13"
+                                                        Placeholder="Enter 13-digit Ref #"
+                                                        Text="{Binding GcashRefNumber}"
+                                                        TextColor="{StaticResource TextPrimary}" />
+                                                </VerticalStackLayout>
+
+                                                <Button
+                                                    BackgroundColor="#28a745"
+                                                    Command="{Binding ConfirmGcashPaymentCommand}"
+                                                    FontAttributes="Bold"
+                                                    FontSize="16"
+                                                    HeightRequest="55"
+                                                    HorizontalOptions="Center"
+                                                    Text="CONFIRM GCASH PAYMENT"
+                                                    WidthRequest="300" />
+                                            </VerticalStackLayout>
+                                        </ScrollView>
+                                    </tabView:SfTabItem.Content>
+                                </tabView:SfTabItem>
+                                <!--#endregion-->
+
+                            </tabView:SfTabView>
+                        </ScrollView>
+
                     </Grid>
                 </DataTemplate>
             </popup:SfPopup.ContentTemplate>

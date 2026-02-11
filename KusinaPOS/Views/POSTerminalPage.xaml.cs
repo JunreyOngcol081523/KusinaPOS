@@ -62,20 +62,6 @@ namespace KusinaPOS.Views
             }
         }
 
-        protected override void OnDisappearing()
-        {
-            base.OnDisappearing();
-
-            try
-            {
-                Debug.WriteLine("POSTerminalPage OnDisappearing");
-                _viewModel?.Cleanup();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error in OnDisappearing: {ex.Message}");
-            }
-        }
         protected override bool OnBackButtonPressed()
         {
             // Return true to "consume" the event (stop the back action)

@@ -4,22 +4,18 @@ using KusinaPOS.Enums;
 using KusinaPOS.Helpers;
 using KusinaPOS.Models;
 using KusinaPOS.Services;
-using KusinaPOS.Views;
 using SQLite;
 using Syncfusion.XlsIO;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Net.Http;
-using System.Text;
 
 namespace KusinaPOS.ViewModel
 {
-    public partial class SettingsViewModel : ObservableObject {
+    public partial class SettingsViewModel : ObservableObject
+    {
         public RefundSaleViewModel RefundSaleVM { get; }
-        private readonly SettingsService? _settingsService=null;
-        private readonly IDateTimeService? _dateTimeService;
+        private readonly SettingsService? _settingsService = null;
+
         private readonly CategoryService? _categoryService;
         private readonly MenuItemService? _menuItemService;
         private readonly SaveService? _saveService;
@@ -35,7 +31,7 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty]
         private string _storeAddress = string.Empty;
         [ObservableProperty]
-        private string _storeLogo= string.Empty;
+        private string _storeLogo = string.Empty;
         [ObservableProperty]
         private Image _logoFile = null;
         [ObservableProperty]
@@ -69,14 +65,14 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty] private Category selectedCategory;
         #region constructor
         public SettingsViewModel(SettingsService settingsService,
-                                IDateTimeService dateTimeService,
+
                                 CategoryService categoryService,
                                 MenuItemService menuItemService,
                                 SaveService saveService,
                                 InventoryItemService inventoryItemService,
-                                InventoryTransactionService? inventoryTransactionService, 
+                                InventoryTransactionService? inventoryTransactionService,
                                 IServiceProvider serviceProvider)
-                                
+
         {
 
 
@@ -96,21 +92,20 @@ namespace KusinaPOS.ViewModel
                 LoggedInUserId = Preferences.Get(DatabaseConstants.LoggedInUserIdKey, 0).ToString();
                 LoggedInUserName = Preferences.Get(DatabaseConstants.LoggedInUserNameKey, string.Empty);
                 StoreName = Preferences.Get(DatabaseConstants.StoreNameKey, "Kusina POS");
-                _dateTimeService = dateTimeService;
-                _dateTimeService.DateTimeChanged += OnDateTimeChanged;
-                CurrentDateTime = _dateTimeService.CurrentDateTime;
+
 
                 LoadStoreSettings();
                 LoadAboutHtml();
                 LoadCategories();
                 LoadPOSSettings();
+                LoadSavedQrCode();
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error in MenuItemViewModel constructor: {ex.Message}");
             }
 
-            
+
         }
 
         public SettingsViewModel(SettingsService settingsService)
@@ -318,7 +313,7 @@ namespace KusinaPOS.ViewModel
             var (storeName, storeAddress) = SettingsService.LoadStoreSettings();
             StoreName = storeName;
             StoreAddress = storeAddress;
-        } 
+        }
         #endregion
 
         #region database settings
@@ -752,6 +747,94 @@ namespace KusinaPOS.ViewModel
             // PrinterConnectionStatus = "Connection failed";
             // PrinterConnectionStatusColor = Colors.Red;
         }
+        [ObservableProperty]
+        private ImageSource? gcashQrSource;
+        [RelayCommand]
+        private async Task UploadQrAsync()
+        {
+            try
+            {
+                var result = await MediaPicker.PickPhotosAsync(new MediaPickerOptions
+                {
+                    Title = "Select GCash QR Code",
+                    SelectionLimit = 1
+                });
+
+                var photo = result?.FirstOrDefault();
+
+                if (photo != null)
+                {
+                    // Save the image to local storage
+                    var localFilePath = await SaveImageToLocalStorage(photo);
+
+                    // Update the image source
+                    GcashQrSource = ImageSource.FromFile(localFilePath);
+
+                    // Save the path to preferences
+                    Preferences.Set(SettingsConstants.GCashQRCodeKey, localFilePath);
+
+                    await PageHelper.DisplayAlertAsync("Success", "QR code uploaded successfully!", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                await PageHelper.DisplayAlertAsync("Error", $"Failed to upload QR code: {ex.Message}", "OK");
+            }
+        }
+        [RelayCommand]
+        private async Task RemoveQrAsync()
+        {
+            var confirm = await PageHelper.DisplayConfirmAsync(
+                "Confirm",
+                "Are you sure you want to remove the QR code?",
+                "Yes",
+                "No");
+
+            if (confirm)
+            {
+                // Delete the saved file
+                var savedPath = Preferences.Get(SettingsConstants.GCashQRCodeKey, string.Empty);
+                if (!string.IsNullOrEmpty(savedPath) && File.Exists(savedPath))
+                {
+                    try
+                    {
+                        File.Delete(savedPath);
+                    }
+                    catch { /* Handle silently */ }
+                }
+
+                // Clear the preference
+                Preferences.Remove(SettingsConstants.GCashQRCodeKey);
+
+                // Clear the image source
+                GcashQrSource = null;
+
+                await PageHelper.DisplayAlertAsync("Success", "QR code removed successfully!", "OK");
+            }
+        }
+
+        private void LoadSavedQrCode()
+        {
+            var savedPath = Preferences.Get(SettingsConstants.GCashQRCodeKey, string.Empty);
+            if (!string.IsNullOrEmpty(savedPath) && File.Exists(savedPath))
+            {
+                GcashQrSource = ImageSource.FromFile(savedPath);
+            }
+        }
+
+        private async Task<string> SaveImageToLocalStorage(FileResult fileResult)
+        {
+            // Create a unique filename
+            var fileName = $"gcash_qr_{DateTime.Now:yyyyMMddHHmmss}.jpg";
+            var localFilePath = Path.Combine(FileSystem.AppDataDirectory, fileName);
+
+            // Copy the file to app data directory
+            using var stream = await fileResult.OpenReadAsync();
+            using var fileStream = File.Create(localFilePath);
+            await stream.CopyToAsync(fileStream);
+
+            return localFilePath;
+        }
         //========================END POS SETTINGS========================// 
         #endregion
 
@@ -797,7 +880,7 @@ namespace KusinaPOS.ViewModel
                 };
 
                 // Syncfusion specific property names:
-                unitValidation.IsSuppressDropDownArrow = false;     
+                unitValidation.IsSuppressDropDownArrow = false;
                 unitValidation.ShowErrorBox = true;         // This replaces ShowError
                 unitValidation.ErrorBoxText = "Please select a valid unit from the list";
                 unitValidation.ErrorBoxTitle = "Invalid Selection";

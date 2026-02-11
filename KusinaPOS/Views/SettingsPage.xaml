@@ -756,6 +756,91 @@
                                                                 Text="{Binding PrinterConnectionStatus}"
                                                                 TextColor="{Binding PrinterConnectionStatusColor}" />
                                                         </Border>
+                                                        <!--#region upload gcash qrcode-->
+                                                        <Border
+                                                            Padding="15"
+                                                            BackgroundColor="{StaticResource CardBackground}"
+                                                            Stroke="{StaticResource TextSecondary}"
+                                                            StrokeShape="RoundRectangle 8"
+                                                            StrokeThickness="1">
+                                                            <VerticalStackLayout Spacing="12">
+
+                                                                <HorizontalStackLayout Spacing="8">
+                                                                    <Label
+                                                                        FontSize="18"
+                                                                        Text="📱"
+                                                                        VerticalOptions="Center" />
+                                                                    <Label
+                                                                        FontAttributes="Bold"
+                                                                        FontSize="14"
+                                                                        Text="GCash QR Settings"
+                                                                        TextColor="{StaticResource TextPrimary}"
+                                                                        VerticalOptions="Center" />
+                                                                </HorizontalStackLayout>
+
+                                                                <BoxView
+                                                                    Margin="0,5,0,10"
+                                                                    HeightRequest="1"
+                                                                    Opacity="0.3"
+                                                                    Color="{StaticResource TextSecondary}" />
+
+                                                                <Label
+                                                                    Margin="0,0,0,5"
+                                                                    FontSize="11"
+                                                                    Text="Upload your GCash QR code to show it to customers during checkout."
+                                                                    TextColor="{StaticResource TextSecondary}" />
+
+                                                                <Border
+                                                                    BackgroundColor="{StaticResource CardDark}"
+                                                                    HeightRequest="180"
+                                                                    HorizontalOptions="Center"
+                                                                    Stroke="{StaticResource TextSecondary}"
+                                                                    StrokeDashArray="4,2"
+                                                                    StrokeShape="RoundRectangle 12"
+                                                                    WidthRequest="180">
+
+                                                                    <Grid>
+                                                                        <VerticalStackLayout
+                                                                            HorizontalOptions="Center"
+                                                                            IsVisible="{Binding GcashQrSource, Converter={StaticResource NullToTrueConverter}}"
+                                                                            VerticalOptions="Center">
+                                                                            <Label
+                                                                                FontSize="30"
+                                                                                HorizontalOptions="Center"
+                                                                                Text="📷" />
+                                                                            <Label
+                                                                                FontSize="11"
+                                                                                Text="No QR Uploaded"
+                                                                                TextColor="{StaticResource TextSecondary}" />
+                                                                        </VerticalStackLayout>
+
+                                                                        <Image
+                                                                            Margin="10"
+                                                                            Aspect="AspectFit"
+                                                                            Source="{Binding GcashQrSource}" />
+                                                                    </Grid>
+                                                                </Border>
+
+                                                                <Button
+                                                                    Margin="0,10,0,0"
+                                                                    BackgroundColor="{StaticResource Primary}"
+                                                                    Command="{Binding UploadQrCommand}"
+                                                                    CornerRadius="6"
+                                                                    HeightRequest="44"
+                                                                    Text="📤 Upload QR Image"
+                                                                    TextColor="White" />
+
+                                                                <Button
+                                                                    BackgroundColor="Transparent"
+                                                                    Command="{Binding RemoveQrCommand}"
+                                                                    FontSize="12"
+                                                                    HeightRequest="30"
+                                                                    Text="Remove Current QR"
+                                                                    TextColor="#FF453A" />
+
+                                                            </VerticalStackLayout>
+                                                        </Border>
+                                                        <!--#endregion-->
                                                     </VerticalStackLayout>
                                                 </Border>
 
