@@ -51,7 +51,12 @@ namespace KusinaPOS.Services
                 .Table<InventoryItem>()
                 .FirstOrDefaultAsync(i => i.Id == id);
         }
-
+        public async Task<bool> GetInventoryStatusById(int id)
+        {
+            await InitializeAsync();
+            var item = await GetInventoryItemByIdAsync(id);
+            return item != null && item.IsActive;
+        }
         // UPDATE
         public async Task UpdateInventoryItemAsync(InventoryItem item)
         {

@@ -382,7 +382,12 @@ namespace KusinaPOS.ViewModel
                     await PageHelper.DisplayAlertAsync("Selection Required", "Please select both a menu item and an inventory item before adding an ingredient.", "OK");
                     return;
                 }
-
+                bool inventoryItemActive = await inventoryItemService.GetInventoryStatusById(SelectedInventoryItem.Id);
+                if (!inventoryItemActive)
+                {
+                    await PageHelper.DisplayAlertAsync("Inactive Inventory Item", "The selected inventory item is inactive and cannot be added as an ingredient.", "OK");
+                    return;
+                }
                 if (MenuItemIngredients.Any(i => i.InventoryItemId == SelectedInventoryItem.Id))
                 {
                     await PageHelper.DisplayAlertAsync("Duplicate Ingredient", "This inventory item is already added as an ingredient for the selected menu item.", "OK");
