@@ -21,6 +21,7 @@ namespace KusinaPOS.ViewModel
         private readonly SaveService? _saveService;
         private readonly InventoryItemService? _inventoryItemService;
         private readonly InventoryTransactionService? _inventoryTransactionService;
+        private readonly IDatabaseService _databaseService;
         //===================================
         // Observable Properties
         //===================================
@@ -71,7 +72,8 @@ namespace KusinaPOS.ViewModel
                                 SaveService saveService,
                                 InventoryItemService inventoryItemService,
                                 InventoryTransactionService? inventoryTransactionService,
-                                IServiceProvider serviceProvider)
+                                IServiceProvider serviceProvider,
+                                IDatabaseService databaseService)
 
         {
 
@@ -85,6 +87,7 @@ namespace KusinaPOS.ViewModel
                 _saveService = saveService;
                 _inventoryItemService = inventoryItemService;
                 _inventoryTransactionService = inventoryTransactionService;
+
                 BackupLocation = Preferences.Get(DatabaseConstants.BackupLocationKey, DatabaseConstants.BackupFolder);
                 ImagePath = _settingsService.GetStoreLogo;
 
@@ -105,7 +108,7 @@ namespace KusinaPOS.ViewModel
                 Debug.WriteLine($"Error in MenuItemViewModel constructor: {ex.Message}");
             }
 
-
+            _databaseService = databaseService;
         }
 
         public SettingsViewModel(SettingsService settingsService)
@@ -568,6 +571,109 @@ namespace KusinaPOS.ViewModel
                 Debug.WriteLine($"Error navigating back: {ex.Message}");
             }
         }
+        [ObservableProperty]
+        private string _selectedExternalFileName;
+
+        [ObservableProperty]
+        private string _selectedExternalFilePath;
+
+        // Returns true if a file has been picked
+        public bool IsExternalFileSelected => !string.IsNullOrEmpty(SelectedExternalFilePath);
+
+        [RelayCommand]
+        private async Task PickExternalBackupAsync()
+        {
+            try
+            {
+
+                // Define custom file types for .db files
+                var dbFileType = new FilePickerFileType(
+                    new Dictionary<DevicePlatform, IEnumerable<string>>
+                    {
+                { DevicePlatform.iOS, new[] { "public.database", "sqlite" } },
+                { DevicePlatform.Android, new[] { "application/octet-stream", "application/x-sqlite3" } },
+                { DevicePlatform.WinUI, new[] { ".db" } },
+                { DevicePlatform.MacCatalyst, new[] { "db" } }
+                    });
+
+                var result = await FilePicker.Default.PickAsync(new PickOptions
+                {
+                    PickerTitle = "Select Kusina POS Backup (.db)",
+                    FileTypes = dbFileType
+                });
+
+                if (result != null)
+                {
+                    SelectedExternalFileName = result.FileName;
+                    SelectedExternalFilePath = result.FullPath;
+                    // Notify the UI that the Restore button can now be visible
+                    OnPropertyChanged(nameof(IsExternalFileSelected));
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error picking file: {ex.Message}");
+                await PageHelper.DisplayAlertAsync("Error", "Could not access the file picker.", "OK");
+            }
+        }
+        [RelayCommand]
+        private async Task RestoreExternalBackupAsync()
+        {
+            if (string.IsNullOrEmpty(SelectedExternalFilePath)) return;
+
+            try
+            {
+                IsBusy = true;
+
+                // 1. Safety Backup (Current State)
+                // This ensures if the new DB is bad, we didn't lose the old one.
+                await BackupDatabaseAsync();
+
+                // 2. Confirm Restoration
+                bool confirm = await PageHelper.DisplayConfirmAsync("Confirm Restore",
+                    "All current data will be replaced. A safety backup has been created. Proceed?", "Yes", "No");
+
+                if (!confirm) return;
+
+                // 3. Close Connection
+                // You'll need to call your Database Service to close the SQLiteAsyncConnection
+                // Example: await _categoryService.CloseConnectionAsync(); 
+                // Or wherever your SQLiteConnection instance lives.
+                await _databaseService.CloseConnectionAsync();
+
+                // 4. Perform the File Overwrite
+                var activeDbPath = DatabaseConstants.DatabasePath;
+
+                using (FileStream sourceStream = File.OpenRead(SelectedExternalFilePath))
+                using (FileStream destinationStream = File.Create(activeDbPath))
+                {
+                    await sourceStream.CopyToAsync(destinationStream);
+                }
+
+                // 5. Verification Backup (A copy of the newly imported data)
+                // We re-initialize the connection briefly or just copy the file again
+                await BackupDatabaseAsync();
+
+                // 6. Success & Cleanup
+                SelectedExternalFilePath = string.Empty;
+                SelectedExternalFileName = string.Empty;
+                OnPropertyChanged(nameof(IsExternalFileSelected));
+
+                await PageHelper.DisplayAlertAsync("Restoration Successful",
+                    "The database has been updated. Please close and restart the app to apply changes.", "OK");
+                Application.Current.Quit();
+            }
+            catch (Exception ex)
+            {
+                await PageHelper.DisplayAlertAsync("Restore Error", ex.Message, "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+                await RefreshBackupsAsync();
+            }
+        }
+
         #endregion
         #region POS settings
         //========================POS SETTINGS========================//

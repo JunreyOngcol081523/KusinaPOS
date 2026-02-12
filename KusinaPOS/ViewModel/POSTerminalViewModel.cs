@@ -59,7 +59,8 @@ namespace KusinaPOS.ViewModel
 
         [ObservableProperty]
         private string changeAmount = "0.00";
-
+        [ObservableProperty]
+        private bool isReferenceNumberCorrect = false;
         private decimal subtotal = 0;
         private decimal discountValue = 0;
         private decimal vatValue = 0;
@@ -1019,6 +1020,17 @@ namespace KusinaPOS.ViewModel
             if (!string.IsNullOrEmpty(CashTenderedAmount) && CashTenderedAmount.Length > 0)
             {
                 CashTenderedAmount = CashTenderedAmount.Substring(0, CashTenderedAmount.Length - 1);
+            }
+        }
+        partial void OnGcashRefNumberChanged(string value)
+        {
+            if (!string.IsNullOrEmpty(value) && value.Length == 13)
+            {
+                IsReferenceNumberCorrect = true;
+            }
+            else
+            {
+                IsReferenceNumberCorrect = false;
             }
         }
     }

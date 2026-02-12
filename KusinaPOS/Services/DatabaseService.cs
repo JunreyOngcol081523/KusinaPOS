@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace KusinaPOS.Services
+﻿namespace KusinaPOS.Services
 {
     using KusinaPOS.Models;
     using SQLite;
     public interface IDatabaseService
     {
         Task InitializeAsync();
-        //Task ResetDatabaseAsync();
+        Task CloseConnectionAsync();
         SQLiteAsyncConnection GetConnection();
     }
 
     public class DatabaseService : IDatabaseService
     {
-        private readonly SQLiteAsyncConnection _database;
+        private SQLiteAsyncConnection _database;
 
         public DatabaseService(string dbPath)
         {
@@ -123,6 +119,23 @@ namespace KusinaPOS.Services
                     FROM InventoryTransaction it
                     INNER JOIN InventoryItem i ON it.InventoryItemId = i.Id;
             ");
+        }
+        public async Task CloseConnectionAsync()
+        {
+
+            if (_database != null)
+            {
+                // Close the actual SQLite connection
+                await _database.CloseAsync();
+
+                // Clear the reference so the next time a service is called, 
+                // it triggers the initialization logic again
+                _database = null;
+
+                // Force the .NET runtime to release the file handle immediately
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
         }
     }
 

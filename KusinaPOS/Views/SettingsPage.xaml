@@ -146,23 +146,67 @@
                             ZIndex="1"
                             Color="{StaticResource Primary}" />
 
-                        <!--  Header  -->
                         <Label
                             Grid.Row="0"
                             Margin="0,0,0,10"
                             FontAttributes="Bold"
                             FontSize="12"
-                            Text="Database Backup"
+                            Text="Database Management"
                             TextColor="{StaticResource TextPrimary}" />
 
-                        <!--  Backup Button  -->
-                        <Button
-                            Grid.Row="1"
-                            Command="{Binding BackupDatabaseCommand}"
-                            CornerRadius="8"
-                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-                            Text="Create New Backup"
-                            TextColor="White" />
+                        <VerticalStackLayout Grid.Row="1" Spacing="10">
+                            <Button
+                                BackgroundColor="{StaticResource Primary}"
+                                Command="{Binding BackupDatabaseCommand}"
+                                CornerRadius="8"
+                                IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                Text="Create New Local Backup"
+                                TextColor="White" />
+
+                            <BoxView
+                                Margin="0,5"
+                                HeightRequest="1"
+                                Color="{StaticResource Gray200}" />
+
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="11"
+                                Text="Import External Backup"
+                                TextColor="{StaticResource TextSecondary}" />
+
+                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                                <Border
+                                    Padding="12,0"
+                                    BackgroundColor="{StaticResource Gray100}"
+                                    HeightRequest="45"
+                                    Stroke="{StaticResource Gray200}"
+                                    StrokeShape="RoundRectangle 8"
+                                    StrokeThickness="1">
+                                    <Label
+                                        FontSize="12"
+                                        LineBreakMode="TailTruncation"
+                                        MaxLines="1"
+                                        Text="{Binding SelectedExternalFileName, TargetNullValue='No file selected...'}"
+                                        VerticalOptions="Center" />
+                                </Border>
+
+                                <Button
+                                    Grid.Column="1"
+                                    Command="{Binding PickExternalBackupCommand}"
+                                    FontSize="12"
+                                    HeightRequest="45"
+                                    Text="Browse"
+                                    WidthRequest="100" />
+                            </Grid>
+
+                            <Button
+                                BackgroundColor="#34C759"
+                                Command="{Binding RestoreExternalBackupCommand}"
+                                CornerRadius="8"
+                                IsVisible="{Binding IsExternalFileSelected}"
+                                Text="Restore Selected File"
+                                TextColor="White" />
+                        </VerticalStackLayout>
 
                         <!--  Backup List Header  -->
                         <HorizontalStackLayout

@@ -640,6 +640,7 @@
                                                     FontSize="16"
                                                     HeightRequest="55"
                                                     HorizontalOptions="Center"
+                                                    IsEnabled="{Binding IsReferenceNumberCorrect}"
                                                     Text="CONFIRM GCASH PAYMENT"
                                                     WidthRequest="300" />
                                             </VerticalStackLayout>
