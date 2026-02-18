@@ -73,6 +73,8 @@ namespace KusinaPOS
             builder.Services.AddTransient<AppHeaderView>();
             builder.Services.AddTransient<MenuInventorySettingsPage>();
             builder.Services.AddTransient<MenuInventorySettingsViewModel>();
+            builder.Services.AddTransient<InventoryBulkStocksEditViewModel>();
+            builder.Services.AddTransient<InventoryItemBulkStocksEditPage>();
             return builder.Build();
         }
     }

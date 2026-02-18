@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="KusinaPOS.Views.InventoryItemBulkStocksEditPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:sfdatagrid="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid">
+
+
+    <Grid RowDefinitions="Auto, *,Auto" RowSpacing="15">
+
+        <Grid
+            Grid.Row="0"
+            ColumnDefinitions="*,Auto"
+            ColumnSpacing="10">
+            <SearchBar
+                Grid.Column="0"
+                BackgroundColor="{StaticResource BackgroundDark}"
+                HeightRequest="45"
+                Placeholder="Search inventory..."
+                Text="{Binding SearchItemText, Mode=TwoWay}" />
+            <Button
+                Grid.Column="1"
+                BackgroundColor="{StaticResource Error}"
+                Command="{Binding ClearSelectionsCommand}"
+                Text="Clear Selections" />
+        </Grid>
+
+        <sfdatagrid:SfDataGrid
+            Grid.Row="1"
+            AutoGenerateColumnsMode="None"
+            ColumnWidthMode="Fill"
+            HeaderRowHeight="45"
+            ItemsSource="{Binding InventorySelectionList}"
+            RowHeight="60"
+            SelectionMode="None">
+
+            <sfdatagrid:SfDataGrid.Columns>
+
+                <sfdatagrid:DataGridTemplateColumn Width="50" HeaderText="Select">
+                    <sfdatagrid:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox
+                                HorizontalOptions="Center"
+                                IsChecked="{Binding IsSelected}"
+                                VerticalOptions="Center" />
+                        </DataTemplate>
+                    </sfdatagrid:DataGridTemplateColumn.CellTemplate>
+                </sfdatagrid:DataGridTemplateColumn>
+
+                <sfdatagrid:DataGridTextColumn
+                    AllowEditing="False"
+                    HeaderText="Item Name"
+                    MappingName="Item.Name" />
+
+                <sfdatagrid:DataGridTemplateColumn HeaderText="Qty On Hand">
+                    <sfdatagrid:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Entry
+                                HorizontalTextAlignment="Center"
+                                IsEnabled="{Binding IsSelected}"
+                                Keyboard="Numeric"
+                                Text="{Binding Item.QuantityOnHand, Mode=TwoWay}"
+                                Visual="Material" />
+                        </DataTemplate>
+                    </sfdatagrid:DataGridTemplateColumn.CellTemplate>
+                </sfdatagrid:DataGridTemplateColumn>
+
+                <sfdatagrid:DataGridTemplateColumn HeaderText="Cost/Unit">
+                    <sfdatagrid:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Entry
+                                HorizontalTextAlignment="Center"
+                                IsEnabled="{Binding IsSelected}"
+                                Keyboard="Numeric"
+                                Text="{Binding Item.CostPerUnit, Mode=TwoWay}"
+                                Visual="Material" />
+                        </DataTemplate>
+                    </sfdatagrid:DataGridTemplateColumn.CellTemplate>
+                </sfdatagrid:DataGridTemplateColumn>
+
+                <sfdatagrid:DataGridTemplateColumn HeaderText="Reorder Lvl">
+                    <sfdatagrid:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Entry
+                                HorizontalTextAlignment="Center"
+                                IsEnabled="{Binding IsSelected}"
+                                Keyboard="Numeric"
+                                Text="{Binding Item.ReOrderLevel, Mode=TwoWay}"
+                                Visual="Material" />
+                        </DataTemplate>
+                    </sfdatagrid:DataGridTemplateColumn.CellTemplate>
+                </sfdatagrid:DataGridTemplateColumn>
+
+                <sfdatagrid:DataGridTextColumn
+                    Width="80"
+                    AllowEditing="False"
+                    HeaderText="Unit"
+                    MappingName="Item.Unit" />
+
+            </sfdatagrid:SfDataGrid.Columns>
+        </sfdatagrid:SfDataGrid>
+        <Button
+            Grid.Row="2"
+            Background="{StaticResource Accent}"
+            Command="{Binding SaveBulkChangesCommand}"
+            Text="SAVE BULK STOCKS IN" />
+    </Grid>
+
+</ContentView>

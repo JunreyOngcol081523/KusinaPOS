@@ -59,6 +59,7 @@ namespace KusinaPOS.ViewModel
         // UI STATE
         // ======================================================
         [ObservableProperty] private bool isEditPanelVisible;
+        [ObservableProperty] private bool isBulkStocksInPanelVisible;
         [ObservableProperty] private string editPanelTitle = "Edit Inventory Item";
         [ObservableProperty] private string searchText = string.Empty;
         [ObservableProperty] private bool isTransactionPanelVisible;
@@ -158,6 +159,7 @@ namespace KusinaPOS.ViewModel
                 EditPanelTitle = "Add Inventory Item";
                 IsEditPanelVisible = true;
                 IsTransactionPanelVisible = !IsEditPanelVisible;
+                IsBulkStocksInPanelVisible = false;
             }
             catch (Exception ex)
             {
@@ -194,6 +196,7 @@ namespace KusinaPOS.ViewModel
                 EditPanelTitle = $"Edit Inventory Item: {item.Name}";
                 IsEditPanelVisible = true;
                 IsTransactionPanelVisible = !IsEditPanelVisible;
+                IsBulkStocksInPanelVisible = false;
             }
             catch (Exception ex)
             {
@@ -415,7 +418,12 @@ namespace KusinaPOS.ViewModel
                 await PageHelper.DisplayAlertAsync("Error", "Failed to load inventory items.", "OK");
             }
         }
-
+        [RelayCommand]
+        private async Task RefreshInventoryAsync()
+        {
+            await LoadInventoryItems(string.Empty);
+            SearchText = string.Empty;
+        }
         // ======================================================
         // SEARCH WITH DEBOUNCE
         // ======================================================
@@ -550,7 +558,7 @@ namespace KusinaPOS.ViewModel
                 IsEditPanelVisible = false;
                 IsTransactionPanelVisible = true;
                 TransactionLogPanelTitle = $"Transaction Logs: {item.Name}";
-
+                IsBulkStocksInPanelVisible = false;
                 var transactions = await _inventoryTransactionService
                     .GetTransactionsByInventoryItemAsync(item.Id);
 
@@ -576,6 +584,15 @@ namespace KusinaPOS.ViewModel
                 Debug.WriteLine($"Error closing transaction panel: {ex.Message}");
             }
         }
-
+        [RelayCommand]
+        private void OpenBulkStocksEdit() {
+            IsBulkStocksInPanelVisible =true;
+            IsEditPanelVisible = IsTransactionPanelVisible= false;
+        }
+        [RelayCommand]
+        private void CloseBulkStocksEdit() {
+            IsBulkStocksInPanelVisible=false;
+            IsEditPanelVisible = IsTransactionPanelVisible= false;
+        }
     }
 }

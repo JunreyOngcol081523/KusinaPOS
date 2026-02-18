@@ -11,6 +11,7 @@
     xmlns:sfdatagrid="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
     xmlns:sfeditors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
     xmlns:viewmodel="clr-namespace:KusinaPOS.ViewModel"
+    xmlns:views="clr-namespace:KusinaPOS.Views"
     BackgroundColor="{StaticResource BackgroundDark}">
 
     <Grid Padding="20" RowDefinitions="Auto,*">
@@ -64,11 +65,12 @@
                 <Grid
                     Grid.Row="1"
                     Margin="0,0,0,8"
-                    ColumnDefinitions="*,Auto">
+                    ColumnDefinitions="*,Auto,Auto"
+                    ColumnSpacing="5">
 
                     <SearchBar
                         Grid.Column="0"
-                        BackgroundColor="Transparent"
+                        BackgroundColor="{StaticResource BackgroundDark}"
                         FontSize="12"
                         Placeholder="Search"
                         PlaceholderColor="{StaticResource TextDisabled}"
@@ -79,6 +81,14 @@
                         Grid.Column="1"
                         Padding="20,10"
                         BackgroundColor="{StaticResource Primary}"
+                        Command="{Binding OpenBulkStocksEditCommand}"
+                        CornerRadius="5"
+                        Text="Bulk Stocks In"
+                        TextColor="{StaticResource White}" />
+                    <Button
+                        Grid.Column="2"
+                        Padding="20,10"
+                        BackgroundColor="{StaticResource Primary}"
                         Command="{Binding AddItemCommand}"
                         CornerRadius="5"
                         Text="Add Item"
@@ -86,7 +96,7 @@
                 </Grid>
 
                 <!--  Inventory List  -->
-                <Border Grid.Row="2" Style="{StaticResource CardBorder}">
+                <Grid Grid.Row="2" Style="{StaticResource CardBorder}">
                     <Grid Padding="0" RowDefinitions="*,Auto">
                         <!--  DataGrid  -->
                         <sfdatagrid:SfDataGrid
@@ -190,7 +200,7 @@
                             PageSize="5"
                             Source="{Binding InventoryItems}" />
                     </Grid>
-                </Border>
+                </Grid>
             </Grid>
         </Border>
 
@@ -504,6 +514,26 @@
 
             </Grid>
         </Border>
-
+        <Border
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="10,0,0,0"
+            Padding="20"
+            BackgroundColor="{StaticResource Gray100}"
+            IsVisible="{Binding IsBulkStocksInPanelVisible}"
+            Style="{StaticResource CardBorder}">
+            <Grid RowDefinitions="Auto,*,Auto" RowSpacing="5">
+                <Label
+                    Grid.Row="0"
+                    FontSize="Small"
+                    Text="For Bulk Stocks In" />
+                <views:InventoryItemBulkStocksEditPage Grid.Row="1" />
+                <Button
+                    Grid.Row="2"
+                    BackgroundColor="{StaticResource Gray200}"
+                    Command="{Binding CloseBulkStocksEditCommand}"
+                    Text="CLOSE" />
+            </Grid>
+        </Border>
     </Grid>
 </ContentPage>

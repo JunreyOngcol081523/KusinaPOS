@@ -1,5 +1,6 @@
 ﻿using KusinaPOS.Models;
 using SQLite;
+using System.Diagnostics;
 
 namespace KusinaPOS.Services
 {
@@ -85,6 +86,55 @@ namespace KusinaPOS.Services
             {
                 item.QuantityOnHand = newQuantity;
                 await _db.UpdateAsync(item);
+            }
+        }
+        // In InventoryItemService.cs
+
+        public async Task ApplyBulkInventoryChangesAsync(List<InventoryItem> modifiedItems, string reason = "Stock In", string remarks = "Bulk update")
+        {
+            try
+            {
+                await InitializeAsync();
+
+                // Run in a single transaction for speed and data safety
+                await _db.RunInTransactionAsync(tran =>
+                {
+                    foreach (var updatedItem in modifiedItems)
+                    {
+                        // 1. Fetch the original item using its Primary Key (No FirstOrDefault needed!)
+                        var originalItem = tran.Find<InventoryItem>(updatedItem.Id);
+
+                        if (originalItem != null)
+                        {
+                            // 2. Calculate the difference (New minus Old)
+                            decimal qtyDifference = updatedItem.QuantityOnHand - originalItem.QuantityOnHand;
+
+                            // 3. If the quantity actually changed, record the transaction
+                            if (qtyDifference != 0)
+                            {
+                                var transaction = new InventoryTransaction
+                                {
+                                    InventoryItemId = updatedItem.Id,
+                                    QuantityChange = qtyDifference,
+                                    CostAtTransaction = updatedItem.CostPerUnit,
+                                    Reason = reason,
+                                    Remarks = remarks,
+                                    TransactionDate = DateTime.Now
+                                };
+
+                                tran.Insert(transaction);
+                            }
+
+                            // 4. Update the actual Inventory Item (Qty, Cost, and Reorder Level)
+                            tran.Update(updatedItem);
+                        }
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+
+                System.Console.WriteLine($"Error:ApplyBulkInventoryChangesAsync -- {ex.Message}");
             }
         }
     }
