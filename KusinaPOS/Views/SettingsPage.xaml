@@ -359,7 +359,7 @@
                 <tabView:SfTabItem
                     BackgroundColor="{StaticResource CardBackground}"
                     FontSize="12"
-                    Header="Items and Categories Settings"
+                    Header="POS and Categories Settings"
                     ImagePosition="Left"
                     ImageSize="20"
                     ImageSource="inventory.png"
@@ -1427,6 +1427,18 @@
                         </Grid>
                     </ScrollView>
 
+                </tabView:SfTabItem>
+                <!--#endregion-->
+                <!--#region Menu Items Settings-->
+                <tabView:SfTabItem
+                    BackgroundColor="{StaticResource CardBackground}"
+                    FontSize="12"
+                    Header="Menus and Inventory Settings"
+                    ImagePosition="Left"
+                    ImageSize="20"
+                    ImageSource="menu.png"
+                    TextColor="{StaticResource TextPrimary}">
+                    <views:MenuInventorySettingsPage />
                 </tabView:SfTabItem>
                 <!--#endregion-->
                 <!--#region about settings-->

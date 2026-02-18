@@ -72,23 +72,16 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<MauiIcon Include="Resources\AppIcon\appicon.svg"
-				  Color="#121212"
-				  ForegroundScale="0.65" />
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" Color="#121212" ForegroundScale="0.65" />
 
-		<MauiSplashScreen Include="Resources\Splash\splash.svg"
-						  Color="#121212"
-						  BaseSize="128,128" />
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#121212" BaseSize="128,128" />
 
 		<MauiImage Include="Resources\Images\*" />
-		<MauiImage Update="Resources\Images\dotnet_bot.png"
-				   Resize="True"
-				   BaseSize="300,185" />
+		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
 
 		<MauiFont Include="Resources\Fonts\*" />
 
-		<MauiAsset Include="Resources\Raw\**"
-				   LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Compile Remove="Converters\BoolToCategoryBgConverter.cs" />
@@ -129,6 +122,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\InventoryItemPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\MenuInventorySettingsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\MenuItemIngredientsPage.xaml">

@@ -44,7 +44,8 @@ namespace KusinaPOS.Services
                 new Category { Name = "Pulutan", IsActive = true },
                 new Category { Name = "Snacks", IsActive = true },
                 new Category { Name = "Soup", IsActive = true },
-                new Category { Name = "Pasta", IsActive = true }
+                new Category { Name = "Pasta", IsActive = true },
+                new Category { Name = "General", IsActive = true }
             };
             await _db.InsertAllAsync(defaultCategories);
         }

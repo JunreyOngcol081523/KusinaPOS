@@ -71,6 +71,8 @@ namespace KusinaPOS
             builder.Services.AddSingleton<RefundSaleViewModel>();
             builder.Services.AddSingleton<HeaderViewModel>();
             builder.Services.AddTransient<AppHeaderView>();
+            builder.Services.AddTransient<MenuInventorySettingsPage>();
+            builder.Services.AddTransient<MenuInventorySettingsViewModel>();
             return builder.Build();
         }
     }

@@ -184,7 +184,7 @@
                             x:Name="inventoryPager"
                             Grid.Row="1"
                             Margin="0,8,0,8"
-                            BackgroundColor="{StaticResource CardBackground}"
+                            BackgroundColor="{StaticResource TextSecondary}"
                             HorizontalOptions="Center"
                             NumericButtonCount="5"
                             PageSize="5"

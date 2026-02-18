@@ -53,21 +53,22 @@
                         <!--  Segmented Control for Categories  -->
 
                         <CollectionView
-                                        Grid.Row="0"
-                                        HeightRequest="60"
-                                        ItemsSource="{Binding Categories}"
-                                        SelectionMode="Single"
-                                        SelectedItem="{Binding SelectedCategory}"
-                                        ItemsLayout="HorizontalList">
+                            Grid.Row="0"
+                            HeightRequest="60"
+                            ItemsLayout="HorizontalList"
+                            ItemsSource="{Binding Categories}"
+                            SelectedItem="{Binding SelectedCategory}"
+                            SelectionMode="Single">
 
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="models:Category">
                                     <Grid Padding="5">
 
-                                        <Border Style="{StaticResource CardBorder}" Padding="10">
-                                            <Label Text="{Binding Name}" 
-                                        VerticalOptions="Center" 
-                                        HorizontalOptions="Center" />
+                                        <Border Padding="10" Style="{StaticResource CardBorder}">
+                                            <Label
+                                                HorizontalOptions="Center"
+                                                Text="{Binding Name}"
+                                                VerticalOptions="Center" />
                                         </Border>
 
                                     </Grid>
@@ -197,6 +198,7 @@
                     </Grid>
 
                     <!--  Add New Item Button  -->
+
                     <Button
                         Grid.Row="2"
                         BackgroundColor="Transparent"
@@ -208,6 +210,7 @@
                         FontSize="12"
                         Text="ADD NEW ITEM"
                         TextColor="{StaticResource Primary}" />
+
                 </Grid>
             </Border>
 

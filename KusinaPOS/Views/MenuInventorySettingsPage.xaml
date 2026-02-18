@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="KusinaPOS.Views.MenuInventorySettingsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="40" Spacing="30">
+
+            <VerticalStackLayout Spacing="5">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="32"
+                    Text="Menu and Inventory Settings" />
+                <Label
+                    FontSize="16"
+                    Text="Download the template, fill it out, and import your files."
+                    TextColor="Gray" />
+                <Label
+                    FontSize="16"
+                    Text="Strictly do not modify/add/remove column headers. It may affect the system."
+                    TextColor="Gray" />
+            </VerticalStackLayout>
+
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="25">
+
+                <!--#region UnitBasedMenuItems-->
+                <Border
+                    Grid.Column="0"
+                    Padding="10"
+                    Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="20">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="22"
+                            Text="Menu Items" />
+                        <Label
+                            FontSize="14"
+                            Text="For Unit-Based items only."
+                            TextColor="{StaticResource TextSecondary}" />
+
+                        <BoxView HeightRequest="1" Color="#F0F0F0" />
+
+                        <Button
+                            BackgroundColor="#512BD4"
+                            Command="{Binding DownloadUnitBasedMenuTemplateCommand}"
+                            Text="Download Template" />
+
+                        <VerticalStackLayout Spacing="8">
+                            <Button
+                                Command="{Binding SelectUnitBasedMenuTemplateCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Text="Choose Excel File" />
+                            <Label
+                                FontSize="12"
+                                HorizontalOptions="Center"
+                                Text="{Binding SelectedMenuFilePath}"
+                                TextColor="Gray" />
+                        </VerticalStackLayout>
+
+                        <Button
+                            BackgroundColor="#27AE60"
+                            Command="{Binding StartImportUnitBasedMenuTemplateCommand}"
+                            FontAttributes="Bold"
+                            HeightRequest="50"
+                            IsEnabled="{Binding HasUnitBasedSelected}"
+                            Text="Start Import" />
+                    </VerticalStackLayout>
+                </Border>
+                <!--#endregion-->
+                <core:SfBusyIndicator
+                    x:Name="busyIndicator"
+                    AnimationType="CircularMaterial"
+                    IsRunning="{Binding IsBusy}" />
+                <!--#region RecipeBasedInventoryTemplate-->
+                <Border
+                    Grid.Column="1"
+                    Padding="10"
+                    Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="20">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="22"
+                            Text="Inventory Items" />
+                        <Label
+                            FontSize="14"
+                            Text="For Recipe-Based ingredients."
+                            TextColor="{StaticResource TextSecondary}" />
+
+                        <BoxView HeightRequest="1" Color="#F0F0F0" />
+
+                        <Button
+                            BackgroundColor="#512BD4"
+                            Command="{Binding DownloadRecipeBasedTemplateCommand}"
+                            Text="Download Template" />
+
+                        <VerticalStackLayout Spacing="8">
+                            <Button
+                                Command="{Binding SelectRecipeBasedInventoryTemplateCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Text="Choose Excel File" />
+                            <Label
+                                FontSize="12"
+                                HorizontalOptions="Center"
+                                Text="{Binding SelectedInventoryFilePath}"
+                                TextColor="{StaticResource TextSecondary}" />
+                        </VerticalStackLayout>
+
+                        <Button
+                            BackgroundColor="#27AE60"
+                            Command="{Binding StartImportInventoryTemplateCommand}"
+                            FontAttributes="Bold"
+                            HeightRequest="50"
+                            IsEnabled="{Binding HasRecipeBasedSelected}"
+                            Text="Start Import" />
+                    </VerticalStackLayout>
+                </Border>
+                <!--#endregion-->
+
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentView>
