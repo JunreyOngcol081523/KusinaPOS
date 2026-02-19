@@ -476,7 +476,7 @@
 
                             <sfdatagrid:DataGridTextColumn
                                 Format="N0"
-                                HeaderText="Qty Changed"
+                                HeaderText="Qty&#10;(+)(-)"
                                 MappingName="QuantityChange" />
 
                             <sfdatagrid:DataGridNumericColumn

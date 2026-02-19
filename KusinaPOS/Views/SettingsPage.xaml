@@ -155,13 +155,24 @@
                             TextColor="{StaticResource TextPrimary}" />
 
                         <VerticalStackLayout Grid.Row="1" Spacing="10">
-                            <Button
-                                BackgroundColor="{StaticResource Primary}"
-                                Command="{Binding BackupDatabaseCommand}"
-                                CornerRadius="8"
-                                IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-                                Text="Create New Local Backup"
-                                TextColor="White" />
+                            <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="10">
+                                <Button
+                                    Grid.Column="0"
+                                    BackgroundColor="{StaticResource Primary}"
+                                    Command="{Binding BackupDatabaseCommand}"
+                                    CornerRadius="8"
+                                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                    Text="Create New Local Backup"
+                                    TextColor="White" />
+                                <Button
+                                    Grid.Column="1"
+                                    BackgroundColor="{StaticResource Primary}"
+                                    Command="{Binding ResetCommand}"
+                                    CornerRadius="8"
+                                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                    Text="Reset DB"
+                                    TextColor="White" />
+                            </Grid>
 
                             <BoxView
                                 Margin="0,5"

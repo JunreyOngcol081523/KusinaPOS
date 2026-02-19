@@ -7,6 +7,7 @@
         Task InitializeAsync();
         Task CloseConnectionAsync();
         SQLiteAsyncConnection GetConnection();
+        Task ResetDatabaseAsync();
     }
 
     public class DatabaseService : IDatabaseService

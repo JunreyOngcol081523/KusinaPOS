@@ -1144,6 +1144,19 @@ namespace KusinaPOS.ViewModel
 
 
         #endregion
+        #region About Settings
+        [RelayCommand]
+        private async Task ResetAsync()
+        {
+            var confirm = await PageHelper.DisplayConfirmAsync(
+                "Confirm Reset",
+                "This will delete all your data and reset the app to its initial state. A backup will be created before resetting. Do you want to proceed?",
+                "Yes, Reset", "No");
+            if(!confirm) return;
+            await BackupDatabaseAsync();
+            await _databaseService.ResetDatabaseAsync();
+        }
+        #endregion
     }
 
 }

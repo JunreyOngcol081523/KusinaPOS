@@ -16,9 +16,11 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty]
         private bool _isSelected;
 
+
         [ObservableProperty]
         private InventoryItem _item;
         public decimal OriginalQuantity { get; private set; }
+        
         public InventoryItemSelection(InventoryItem item)
         {
             Item = item;
@@ -28,12 +30,14 @@ namespace KusinaPOS.ViewModel
     }
     public partial class InventoryBulkStocksEditViewModel:ObservableObject
     {
+
         private CancellationTokenSource? _searchCts;
         private readonly InventoryItemService _inventoryService;
         // For the SearchBar Text="{Binding SearchItemText}"
         [ObservableProperty]
         private string _searchItemText = string.Empty;
-
+        [ObservableProperty]
+        private string textRemarks=string.Empty;
         // For the DataGrid ItemsSource="{Binding InventorySelectionList}"
         [ObservableProperty]
         private ObservableCollection<InventoryItemSelection> _inventorySelectionList = new();
@@ -121,6 +125,11 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         private async Task SaveBulkChangesAsync()
         {
+            if(TextRemarks.Length < 5)
+            {
+                await PageHelper.DisplayAlertAsync("Notice", "Please provide a reason for the stock change (at least 5 characters).", "OK");
+                return;
+            }
             // 1. Filter out only the checked wrapper items so we can access OriginalQuantity
             var selectedWrappers = _allInventoryItems
                 .Where(x => x.IsSelected)
@@ -163,7 +172,7 @@ namespace KusinaPOS.ViewModel
                 await _inventoryService.ApplyBulkInventoryChangesAsync(
                     itemsToSave,
                     reason: "Stock In",
-                    remarks: "Updated via Bulk Stocks In panel");
+                    remarks: TextRemarks);
 
                 await PageHelper.DisplayAlertAsync("Success", $"{itemsToSave.Count} items have been updated.", "OK");
 

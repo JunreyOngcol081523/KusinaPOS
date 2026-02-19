@@ -64,7 +64,7 @@
                                 <DataTemplate x:DataType="models:Category">
                                     <Grid Padding="5">
 
-                                        <Border Padding="10" Style="{StaticResource CardBorder}">
+                                        <Border Padding="10" Stroke="Transparent">
                                             <Label
                                                 HorizontalOptions="Center"
                                                 Text="{Binding Name}"

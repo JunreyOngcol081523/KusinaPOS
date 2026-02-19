@@ -3,6 +3,7 @@
     x:Class="KusinaPOS.Views.InventoryItemBulkStocksEditPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
     xmlns:sfdatagrid="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid">
 
 
@@ -99,11 +100,22 @@
 
             </sfdatagrid:SfDataGrid.Columns>
         </sfdatagrid:SfDataGrid>
-        <Button
+        <Grid
             Grid.Row="2"
-            Background="{StaticResource Accent}"
-            Command="{Binding SaveBulkChangesCommand}"
-            Text="SAVE BULK STOCKS IN" />
+            ColumnDefinitions="*,Auto"
+            ColumnSpacing="10">
+            <inputLayout:SfTextInputLayout
+                Grid.Column="0"
+                HelperText="(example: Marketing)"
+                Hint="Remarks">
+                <Entry Text="{Binding TextRemarks}" />
+            </inputLayout:SfTextInputLayout>
+            <Button
+                Grid.Column="1"
+                Background="{StaticResource Accent}"
+                Command="{Binding SaveBulkChangesCommand}"
+                Text="SAVE BULK STOCKS IN" />
+        </Grid>
     </Grid>
 
 </ContentView>
