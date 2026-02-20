@@ -119,6 +119,7 @@ namespace KusinaPOS.ViewModel
             {
                 selection.IsSelected = false;
             }
+            await LoadInventoryAsync();
         }
         // In InventoryViewModel.cs
 
@@ -174,11 +175,12 @@ namespace KusinaPOS.ViewModel
                     reason: "Stock In",
                     remarks: TextRemarks);
 
-                await PageHelper.DisplayAlertAsync("Success", $"{itemsToSave.Count} items have been updated.", "OK");
+                await PageHelper.DisplayAlertAsync("Success", $"{itemsToSave.Count} items have been updated.\nClick OK to go back to dashboard", "OK");
 
                 // 5. Reset the search text and reload fresh data from the database
                 SearchItemText = string.Empty;
-                
+                //close this Page and navigate back to InventoryPage
+                await PageHelper.NavigateBackAsync();
             }
             catch (Exception ex)
             {

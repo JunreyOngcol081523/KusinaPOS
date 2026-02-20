@@ -163,15 +163,22 @@ namespace KusinaPOS.ViewModel
                 // Cleanup old backups
                 CleanupOldBackups(backupDir, maxBackupsToKeep: 10);
 
-                await PageHelper.DisplayAlertAsync("Quick DB Backup","Database backup created successfully.","OK");
+                await PageHelper.DisplayAlertAsync(
+                        "Quick DB Backup",
+                        "Database backup created successfully.",
+                        "OK");
+                
                 //save to preferences date last backup
                 Preferences.Set(DatabaseConstants.LastBackupDateKey, DateTime.UtcNow.Ticks);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error backing up database: {ex.Message}");
-                await PageHelper.DisplayAlertAsync("Error",
-                    $"Failed to backup database: {ex.Message}", "OK");
+                await PageHelper.DisplayAlertAsync(
+                        "Error",
+                        $"Failed to backup database: {ex.Message}",
+                        "OK");
+                
             }
             finally
             {

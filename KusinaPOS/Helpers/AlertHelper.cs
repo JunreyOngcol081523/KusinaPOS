@@ -9,17 +9,15 @@ namespace KusinaPOS.Helpers
 {
     public class AlertHelper
     {
-        
 
-        public static void ShowToast(string message)
+
+        public static async Task ShowToast(string message)
         {
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-            ToastDuration duration = ToastDuration.Short;
-            double fontSize = 14;
-            // Implementation for showing a toast notification
-            var toast = Toast.Make(message, duration, fontSize);
-
-            toast.Show(cancellationTokenSource.Token);
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                var toast = Toast.Make(message, ToastDuration.Short, 14);
+                await toast.Show();
+            });
         }
     }
 }

@@ -106,6 +106,7 @@
             ColumnSpacing="10">
             <inputLayout:SfTextInputLayout
                 Grid.Column="0"
+                HeightRequest="80"
                 HelperText="(example: Marketing)"
                 Hint="Remarks">
                 <Entry Text="{Binding TextRemarks}" />

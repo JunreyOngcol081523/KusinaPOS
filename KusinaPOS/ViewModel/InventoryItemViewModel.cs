@@ -65,6 +65,7 @@ namespace KusinaPOS.ViewModel
         [ObservableProperty] private bool isTransactionPanelVisible;
         [ObservableProperty] private string transactionLogPanelTitle;
         [ObservableProperty] private string costPerUnitLabel = "Cost Per Unit (₱)";
+        [ObservableProperty] private int inventoryPanelColSpan = 0;
 
         // =========================
         // Units (Autocomplete)
@@ -123,7 +124,8 @@ namespace KusinaPOS.ViewModel
                 // Load all unit measurements initially
                 UnitMeasurements = UnitMeasurementService.AllUnits;
 
-               // _ = SeedInventoryDataAsync();
+                // _ = SeedInventoryDataAsync();
+                InventoryPanelColSpan = 2;
             }
             catch (Exception ex)
             {
@@ -160,6 +162,7 @@ namespace KusinaPOS.ViewModel
                 IsEditPanelVisible = true;
                 IsTransactionPanelVisible = !IsEditPanelVisible;
                 IsBulkStocksInPanelVisible = false;
+                InventoryPanelColSpan = 0;
             }
             catch (Exception ex)
             {
@@ -197,6 +200,7 @@ namespace KusinaPOS.ViewModel
                 IsEditPanelVisible = true;
                 IsTransactionPanelVisible = !IsEditPanelVisible;
                 IsBulkStocksInPanelVisible = false;
+                InventoryPanelColSpan = 0;
             }
             catch (Exception ex)
             {
@@ -231,7 +235,7 @@ namespace KusinaPOS.ViewModel
                 EditingCostPerUnit = 0;
                 EditingReOrderLevel = 0;
                 EditingIsActive = true;
-
+                InventoryPanelColSpan = 2;
                 QuantityChanged = 0;
                 OriginalQuantityOnHand = 0;
             }
@@ -249,13 +253,7 @@ namespace KusinaPOS.ViewModel
         {
             try
             {
-                // Validation checks
-                bool confirm = await PageHelper.DisplayConfirmAsync(
-                    "Confirm Save",
-                    "Are you sure you want to save changes to this inventory item?",
-                    "Yes",
-                    "No");
-                if(!confirm) return;
+
                 if (string.IsNullOrWhiteSpace(EditingName) ||
                     string.IsNullOrWhiteSpace(EditingUnit))
                 {
@@ -277,6 +275,13 @@ namespace KusinaPOS.ViewModel
                         "OK");
                     return;
                 }
+                // Validation checks
+                bool confirm = await PageHelper.DisplayConfirmAsync(
+                    "Confirm Save",
+                    "Are you sure you want to save changes to this inventory item?",
+                    "Yes",
+                    "No");
+                if (!confirm) return;
                 var originalItem = InventoryItems.FirstOrDefault(i => i.Id == EditingId);
 
                 if (originalItem != null) // Update Mode
@@ -550,6 +555,7 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         public async Task ViewTransactionsAsync(InventoryItem item)
         {
+            InventoryPanelColSpan = 0;
             try
             {
                 if (item == null) return;
@@ -574,10 +580,12 @@ namespace KusinaPOS.ViewModel
         [RelayCommand]
         private void CloseTransactionPanel()
         {
+            InventoryPanelColSpan = 2;
             try
             {
                 IsTransactionPanelVisible = false;
                 TransactionLogs.Clear();
+                
             }
             catch (Exception ex)
             {

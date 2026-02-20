@@ -40,11 +40,22 @@
                             BackgroundColor="{StaticResource SurfaceDark}"
                             StrokeShape="RoundRectangle 15">
                             <VerticalStackLayout Spacing="8">
-                                <Label
-                                    FontAttributes="Bold"
-                                    FontSize="12"
-                                    Text="TODAY'S SALES"
-                                    TextColor="{StaticResource TextSecondary}" />
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="12"
+                                        Text="TODAY'S SALES"
+                                        TextColor="{StaticResource TextSecondary}" />
+                                    <Label
+                                        FontFamily="MauiMaterialAssets.ttf"
+                                        FontSize="20"
+                                        Text="&#xe7a2;"
+                                        TextColor="{StaticResource TextSecondary}">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding RefreshTransactionCounterCommand}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                </HorizontalStackLayout>
 
                                 <Label
                                     FontSize="35"
@@ -71,11 +82,22 @@
                             BackgroundColor="{StaticResource SurfaceDark}"
                             StrokeShape="RoundRectangle 15">
                             <VerticalStackLayout Spacing="8">
-                                <Label
-                                    FontAttributes="Bold"
-                                    FontSize="12"
-                                    Text="WEEKLY SALES"
-                                    TextColor="{StaticResource TextSecondary}" />
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="12"
+                                        Text="WEEKLY SALES"
+                                        TextColor="{StaticResource TextSecondary}" />
+                                    <Label
+                                        FontFamily="MauiMaterialAssets.ttf"
+                                        FontSize="20"
+                                        Text="&#xe7a2;"
+                                        TextColor="{StaticResource TextSecondary}">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding RefreshTransactionCounterCommand}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                </HorizontalStackLayout>
 
                                 <Label
                                     FontSize="35"
@@ -106,7 +128,7 @@
                                     <Label
                                         FontAttributes="Bold"
                                         FontSize="12"
-                                        Text="TODAY'S TRANSACTION COUNTER"
+                                        Text="TODAY'S TRANSACTION"
                                         TextColor="{StaticResource TextSecondary}" />
                                     <Label
                                         FontFamily="MauiMaterialAssets.ttf"
@@ -183,11 +205,22 @@
 
                             <VerticalStackLayout Spacing="5" VerticalOptions="Start">
 
-                                <Label
-                                    FontAttributes="Bold"
-                                    FontSize="12"
-                                    Text="NET INCOME (TODAY)"
-                                    TextColor="{StaticResource TextSecondary}" />
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="12"
+                                        Text="NET INCOME (TODAY)"
+                                        TextColor="{StaticResource TextSecondary}" />
+                                    <Label
+                                        FontFamily="MauiMaterialAssets.ttf"
+                                        FontSize="20"
+                                        Text="&#xe7a2;"
+                                        TextColor="{StaticResource TextSecondary}">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding RefreshTransactionCounterCommand}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                </HorizontalStackLayout>
 
                                 <Label
                                     FontAttributes="Bold"
@@ -241,7 +274,7 @@
                     <!--  Bottom Section  -->
                     <Grid
                         Grid.Row="1"
-                        ColumnDefinitions="*,*"
+                        ColumnDefinitions="*,Auto"
                         ColumnSpacing="8">
 
                         <!--  Daily Sales Overview Chart  -->
@@ -249,6 +282,7 @@
                             Grid.Column="0"
                             Padding="15"
                             BackgroundColor="{StaticResource SurfaceDark}"
+                            HeightRequest="310"
                             StrokeShape="RoundRectangle 15">
 
                             <VerticalStackLayout Spacing="15">
@@ -257,37 +291,43 @@
                                     <Label
                                         Grid.Column="0"
                                         FontAttributes="Bold"
-                                        FontSize="14"
+                                        FontSize="12"
                                         Text="REVENUE TRENDS"
                                         TextColor="{StaticResource TextSecondary}"
                                         VerticalOptions="Center" />
+
 
                                     <buttons:SfRadioGroup
                                         x:Name="FilterGroup"
                                         Grid.Column="1"
                                         Orientation="Horizontal"
-                                        Spacing="15">
+                                        Spacing="1">
                                         <buttons:SfRadioButton
+                                            FontSize="12"
                                             StateChanged="OnFilterChanged"
                                             Text="Hourly"
                                             TextColor="{StaticResource TextPrimary}" />
                                         <buttons:SfRadioButton
+                                            FontSize="12"
                                             IsChecked="True"
                                             StateChanged="OnFilterChanged"
                                             Text="Daily"
                                             TextColor="{StaticResource TextPrimary}" />
                                         <buttons:SfRadioButton
+                                            FontSize="12"
                                             StateChanged="OnFilterChanged"
                                             Text="Weekly"
                                             TextColor="{StaticResource TextPrimary}" />
                                         <buttons:SfRadioButton
+                                            FontSize="12"
                                             StateChanged="OnFilterChanged"
                                             Text="Monthly"
                                             TextColor="{StaticResource TextPrimary}" />
                                     </buttons:SfRadioGroup>
+
                                 </Grid>
 
-                                <chart:SfCartesianChart>
+                                <chart:SfCartesianChart HeightRequest="200">
 
                                     <chart:SfCartesianChart.XAxes>
                                         <chart:CategoryAxis>
@@ -338,170 +378,188 @@
                         <!--  Action Buttons  -->
                         <Grid
                             Grid.Column="1"
-                            RowDefinitions="*,*,*"
-                            RowSpacing="15">
+                            ColumnDefinitions="Auto,Auto,Auto"
+                            ColumnSpacing="15"
+                            RowDefinitions="Auto,Auto"
+                            RowSpacing="10">
 
-                            <!--  Row 1  -->
-                            <Grid
+                            <Border
                                 Grid.Row="0"
-                                ColumnDefinitions="*,*"
-                                ColumnSpacing="15">
-                                <Border
-                                    Grid.Column="0"
-                                    Padding="15"
-                                    BackgroundColor="{StaticResource SurfaceDark}"
-                                    Stroke="{StaticResource Primary}"
-                                    StrokeShape="RoundRectangle 15"
-                                    StrokeThickness="2">
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding OpenMenuManagementCommand}" />
-                                    </Border.GestureRecognizers>
-                                    <VerticalStackLayout
+                                Grid.Column="0"
+                                Padding="15"
+                                BackgroundColor="{StaticResource SurfaceDark}"
+                                HeightRequest="150"
+                                Stroke="{StaticResource Primary}"
+                                StrokeShape="RoundRectangle 15"
+                                StrokeThickness="2"
+                                WidthRequest="150">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenMenuManagementCommand}" />
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout
+                                    HorizontalOptions="Center"
+                                    Spacing="10"
+                                    VerticalOptions="Center">
+                                    <Image HeightRequest="40" Source="menu.png" />
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="12"
                                         HorizontalOptions="Center"
-                                        Spacing="10"
-                                        VerticalOptions="Center">
-                                        <Image HeightRequest="40" Source="menu.png" />
-                                        <Label
-                                            FontAttributes="Bold"
-                                            FontSize="12"
-                                            HorizontalOptions="Center"
-                                            Text="MANAGE MENU"
-                                            TextColor="{StaticResource TextPrimary}" />
-                                    </VerticalStackLayout>
-                                </Border>
+                                        HorizontalTextAlignment="Center"
+                                        TextColor="{StaticResource TextPrimary}">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="MANAGE&#10;" />
+                                                <Span Text="MENU" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </VerticalStackLayout>
+                            </Border>
 
-                                <Border
-                                    Grid.Column="1"
-                                    Padding="15"
-                                    BackgroundColor="{StaticResource SurfaceDark}"
-                                    Stroke="{StaticResource Primary}"
-                                    StrokeShape="RoundRectangle 15"
-                                    StrokeThickness="2">
-                                    <VerticalStackLayout
+                            <Border
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Padding="15"
+                                BackgroundColor="{StaticResource SurfaceDark}"
+                                HeightRequest="150"
+                                Stroke="{StaticResource Primary}"
+                                StrokeShape="RoundRectangle 15"
+                                StrokeThickness="2"
+                                WidthRequest="150">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenRecipeManagementCommand}" />
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout
+                                    HorizontalOptions="Center"
+                                    Spacing="10"
+                                    VerticalOptions="Center">
+                                    <Image HeightRequest="40" Source="weighingscale.png" />
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="12"
                                         HorizontalOptions="Center"
-                                        Spacing="10"
-                                        VerticalOptions="Center">
-                                        <Image HeightRequest="40" Source="weighingscale.png" />
-                                        <Label
-                                            FontAttributes="Bold"
-                                            FontSize="12"
-                                            HorizontalOptions="Center"
-                                            Text="MANAGE PER SERVING"
-                                            TextColor="{StaticResource TextPrimary}" />
-                                    </VerticalStackLayout>
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding OpenRecipeManagementCommand}" />
-                                    </Border.GestureRecognizers>
-                                </Border>
-                            </Grid>
+                                        HorizontalTextAlignment="Center"
+                                        TextColor="{StaticResource TextPrimary}">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="MANAGE&#10;" />
+                                                <Span Text="PER&#10;" />
+                                                <Span Text="SERVING" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </VerticalStackLayout>
+                            </Border>
 
-                            <!--  Row 2  -->
-                            <Grid
+                            <Border
+                                Grid.Row="0"
+                                Grid.Column="2"
+                                Padding="15"
+                                BackgroundColor="{StaticResource SurfaceDark}"
+                                HeightRequest="150"
+                                Stroke="{StaticResource Primary}"
+                                StrokeShape="RoundRectangle 15"
+                                StrokeThickness="2"
+                                WidthRequest="150">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenInventoryManagementCommand}" />
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout
+                                    HorizontalOptions="Center"
+                                    Spacing="10"
+                                    VerticalOptions="Center">
+                                    <Image HeightRequest="40" Source="inventory.png" />
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="12"
+                                        HorizontalOptions="Center"
+                                        Text="INVENTORY"
+                                        TextColor="{StaticResource TextPrimary}" />
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <Border
                                 Grid.Row="1"
-                                ColumnDefinitions="*,*"
-                                ColumnSpacing="15">
-                                <Border
-                                    Grid.Column="0"
-                                    Padding="15"
-                                    BackgroundColor="{StaticResource SurfaceDark}"
-                                    Stroke="{StaticResource Primary}"
-                                    StrokeShape="RoundRectangle 15"
-                                    StrokeThickness="2">
-                                    <VerticalStackLayout
+                                Grid.Column="0"
+                                Padding="15"
+                                BackgroundColor="{StaticResource SurfaceDark}"
+                                HeightRequest="150"
+                                Stroke="{StaticResource Primary}"
+                                StrokeShape="RoundRectangle 15"
+                                StrokeThickness="2"
+                                WidthRequest="150">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenReportsCommand}" />
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout
+                                    HorizontalOptions="Center"
+                                    Spacing="10"
+                                    VerticalOptions="Center">
+                                    <Image HeightRequest="40" Source="chart.png" />
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="12"
                                         HorizontalOptions="Center"
-                                        Spacing="10"
-                                        VerticalOptions="Center">
-                                        <Image HeightRequest="40" Source="inventory.png" />
-                                        <Label
-                                            FontAttributes="Bold"
-                                            FontSize="12"
-                                            HorizontalOptions="Center"
-                                            Text="INVENTORY"
-                                            TextColor="{StaticResource TextPrimary}" />
-                                    </VerticalStackLayout>
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding OpenInventoryManagementCommand}" />
-                                    </Border.GestureRecognizers>
-                                </Border>
+                                        Text="REPORTS"
+                                        TextColor="{StaticResource TextPrimary}" />
+                                </VerticalStackLayout>
+                            </Border>
 
-                                <Border
-                                    Grid.Column="1"
-                                    Padding="15"
-                                    BackgroundColor="{StaticResource SurfaceDark}"
-                                    Stroke="{StaticResource Primary}"
-                                    StrokeShape="RoundRectangle 15"
-                                    StrokeThickness="2">
-                                    <VerticalStackLayout
+                            <Border
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Padding="15"
+                                BackgroundColor="{StaticResource SurfaceDark}"
+                                HeightRequest="150"
+                                Stroke="{StaticResource Primary}"
+                                StrokeShape="RoundRectangle 15"
+                                StrokeThickness="2"
+                                WidthRequest="150">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenUserManagementCommand}" />
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout
+                                    HorizontalOptions="Center"
+                                    Spacing="10"
+                                    VerticalOptions="Center">
+                                    <Image HeightRequest="40" Source="usersettings.png" />
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="12"
                                         HorizontalOptions="Center"
-                                        Spacing="10"
-                                        VerticalOptions="Center">
-                                        <Image HeightRequest="40" Source="chart.png" />
-                                        <Label
-                                            FontAttributes="Bold"
-                                            FontSize="12"
-                                            HorizontalOptions="Center"
-                                            Text="REPORTS"
-                                            TextColor="{StaticResource TextPrimary}" />
-                                    </VerticalStackLayout>
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding OpenReportsCommand}" />
-                                    </Border.GestureRecognizers>
-                                </Border>
-                            </Grid>
+                                        Text="USER"
+                                        TextColor="{StaticResource TextPrimary}" />
+                                </VerticalStackLayout>
+                            </Border>
 
-                            <!--  Row 3  -->
-                            <Grid
-                                Grid.Row="2"
-                                ColumnDefinitions="*,*"
-                                ColumnSpacing="15">
-                                <Border
-                                    Grid.Column="0"
-                                    Padding="15"
-                                    BackgroundColor="{StaticResource SurfaceDark}"
-                                    Stroke="{StaticResource Primary}"
-                                    StrokeShape="RoundRectangle 15"
-                                    StrokeThickness="2">
-                                    <VerticalStackLayout
+                            <Border
+                                Grid.Row="1"
+                                Grid.Column="2"
+                                Padding="15"
+                                BackgroundColor="{StaticResource SurfaceDark}"
+                                HeightRequest="150"
+                                Stroke="{StaticResource Primary}"
+                                StrokeShape="RoundRectangle 15"
+                                StrokeThickness="2"
+                                WidthRequest="150">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenSettingsCommand}" />
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout
+                                    HorizontalOptions="Center"
+                                    Spacing="10"
+                                    VerticalOptions="Center">
+                                    <Image HeightRequest="40" Source="settings.png" />
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="12"
                                         HorizontalOptions="Center"
-                                        Spacing="10"
-                                        VerticalOptions="Center">
-                                        <Image HeightRequest="40" Source="usersettings.png" />
-                                        <Label
-                                            FontAttributes="Bold"
-                                            FontSize="12"
-                                            HorizontalOptions="Center"
-                                            Text="USER"
-                                            TextColor="{StaticResource TextPrimary}" />
-                                    </VerticalStackLayout>
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding OpenUserManagementCommand}" />
-                                    </Border.GestureRecognizers>
-                                </Border>
+                                        Text="SETTINGS"
+                                        TextColor="{StaticResource TextPrimary}" />
+                                </VerticalStackLayout>
+                            </Border>
 
-                                <Border
-                                    Grid.Column="1"
-                                    Padding="15"
-                                    BackgroundColor="{StaticResource SurfaceDark}"
-                                    Stroke="{StaticResource Primary}"
-                                    StrokeShape="RoundRectangle 15"
-                                    StrokeThickness="2">
-                                    <VerticalStackLayout
-                                        HorizontalOptions="Center"
-                                        Spacing="10"
-                                        VerticalOptions="Center">
-                                        <Image HeightRequest="40" Source="settings.png" />
-                                        <Label
-                                            FontAttributes="Bold"
-                                            FontSize="12"
-                                            HorizontalOptions="Center"
-                                            Text="SETTINGS"
-                                            TextColor="{StaticResource TextPrimary}" />
-                                    </VerticalStackLayout>
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding OpenSettingsCommand}" />
-                                    </Border.GestureRecognizers>
-                                </Border>
-                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>

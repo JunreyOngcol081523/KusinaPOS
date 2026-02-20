@@ -30,9 +30,11 @@
         <Border
             Grid.Row="1"
             Grid.Column="0"
+            Grid.ColumnSpan="{Binding InventoryPanelColSpan}"
             Margin="0,0,10,0"
             Padding="20"
             BackgroundColor="{StaticResource Gray100}"
+            IsVisible="{Binding IsBulkStocksInPanelVisible, Converter={StaticResource InvertedBoolConverter}}"
             Stroke="{StaticResource Gray200}"
             StrokeShape="RoundRectangle 10"
             StrokeThickness="1">
@@ -207,14 +209,16 @@
         <!--  Right Panel: Edit Inventory Item  -->
         <Border
             Grid.Row="1"
-            Grid.Column="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
             Margin="10,0,0,0"
             Padding="20"
             BackgroundColor="{StaticResource Gray100}"
             IsVisible="{Binding IsEditPanelVisible}"
             Stroke="{StaticResource Gray200}"
             StrokeShape="RoundRectangle 10"
-            StrokeThickness="1">
+            StrokeThickness="1"
+            WidthRequest="600">
             <Grid RowDefinitions="Auto,*,Auto">
 
                 <!--  Header  -->
@@ -433,12 +437,14 @@
         <!--  Right Panel: Show inventory transaction logs per item  -->
         <Border
             Grid.Row="1"
-            Grid.Column="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
             Margin="10,0,0,0"
             Padding="20"
             BackgroundColor="{StaticResource Gray100}"
             IsVisible="{Binding IsTransactionPanelVisible}"
-            Style="{StaticResource CardBorder}">
+            Style="{StaticResource CardBorder}"
+            WidthRequest="850">
             <Grid RowDefinitions="Auto,*,Auto">
 
                 <!--  Header  -->
@@ -516,7 +522,8 @@
         </Border>
         <Border
             Grid.Row="1"
-            Grid.Column="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
             Margin="10,0,0,0"
             Padding="20"
             BackgroundColor="{StaticResource Gray100}"
