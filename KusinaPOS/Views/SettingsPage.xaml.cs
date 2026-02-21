@@ -26,6 +26,7 @@ namespace KusinaPOS.Views
             {
                 Debug.WriteLine($"Error in SettingsPage constructor: {ex.Message}");
                 Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                PageHelper.DisplayAlertAsync("error from constructor", $"Failed to initialize settings page: {ex.StackTrace} \n {ex.Message} \n {ex.ToString()}", "OK");
             }
         }
 

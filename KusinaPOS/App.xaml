@@ -18,6 +18,7 @@
             <converters:ImageSourceConverter x:Key="ImageSourceConverter" />
             <converters:StockColorConverter x:Key="StockColorConverter" />
             <converters:EnumToStringConverter x:Key="EnumToStringConverter" />
+            <converters:NullToTrueConverter x:Key="NullToTrueConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

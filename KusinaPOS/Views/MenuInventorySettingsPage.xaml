@@ -50,7 +50,7 @@
                         <VerticalStackLayout Spacing="8">
                             <Button
                                 Command="{Binding SelectUnitBasedMenuTemplateCommand}"
-                                Style="{StaticResource SecondaryButtonStyle}"
+                                
                                 Text="Choose Excel File" />
                             <Label
                                 FontSize="12"
@@ -98,7 +98,7 @@
                         <VerticalStackLayout Spacing="8">
                             <Button
                                 Command="{Binding SelectRecipeBasedInventoryTemplateCommand}"
-                                Style="{StaticResource SecondaryButtonStyle}"
+                                
                                 Text="Choose Excel File" />
                             <Label
                                 FontSize="12"
